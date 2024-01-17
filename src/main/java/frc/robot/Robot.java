@@ -4,18 +4,26 @@ import com.flash3388.flashlib.frc.robot.FrcRobotControl;
 import com.flash3388.flashlib.frc.robot.base.iterative.DelegatingFrcRobotControl;
 import com.flash3388.flashlib.frc.robot.base.iterative.IterativeFrcRobot;
 import com.flash3388.flashlib.hid.XboxController;
+import com.flash3388.flashlib.scheduling.actions.Action;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.actions.DriveWithXbox;
+import frc.robot.actions.TrajectoryFollowingAction;
 import frc.robot.subSystems.Swerve;
+import frc.robot.subSystems.TrajectoryExample;
 
 public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobot {
 
     private Swerve swerve;
     private XboxController xbox;
+
+    private TrajectoryExample trajectory;
     public Robot(FrcRobotControl robotControl) {
         super(robotControl);
         swerve = SystemFactory.createSwerveSystem();
         this.xbox = getHidInterface().newXboxController(RobotMap.XBOX);
+        this.trajectory = new TrajectoryExample(swerve.getSwerveDriveKinematics());
+
+        Action followTrajectory = new TrajectoryFollowingAction();
 
         swerve.setDefaultAction(new DriveWithXbox(swerve, xbox));
     }

@@ -4,6 +4,7 @@ import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -83,7 +84,7 @@ public class SwerveModule {
     }
 
     public double getDistancePassedMeters() {
-        return driveEncoder.getPosition() * GEAR_RATIO_DRIVE * WHEEL_RADIUS_M;
+        return driveEncoder.getPosition() * GEAR_RATIO_DRIVE * WHEEL_RADIUS_M * Math.PI * 2;
     }
 
     public double getAbsEncoder() {
@@ -134,12 +135,22 @@ public class SwerveModule {
         }
         return newAngle;
     }
-/*
-    public void MoveWheelTo0() {
-        SwerveModuleState optimizedState = optimize(new SwerveModuleState(), Rotation2d.fromDegrees(getHeadingDegrees()));
-        double steeringValue = optimizedState.angle.getDegrees() / 360 / GEAR_RATIO;
-        this.pidSteer.setReference(steeringValue, CANSparkMax.ControlType.kPosition);
-        if(!ExtendedMath.constrained(getHeadingDegrees(), -2, 2))
-            MoveWheelTo0();
-    }*/
+
+    public void resetEncoders() {
+        driveEncoder.setPosition(0);
+    }
+
+    public SwerveModulePosition getModulePosition() {
+        return new SwerveModulePosition(
+                getDistancePassed(),
+                getRotation2D());
+    }
+    public Rotation2d getRotation2D() {
+        return new Rotation2d(
+                Math.toRadians(getHeadingDegrees()));
+    }
+
+    public double getDistancePassed() {
+        return driveEncoder.getPosition() * GEAR_RATIO_DRIVE * WHEEL_RADIUS_M  * Math.PI * 2;
+    }
 }

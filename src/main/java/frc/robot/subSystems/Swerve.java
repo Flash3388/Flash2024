@@ -5,11 +5,10 @@ import com.flash3388.flashlib.robot.RunningRobot;
 import com.flash3388.flashlib.robot.control.PidController;
 import com.flash3388.flashlib.scheduling.Subsystem;
 import com.jmath.ExtendedMath;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.SwerveModule;
 
@@ -27,6 +26,9 @@ public class Swerve extends Subsystem {
     private double currentAngle;
     private PidController pid;
 
+    private SwerveDriveOdometry odometer;
+
+
     public Swerve(SwerveModule[] swerveModules, WPI_Pigeon2 gyro) {
         this.swerveModules = swerveModules;
         this.gyro = gyro;
@@ -42,6 +44,11 @@ public class Swerve extends Subsystem {
 
         currentAngle = gyro.getAngle();
         //moveWheelsForward();
+
+        odometer = new SwerveDriveOdometry(
+                swerveDriveKinematics,
+                new Rotation2d(0),
+                getModulePositions());
     }
 
     public double getHeadingDegrees() {
@@ -78,6 +85,12 @@ public class Swerve extends Subsystem {
         }
     }
 
+    public void resetAllEncoders() {
+        for (int i = 0; i < 4; i++) {
+            swerveModules[i].resetEncoders();
+        }
+    }
+
     public void setDesiredStates(SwerveModuleState[] states) {
         for (int i = 0; i < 4; i++) {
             this.swerveModules[i].setDesiredState(states[i]);
@@ -102,16 +115,15 @@ public class Swerve extends Subsystem {
         } else {
             swerveModuleStates = swerveDriveKinematics.toSwerveModuleStates(new ChassisSpeeds(speedY, speedX, rotation));
         }
-            setDesiredStates(swerveModuleStates);
+        setDesiredStates(swerveModuleStates);
 
     }
 
 
-
-    public void drive(double speedY, double speedX, double rotation){
+    public void drive(double speedY, double speedX, double rotation) {
         SwerveModuleState[] swerveModuleStates;
         swerveModuleStates = swerveDriveKinematics.toSwerveModuleStates(new ChassisSpeeds(speedY, speedX, rotation));
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates,MAX_SPEED);
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_SPEED);
         currentAngle = getHeadingDegrees();
 
         setDesiredStates(swerveModuleStates);
@@ -148,7 +160,37 @@ public class Swerve extends Subsystem {
         SmartDashboard.putNumber("currentAng", currentAngle);
     }
 
-    public  SwerveDriveKinematics getSwerveDriveKinematics(){
+    public SwerveDriveKinematics getSwerveDriveKinematics() {
         return swerveDriveKinematics;
+    }
+
+    public SwerveModulePosition[] getModulePositions() {
+        SwerveModulePosition[] positions = new SwerveModulePosition[4];
+        for (int i = 0; i < swerveModules.length; i++) {
+            positions[i] = swerveModules[i].getModulePosition();
+        }
+        return positions;
+    }
+
+    public void updateOdometer() {
+        odometer.update(
+                getSwerveRotation2D(),
+                getModulePositions());
+    }
+
+    public Rotation2d getSwerveRotation2D() {
+        return new Rotation2d(
+                Math.toRadians(this.getHeadingDegrees()));
+    }
+
+    public void resetOdometer() {
+        odometer.resetPosition(Rotation2d.fromDegrees(0), getModulePositions(),
+                new Pose2d(new Translation2d(0, 0), new Rotation2d(0)));
+    }
+
+    public Pose2d getPose2D() {
+        return new Pose2d(
+                odometer.getPoseMeters().getTranslation(),
+                Rotation2d.fromDegrees(0));
     }
 }
