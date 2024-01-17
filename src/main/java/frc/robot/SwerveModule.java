@@ -4,10 +4,18 @@ import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Velocity;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
 public class SwerveModule {
 
@@ -29,8 +37,8 @@ public class SwerveModule {
 
     private RelativeEncoder driveEncoder;
     private RelativeEncoder steerEncoder;
-    private SparkMaxPIDController pidDrive;
-    private SparkMaxPIDController pidSteer;
+    private SparkPIDController pidDrive;
+    private SparkPIDController pidSteer;
     private CANCoder absoluteEncoder;
     private static final double GEAR_RATIO_STEER = 1 / 12.8;
 
@@ -98,6 +106,24 @@ public class SwerveModule {
         double steeringValue = optimizedState.angle.getDegrees()/360/ GEAR_RATIO_STEER;
         this.pidSteer.setReference(steeringValue,CANSparkMax.ControlType.kPosition);
         SmartDashboard.putNumber("PID VEL", velocityRpm);
+    }
+
+    public void setVoltage(Measure<Voltage> voltage) {
+        double volts = voltage.in(Volts);
+        drive.setVoltage(volts);
+
+        /*double volts = voltage.in(Volts) / drive.getBusVoltage();
+        drive.set(volts);*/
+    }
+
+    public Measure<Voltage> getOutputVoltage() {
+        double voltage = drive.getBusVoltage() * drive.getAppliedOutput();
+        return Volts.of(voltage);
+    }
+
+    public Measure<Velocity<Distance>> getLinearVelocity() {
+        double velocity = getVelocityRpm() * (2 * Math.PI * WHEEL_RADIUS_M) / 60;
+        return MetersPerSecond.of(velocity);
     }
 
     public static SwerveModuleState optimize(SwerveModuleState desiredState, Rotation2d currentAngle) {

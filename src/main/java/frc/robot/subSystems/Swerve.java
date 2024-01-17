@@ -8,9 +8,17 @@ import com.jmath.ExtendedMath;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import frc.robot.SwerveModule;
+
+import static edu.wpi.first.units.Units.Meters;
 
 public class Swerve extends Subsystem {
 
@@ -182,6 +190,28 @@ public class Swerve extends Subsystem {
         return new Rotation2d(
                 Math.toRadians(this.getHeadingDegrees()));
     }
+
+    public void sysidDrive(Measure<Voltage> voltage) {
+        for (SwerveModule module : swerveModules) {
+            module.setVoltage(voltage);
+        }
+    }
+
+    public void sysidLog(SysIdRoutineLog log) {
+        SwerveModule frontLeft = swerveModules[0];
+        SwerveModule frontRight = swerveModules[1];
+
+        log.motor("drive-left")
+                .voltage(frontLeft.getOutputVoltage())
+                .linearPosition(Meters.of(frontLeft.getDistancePassedMeters()))
+                .linearVelocity(frontLeft.getLinearVelocity());
+
+        log.motor("drive-right")
+                .voltage(frontRight.getOutputVoltage())
+                .linearPosition(Meters.of(frontRight.getDistancePassedMeters()))
+                .linearVelocity(frontRight.getLinearVelocity());
+    }
+}
 
     public void resetOdometer() {
         odometer.resetPosition(Rotation2d.fromDegrees(0), getModulePositions(),

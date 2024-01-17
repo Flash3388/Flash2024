@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.flash3388.flashlib.control.Direction;
 import com.flash3388.flashlib.frc.robot.FrcRobotControl;
 import com.flash3388.flashlib.frc.robot.base.iterative.DelegatingFrcRobotControl;
 import com.flash3388.flashlib.frc.robot.base.iterative.IterativeFrcRobot;
@@ -9,6 +10,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.actions.DriveWithXbox;
 import frc.robot.actions.TrajectoryFollowingAction;
 import frc.robot.subSystems.Swerve;
+import frc.robot.sysid.SysIdRoutine;
+import frc.robot.sysid.SysIdRoutineConfig;
+import frc.robot.sysid.SysIdRoutineMechanism;
 import frc.robot.subSystems.TrajectoryExample;
 
 public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobot {
@@ -16,16 +20,26 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     private Swerve swerve;
     private XboxController xbox;
 
-    private TrajectoryExample trajectory;
+    private final SysIdRoutine swerveSysId;
+
     public Robot(FrcRobotControl robotControl) {
         super(robotControl);
         swerve = SystemFactory.createSwerveSystem();
-        this.xbox = getHidInterface().newXboxController(RobotMap.XBOX);
-        this.trajectory = new TrajectoryExample(swerve.getSwerveDriveKinematics());
+        swerveSysId = new SysIdRoutine(
+                "swerve",
+                new SysIdRoutineConfig(),
+                new SysIdRoutineMechanism(
+                        swerve::sysidDrive,
+                        swerve::sysidLog,
+                        swerve,
+                        "swerve"
+                ));
 
-        Action followTrajectory = new TrajectoryFollowingAction();
+        this.xbox = getHidInterface().newXboxController(RobotMap.XBOX);
 
         swerve.setDefaultAction(new DriveWithXbox(swerve, xbox));
+
+        //swerveSysId.quasistatic(Direction.FORWARD).start();
     }
 
     @Override
@@ -61,6 +75,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
     @Override
     public void testInit() {
+
     }
 
     @Override
