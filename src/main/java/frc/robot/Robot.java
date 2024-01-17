@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.flash3388.flashlib.control.Direction;
 import com.flash3388.flashlib.frc.robot.FrcRobotControl;
 import com.flash3388.flashlib.frc.robot.base.iterative.DelegatingFrcRobotControl;
 import com.flash3388.flashlib.frc.robot.base.iterative.IterativeFrcRobot;
@@ -7,17 +8,35 @@ import com.flash3388.flashlib.hid.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.actions.DriveWithXbox;
 import frc.robot.subSystems.Swerve;
+import frc.robot.sysid.SysIdRoutine;
+import frc.robot.sysid.SysIdRoutineConfig;
+import frc.robot.sysid.SysIdRoutineMechanism;
 
 public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobot {
 
     private Swerve swerve;
     private XboxController xbox;
+
+    private final SysIdRoutine swerveSysId;
+
     public Robot(FrcRobotControl robotControl) {
         super(robotControl);
         swerve = SystemFactory.createSwerveSystem();
+        swerveSysId = new SysIdRoutine(
+                "swerve",
+                new SysIdRoutineConfig(),
+                new SysIdRoutineMechanism(
+                        swerve::sysidDrive,
+                        swerve::sysidLog,
+                        swerve,
+                        "swerve"
+                ));
+
         this.xbox = getHidInterface().newXboxController(RobotMap.XBOX);
 
         swerve.setDefaultAction(new DriveWithXbox(swerve, xbox));
+
+        //swerveSysId.quasistatic(Direction.FORWARD).start();
     }
 
     @Override
@@ -53,6 +72,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
     @Override
     public void testInit() {
+
     }
 
     @Override
