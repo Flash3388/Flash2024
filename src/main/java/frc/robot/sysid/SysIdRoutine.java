@@ -19,8 +19,12 @@ public class SysIdRoutine extends SysIdRoutineLog {
         recordState = config.recordState != null ? config.recordState : this::recordState;
     }
 
-    public Action quasistatic(Direction direction) {
+    public Action quasistaticTest(Direction direction) {
         return new QuasistaticTest(config, mechanism, recordState, this, direction);
+    }
+
+    public Action dynamicTest(Direction direction) {
+        return new DynamicTest(config, mechanism, recordState, this, direction);
     }
 
 }
