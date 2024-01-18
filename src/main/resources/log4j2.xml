@@ -9,18 +9,23 @@
     </Appenders>
     <Loggers>
         <Logger name="FlashLib" level="info" additivity="false">
+            <AppenderRef ref="Console"/>
             <AppenderRef ref="DriverStation"/>
         </Logger>
         <Logger name="FlashLib.Scheduler" level="info" additivity="false">
+            <AppenderRef ref="Console"/>
             <AppenderRef ref="DriverStation"/>
         </Logger>
         <Logger name="FlashLib.FRC" level="info" additivity="false">
+            <AppenderRef ref="Console"/>
             <AppenderRef ref="DriverStation"/>
         </Logger>
         <Logger name="FlashLib.Comm" level="error" additivity="false">
+            <AppenderRef ref="Console"/>
             <AppenderRef ref="DriverStation"/>
         </Logger>
         <Root level="warn">
+            <AppenderRef ref="Console"/>
             <AppenderRef ref="DriverStation"/>
         </Root>
     </Loggers>
