@@ -9,7 +9,9 @@ public class TakeOut extends ActionBase {
     private Intake intake;
 
     public TakeOut(Intake intake){
+
         this.intake = intake;
+        requires(intake);
     }
 
     @Override

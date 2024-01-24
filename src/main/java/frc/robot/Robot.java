@@ -3,7 +3,9 @@ package frc.robot;
 import com.flash3388.flashlib.frc.robot.FrcRobotControl;
 import com.flash3388.flashlib.frc.robot.base.iterative.DelegatingFrcRobotControl;
 import com.flash3388.flashlib.frc.robot.base.iterative.IterativeFrcRobot;
+import com.flash3388.flashlib.hid.XboxButton;
 import com.flash3388.flashlib.hid.XboxController;
+import frc.robot.actions.TakeOut;
 import frc.robot.subsystems.Intake;
 
 public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobot {
@@ -15,6 +17,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         super(robotControl);
         this.intake = SystemFactory.createIntake();
         this.xbox = getHidInterface().newXboxController(RobotMap.XBOX);
+       // xbox.getButton(XboxButton.B).whenActive(new TakeOut(intake));
 
     }
     
