@@ -20,7 +20,7 @@ public class ReverseShooter extends ActionBase {
 
     @Override
     public void execute(ActionControl actionControl) {
-        shooter.move(-0.2);
+        shooter.reverse();
     }
 
     @Override

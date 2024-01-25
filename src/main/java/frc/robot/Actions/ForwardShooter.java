@@ -20,7 +20,7 @@ public class ForwardShooter extends ActionBase {
 
     @Override
     public void execute(ActionControl actionControl) {
-        shooter.move(0.2);
+        shooter.shoot();
     }
 
     @Override

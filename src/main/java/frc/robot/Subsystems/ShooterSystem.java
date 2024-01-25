@@ -12,21 +12,64 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class ShooterSystem extends Subsystem {
     private CANSparkMax master;
     private CANSparkMax follower;
-    private static final double SPEED_LIMIT = 0.3;
+    private RelativeEncoder encoder;
+    // TODO: Figure out values for the 4 variables below.
+    private final double kf = 0;
+    private final double kd = 0;
+    private final double ki= 0;
+    private final double kp = 0;
+    private PidController pid;
+    private double ERROR = 0.05;
+    private static final double SPEED_POINT = 0.5; // TODO: Figure ideal value for this variable.
 
     public ShooterSystem(CANSparkMax master, CANSparkMax follower){
         this.master = master;
         this.follower = follower;
-        this.follower.follow(master);
-        this.follower.setInverted(true); // Not sure if this does what I think it does, which is reversing the input given to it by the master.
+        this.encoder = (RelativeEncoder) master.getEncoder();
+        this.follower.follow(master, true); // TODO: Make sure this needs to be inverted.
+        this.pid = new PidController(RunningRobot.getControl().getClock(),
+                ()-> SmartDashboard.getNumber("KP", kp),
+                ()-> SmartDashboard.getNumber("KI", ki),
+                ()-> SmartDashboard.getNumber("KD", kd),
+                ()-> SmartDashboard.getNumber("KF", kf));
+        pid.setOutputLimit(-0.7,0.7);
+        pid.setTolerance(ERROR, Time.milliseconds(500));
+        SmartDashboard.putNumber("KP", kp);
+        SmartDashboard.putNumber("KI", ki);
+        SmartDashboard.putNumber("KD", kd);
+        SmartDashboard.putNumber("KF", kf);
     }
 
-    public void move(double speed){
-        speed = ExtendedMath.constrain(speed, -SPEED_LIMIT, SPEED_LIMIT);
-        this.master.set(speed); // Need to set up PID for speed.
+    public void shoot(){
+        this.master.set(pid.applyAsDouble(getSpeed(),SPEED_POINT));
+    }
+
+    public void reverse(){
+        this.master.set(-pid.applyAsDouble(getSpeed(),SPEED_POINT));
+    }
+
+    public double getSpeed(){
+        return this.encoder.getVelocity();
     }
 
     public void stop(){
         this.master.stopMotor();
     }
 }
+
+
+/*
+HELLO TOM MEET THE CODE CAT.
+     _
+    / )
+   / /
+  / /               /\
+ / /     .-```-.   / ^`-.
+ \ \    /       \_/  (|) `o
+  \ \  /   .-.   \\ _  ,--'
+   \ \/   /   )   \( `^^^
+    \   \/    (    )
+     \   )     )  /
+Hey   ) /__    | (__
+     (___)))   (__)))
+ */
