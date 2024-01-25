@@ -211,7 +211,6 @@ public class Swerve extends Subsystem {
                 .linearPosition(Meters.of(frontRight.getDistancePassedMeters()))
                 .linearVelocity(frontRight.getLinearVelocity());
     }
-}
 
     public void resetOdometer() {
         odometer.resetPosition(Rotation2d.fromDegrees(0), getModulePositions(),
@@ -224,3 +223,5 @@ public class Swerve extends Subsystem {
                 Rotation2d.fromDegrees(0));
     }
 }
+
+
