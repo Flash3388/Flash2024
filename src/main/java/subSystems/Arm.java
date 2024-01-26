@@ -52,14 +52,18 @@ public class Arm extends Subsystem {
     }
 
     public double getAngle(){
-        return 5;
-    }     //Example angle
-
-    public void move(){
-        double speed = pid.applyAsDouble(getAngle(), angle);
-        master.set(speed);
+        return master.getEncoder().getPosition();
     }
 
+    public double speed(){
+        return pid.applyAsDouble(getAngle(), angle);
+    }
+    public void forward(){
+        master.set(speed());
+    }
+    public void backwards(){
+        master.set(-(speed()));
+    }
     public void pidReset(){
         pid.reset();
     }
