@@ -12,18 +12,21 @@ public class Arm extends Subsystem {
     private double angle;
     private CANSparkMax master;
     private CANSparkMax follower;
+    private DutyCycleEncoder encoder;
     private PidController pid;
-    private final double KP = 0;
-    private final double KI = 0;
-    private final double KD = 0;
-    private final double KF = 0;
-    private final double ERROR = 0;
-    private final double LIMIT = 0;
+    private static final double KP = 0;
+    private static final double KI = 0;
+    private static final double KD = 0;
+    private static final double KF = 0;
+    private static final double ERROR = 0;
+    private static final double LIMIT = 0;
 
-    public Arm(double angle, CANSparkMax master, CANSparkMax follower){
+
+    public Arm(double angle, CANSparkMax master, CANSparkMax follower, DutyCycleEncoder encoder){
         this.angle = angle;
         this.master = master;
         this.follower = follower;
+        this.encoder = encoder;
 
         follower.follow(master);
 
