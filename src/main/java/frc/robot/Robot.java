@@ -17,7 +17,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         super(robotControl);
         this.intake = SystemFactory.createIntake();
         this.xbox = getHidInterface().newXboxController(RobotMap.XBOX);
-       // xbox.getButton(XboxButton.B).whenActive(new TakeOut(intake));
+        // xbox.getButton(XboxButton.B).whileActive(new TakeOut(intake));
+        // xbox.getButton(XboxButton.A).whileActive(new TakeIn(intake));
 
     }
     

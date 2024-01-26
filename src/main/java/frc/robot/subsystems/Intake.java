@@ -5,7 +5,7 @@ import com.revrobotics.CANSparkMax;
 
 public class Intake extends Subsystem {
     private CANSparkMax motor;
-    private final double SPEED = -0.2;
+    private final static double SPEED = -0.2;
 
     public Intake(CANSparkMax motor){
         this.motor = motor;
