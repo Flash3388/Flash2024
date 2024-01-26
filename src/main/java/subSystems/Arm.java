@@ -52,7 +52,7 @@ public class Arm extends Subsystem {
     }
 
     public double getAngle(){
-        return master.getEncoder().getPosition();
+        return 5;  //Will change
     }
 
     public double speed(){
