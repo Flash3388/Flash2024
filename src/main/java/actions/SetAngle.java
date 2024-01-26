@@ -23,8 +23,7 @@ public class SetAngle extends ActionBase {
 
     @Override
     public void execute(ActionControl control) {
-        arm.backwards();    //Will change following a condition to check the direction
-        arm.forward();    //"                                                       "
+        arm.move();
     }
 
     @Override

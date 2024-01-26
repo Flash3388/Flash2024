@@ -58,11 +58,8 @@ public class Arm extends Subsystem {
     public double speed(){
         return pid.applyAsDouble(getAngle(), angle);
     }
-    public void forward(){
+    public void move(){
         master.set(speed());
-    }
-    public void backwards(){
-        master.set(-(speed()));
     }
     public void pidReset(){
         pid.reset();
