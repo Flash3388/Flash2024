@@ -19,8 +19,8 @@ public class Arm extends Subsystem {
     private static final double KI = 0;
     private static final double KD = 0;
     private static final double KF = 0;
-    private static final double ERROR = 0;
-    private static final double LIMIT = 0;
+    private static final double ERROR = 1;
+    private static final double LIMIT = 1;
 
 
     public Arm(double angle2Target, CANSparkMax master, CANSparkMax follower, DutyCycleEncoder encoder){
@@ -36,27 +36,18 @@ public class Arm extends Subsystem {
         SmartDashboard.putNumber("KD", KD);
         SmartDashboard.putNumber("KF", KF);
 
-        this.pid = new PidController(RunningRobot.getControl().getClock(),
-                ()-> {
-                    return SmartDashboard.getNumber("KP", KP);
-                },
-                ()->{
-                    return SmartDashboard.getNumber("KI", KI);
-                },
-                ()->{
-                    return SmartDashboard.getNumber("KD", KD);
-                },
-                ()->{
-                    return SmartDashboard.getNumber("KF", KF);
-                });
+        this.pid = PidController.newNamedController("PID", KP, KI, KD, KF);
 
         pid.setTolerance(ERROR, Time.milliseconds(500));
         pid.setOutputLimit(LIMIT);
 
     }
 
-    public double getAngle2Target(){
+    public void angleReset(){
         encoder.reset();
+    }
+
+    public double getAngle2Target(){
         return encoder.getPositionOffset();
     }
 
