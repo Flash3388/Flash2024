@@ -5,11 +5,12 @@ import com.flash3388.flashlib.scheduling.Subsystem;
 import com.flash3388.flashlib.time.Time;
 import com.revrobotics.CANSparkMax;
 import com.flash3388.flashlib.robot.control.PidController;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Arm extends Subsystem {
 
-    private double angle;
+    private double angle2Target;
     private CANSparkMax master;
     private CANSparkMax follower;
     private DutyCycleEncoder encoder;
@@ -22,8 +23,8 @@ public class Arm extends Subsystem {
     private static final double LIMIT = 0;
 
 
-    public Arm(double angle, CANSparkMax master, CANSparkMax follower, DutyCycleEncoder encoder){
-        this.angle = angle;
+    public Arm(double angle2Target, CANSparkMax master, CANSparkMax follower, DutyCycleEncoder encoder){
+        this.angle2Target = angle2Target;
         this.master = master;
         this.follower = follower;
         this.encoder = encoder;
@@ -54,12 +55,13 @@ public class Arm extends Subsystem {
 
     }
 
-    public double getAngle(){
-        return 5;  //Will change
+    public double getAngle2Target(){
+        encoder.reset();
+        return encoder.getPositionOffset();
     }
 
     public double speed(){
-        return pid.applyAsDouble(getAngle(), angle);
+        return pid.applyAsDouble(getAngle2Target(), angle2Target);
     }
     public void move(){
         master.set(speed());
