@@ -31,11 +31,6 @@ public class Arm extends Subsystem {
 
         follower.follow(master);
 
-        SmartDashboard.putNumber("KP", KP);
-        SmartDashboard.putNumber("KI", KI);
-        SmartDashboard.putNumber("KD", KD);
-        SmartDashboard.putNumber("KF", KF);
-
         this.pid = PidController.newNamedController("PID", KP, KI, KD, KF);
 
         pid.setTolerance(ERROR, Time.milliseconds(500));
@@ -48,7 +43,7 @@ public class Arm extends Subsystem {
     }
 
     public double getAngle2Target(){
-        return encoder.getPositionOffset();
+        return encoder.getAbsolutePosition();
     }
 
     public double speed(){
