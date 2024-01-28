@@ -5,12 +5,15 @@ import com.flash3388.flashlib.frc.robot.base.iterative.DelegatingFrcRobotControl
 import com.flash3388.flashlib.frc.robot.base.iterative.IterativeFrcRobot;
 import com.flash3388.flashlib.hid.XboxButton;
 import com.flash3388.flashlib.hid.XboxController;
+import edu.wpi.first.wpilibj.AddressableLED;
 import frc.robot.actions.TakeOut;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.LEDs;
 
 public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobot {
     private Intake intake;
     private XboxController xbox;
+    private LEDs leds;
 
     public Robot(FrcRobotControl robotControl)
     {
@@ -19,7 +22,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         this.xbox = getHidInterface().newXboxController(RobotMap.XBOX);
         // xbox.getButton(XboxButton.B).whileActive(new TakeOut(intake));
         // xbox.getButton(XboxButton.A).whileActive(new TakeIn(intake));
-
+        this.leds = new LEDs();
     }
     
 
@@ -40,7 +43,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
     @Override
     public void teleopPeriodic() {
-
+    this.leds.setColorRed();
     }
 
     @Override
