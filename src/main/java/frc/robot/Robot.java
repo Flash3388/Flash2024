@@ -15,7 +15,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     private Swerve swerve;
     private ShooterSystem shooter;
     private final XboxController xbox;
-    private Limelight limelight = new Limelight();
+    private Limelight limelight = new Limelight(swerve);
     private DigitalInput in = new DigitalInput(0);
 
     public Robot(FrcRobotControl robotControl) {

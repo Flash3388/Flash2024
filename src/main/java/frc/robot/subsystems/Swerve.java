@@ -38,7 +38,7 @@ public class Swerve extends Subsystem {
     private PidController pid;
 
     private SwerveDriveOdometry odometer;
-    private Limelight limelight = new Limelight();
+    private Limelight limelight = new Limelight(this);
 
 
     public Swerve(SwerveModule[] swerveModules, WPI_Pigeon2 gyro) {

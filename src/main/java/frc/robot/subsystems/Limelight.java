@@ -3,9 +3,7 @@ package frc.robot.subsystems;
 import com.flash3388.flashlib.scheduling.Subsystem;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -18,6 +16,9 @@ import java.util.Optional;
 
 public class Limelight extends Subsystem {
     private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-banana");
+    private double[] cameraPoseTargetSpace = LimelightHelpers.getCameraPose_TargetSpace("limelight-banana");
+    //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
+
     /*
     private NetworkTableEntry tx;
     private NetworkTableEntry ty;
@@ -25,20 +26,27 @@ public class Limelight extends Subsystem {
 
      */
     private AprilTagFieldLayout layout;
+    private Swerve swerve;
 
-    public Limelight(){
+    public Limelight(Swerve swerve){
         layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
         layout.setOrigin(AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide); //if we're on the blue side
 
+        this.swerve = swerve; //maybe i'll remove it
     }
     public void setPipline(int n){
         table.getEntry("pipeline").setValue(n);
     }
     public double getXAngleToTarget() {
-        return table.getEntry("tx").getDouble(0.0);
+        //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
+        SmartDashboard.putNumber("cameraPtoTRotation",cameraPoseTargetSpace[5]);
+        SmartDashboard.putNumber("tx",table.getEntry("tx").getDouble(0.0));
+
+        return cameraPoseTargetSpace[5];
+
+       // return table.getEntry("tx").getDouble(0.0);
     }
     public double getDistanceToTarget(){
-        double[] cameraPoseTargetSpace = LimelightHelpers.getCameraPose_TargetSpace("limelight-banana");
         //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
         double distance = Math.sqrt(
                 Math.pow(cameraPoseTargetSpace[0],2) +
@@ -50,7 +58,11 @@ public class Limelight extends Subsystem {
     public boolean isThereTarget(){
         return LimelightHelpers.getTV("limelight-banana"); //tv=1.0 means a target is detected
     }
-
+    public void CheckTargetAndUpdateOdometer(){
+        if(isThereTarget()){
+            getPositionInField();
+        }
+    }
     /*
     setOdometer(Rotation2d gyro, Pose2d pose2d) {
         odometer.resetPosition(gyro, getModulePositions(),
@@ -70,7 +82,7 @@ public class Limelight extends Subsystem {
 
             //an idea
             // get distance to target won't work because of height difference
-            double realDisToTheWall = Math.cos(table.getEntry("ty").getDouble(0.0)) * getDistanceToTarget();
+            double realDisToTheWall = Math.cos(table.getEntry("ty").getDouble(0.0)) * getDistanceToTarget(); //d2 = cos(b) * d
 
             double x2 = translation3d.getY() - Math.asin(getXAngleToTarget()) *  realDisToTheWall; // sin(a) = (x1-x2) / d
             double y2 = translation3d.getY() - Math.acos(getXAngleToTarget()) *  realDisToTheWall; // cos(a) = (y1-y2) / d
@@ -78,7 +90,7 @@ public class Limelight extends Subsystem {
             // a-angle between camera and aprilTag
 
 
-
+            swerve.setOdometer(gyro-using target rotation as well, new Pose2d(x2,y2,new Rotation2d(Math.toRadians(gyro))));
             //traslating aprilTagAngle from us -> getting gyro angle
             //translating apilTagLocation -> getting Pose2D
 
