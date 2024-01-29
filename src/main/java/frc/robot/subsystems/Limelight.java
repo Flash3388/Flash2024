@@ -3,6 +3,9 @@ package frc.robot.subsystems;
 import com.flash3388.flashlib.scheduling.Subsystem;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -10,6 +13,8 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.Publisher;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.LimelightHelpers;
+
+import java.util.Optional;
 
 public class Limelight extends Subsystem {
     private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-banana");
@@ -24,15 +29,6 @@ public class Limelight extends Subsystem {
     public Limelight(){
         layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
         layout.setOrigin(AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide); //if we're on the blue side
-
-                /*
-                public final void setOrigin(OriginPosition origin) {
-    switch (origin) {
-      case kBlueAllianceWallRightSide:
-        setOrigin(new Pose3d());
-        break;
-      case kRedAllianceWallRightSide:
-                 */
 
     }
     public void setPipline(int n){
@@ -68,7 +64,21 @@ public class Limelight extends Subsystem {
             double aprilTagId = LimelightHelpers.getFiducialID("limelight-banana");
             SmartDashboard.putNumber("aprilTagId",aprilTagId);
 
-            layout.getTagPose((int)(aprilTagId)); //position of apriltag (x,y)
+            Optional<Pose3d> aprilTagPose3d = layout.getTagPose((int)(aprilTagId)); //position of apriltag
+            Translation3d translation3d = aprilTagPose3d.get().getTranslation(); //(x,y,z)
+            Rotation3d rotation = aprilTagPose3d.get().getRotation(); //?
+
+            //an idea
+            // get distance to target won't work because of height difference
+            double realDisToTheWall = Math.cos(table.getEntry("ty").getDouble(0.0)) * getDistanceToTarget();
+
+            double x2 = translation3d.getY() - Math.asin(getXAngleToTarget()) *  realDisToTheWall; // sin(a) = (x1-x2) / d
+            double y2 = translation3d.getY() - Math.acos(getXAngleToTarget()) *  realDisToTheWall; // cos(a) = (y1-y2) / d
+            // d-distance between camera and aprilTag
+            // a-angle between camera and aprilTag
+
+
+
             //traslating aprilTagAngle from us -> getting gyro angle
             //translating apilTagLocation -> getting Pose2D
 
