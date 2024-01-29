@@ -1,14 +1,14 @@
-package frc.robot.Actions;
+package frc.robot.actions;
 
 import com.flash3388.flashlib.scheduling.ActionControl;
 import com.flash3388.flashlib.scheduling.FinishReason;
 import com.flash3388.flashlib.scheduling.actions.ActionBase;
-import frc.robot.Subsystems.ShooterSystem;
+import frc.robot.subsystems.ShooterSystem;
 
-public class ForwardShooter extends ActionBase {
+public class ReverseShooter extends ActionBase {
     private ShooterSystem shooter;
 
-    public ForwardShooter(ShooterSystem shooter){
+    public ReverseShooter(ShooterSystem shooter){
         this.shooter = shooter;
         requires(shooter);
     }
@@ -20,7 +20,7 @@ public class ForwardShooter extends ActionBase {
 
     @Override
     public void execute(ActionControl actionControl) {
-        shooter.shoot();
+        shooter.reverse();
     }
 
     @Override

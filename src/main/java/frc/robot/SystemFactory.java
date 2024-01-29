@@ -2,7 +2,7 @@ package frc.robot;
 
 import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
-import frc.robot.Subsystems.ShooterSystem;
+import frc.robot.subsystems.ShooterSystem;
 
 public class SystemFactory {
     public static ShooterSystem createShooter(){
