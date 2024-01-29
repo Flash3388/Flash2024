@@ -36,6 +36,25 @@ public class Limelight extends Subsystem {
         );
         return distance;
     }
+    public boolean isThereTarget(){
+        return LimelightHelpers.getTV("limelight-banana"); //tv=1.0 means a target is detected
+    }
+
+    /*
+    setOdometer(Rotation2d gyro, Pose2d pose2d) {
+        odometer.resetPosition(gyro, getModulePositions(),
+                new Pose2d(new Translation2d(0, 0), new Rotation2d(0)));
+     */
+
+    public Object[] getPositionInField(){
+        Object[] objects = new Object[2];
+        if(isThereTarget()) //only if we detect aprilTag
+        {
+            //traslating aprilTagAngle from us -> getting gyro angle
+            //translating apilTagLocation -> getting Pose2D
+
+        }
+    }
 
 
 

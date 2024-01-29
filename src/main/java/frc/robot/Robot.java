@@ -5,7 +5,9 @@ import com.flash3388.flashlib.frc.robot.base.iterative.DelegatingFrcRobotControl
 import com.flash3388.flashlib.frc.robot.base.iterative.IterativeFrcRobot;
 import com.flash3388.flashlib.hid.XboxAxis;
 import com.flash3388.flashlib.hid.XboxController;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.ShooterSystem;
 import frc.robot.subsystems.Swerve;
 
@@ -13,12 +15,15 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     private Swerve swerve;
     private ShooterSystem shooter;
     private final XboxController xbox;
+    private Limelight limelight = new Limelight();
+    private DigitalInput in = new DigitalInput(0);
 
     public Robot(FrcRobotControl robotControl) {
         super(robotControl);
         swerve = SystemFactory.createSwerveSystem();
         xbox = getHidInterface().newXboxController(RobotMap.XBOX);
         shooter = SystemFactory.createShooter();
+
 
 
    //     xbox.getButton(XboxButton.X).whileActive(new ForwardShooter(shooter));
@@ -42,6 +47,10 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
     @Override
     public void teleopPeriodic() {
+
+        boolean on = in.get(); //if the sensor senses a note
+        SmartDashboard.putBoolean("isNoteIn",on);
+
         double driveY = -xbox.getAxis(XboxAxis.LeftStickY).getAsDouble() ;
         double driveX = -xbox.getAxis(XboxAxis.LeftStickX).getAsDouble() ;
         double rotation = -xbox.getAxis(XboxAxis.RightStickX).getAsDouble();
@@ -52,6 +61,12 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
         boolean isFiledRelative = SmartDashboard.getBoolean("Is Field Relative?", false);
         this.swerve.drive(driveY /3 ,driveX/3 ,rotation/3, true);
+
+        if(limelight.isThereTarget()){
+
+        }
+
+
 
 
     }
