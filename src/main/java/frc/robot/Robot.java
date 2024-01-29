@@ -11,15 +11,16 @@ import frc.robot.Subsystems.ShooterSystem;
 
 public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobot {
     private ShooterSystem shooter;
-    private final XboxController xboxController;
+    private final XboxController xbox;
 
     public Robot(FrcRobotControl robotControl) {
         super(robotControl);
-
+        xbox = getHidInterface().newXboxController(RobotMap.XBOX);
         this.shooter = SystemFactory.createShooter();
-        xboxController = getHidInterface().newXboxController(RobotMap.XBOX);
-        xboxController.getButton(XboxButton.X).whileActive(new ForwardShooter(shooter));
-        xboxController.getButton(XboxButton.Y).whileActive(new ReverseShooter(shooter));
+
+
+   //     xbox.getButton(XboxButton.X).whileActive(new ForwardShooter(shooter));
+   //     xbox.getButton(XboxButton.Y).whileActive(new ReverseShooter(shooter));
     }
 
     @Override
