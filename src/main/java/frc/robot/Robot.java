@@ -14,9 +14,9 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
     public Robot(FrcRobotControl robotControl) {
         super(robotControl);
-        swerve = SystemFactory;
+        swerve = SystemFactory.createSwerveSystem();
         xbox = getHidInterface().newXboxController(RobotMap.XBOX);
-        this.shooter = SystemFactory.createShooter();
+        shooter = SystemFactory.createShooter();
 
 
    //     xbox.getButton(XboxButton.X).whileActive(new ForwardShooter(shooter));
@@ -36,15 +36,12 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     @Override
     public void teleopInit() {
 
-
-
-
-
-
     }
 
     @Override
     public void teleopPeriodic() {
+
+
 
     }
 
