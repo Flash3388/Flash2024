@@ -35,7 +35,6 @@ public class Limelight extends Subsystem {
                 Math.pow(cameraPoseTargetSpace[2],2)
         );
         return distance;
-
     }
 
 

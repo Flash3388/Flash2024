@@ -5,13 +5,16 @@ import com.flash3388.flashlib.frc.robot.base.iterative.DelegatingFrcRobotControl
 import com.flash3388.flashlib.frc.robot.base.iterative.IterativeFrcRobot;
 import com.flash3388.flashlib.hid.XboxController;
 import frc.robot.subsystems.ShooterSystem;
+import frc.robot.subsystems.Swerve;
 
 public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobot {
+    private Swerve swerve;
     private ShooterSystem shooter;
     private final XboxController xbox;
 
     public Robot(FrcRobotControl robotControl) {
         super(robotControl);
+        swerve = SystemFactory;
         xbox = getHidInterface().newXboxController(RobotMap.XBOX);
         this.shooter = SystemFactory.createShooter();
 
@@ -32,6 +35,11 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
     @Override
     public void teleopInit() {
+
+
+
+
+
 
     }
 

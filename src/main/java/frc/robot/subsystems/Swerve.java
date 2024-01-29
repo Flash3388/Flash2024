@@ -38,6 +38,7 @@ public class Swerve extends Subsystem {
     private PidController pid;
 
     private SwerveDriveOdometry odometer;
+    private Limelight limelight = new Limelight();
 
 
     public Swerve(SwerveModule[] swerveModules, WPI_Pigeon2 gyro) {
@@ -161,16 +162,20 @@ public class Swerve extends Subsystem {
                 getSwerveRotation2D(),
                 getModulePositions());
     }
+    public void setOdometer(Rotation2d gyro, Pose2d pose2d) {
+        odometer.resetPosition(gyro, getModulePositions(),
+                new Pose2d(new Translation2d(0, 0), new Rotation2d(0)));
+    }
+    public void resetOdometer() {
+        odometer.resetPosition(Rotation2d.fromDegrees(0), getModulePositions(),
+                new Pose2d(new Translation2d(0, 0), new Rotation2d(0)));
+    }
 
     public Rotation2d getSwerveRotation2D() {
         return new Rotation2d(
                 Math.toRadians(this.getHeadingDegrees()));
     }
 
-    public void resetOdometer() {
-        odometer.resetPosition(Rotation2d.fromDegrees(0), getModulePositions(),
-                new Pose2d(new Translation2d(0, 0), new Rotation2d(0)));
-    }
     public Pose2d getPose2D() {
         return new Pose2d(
                 odometer.getPoseMeters().getTranslation(),
