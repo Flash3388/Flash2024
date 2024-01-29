@@ -1,11 +1,14 @@
 package frc.robot.subsystems;
 
 import com.flash3388.flashlib.scheduling.Subsystem;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.Publisher;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.LimelightHelpers;
 
 public class Limelight extends Subsystem {
@@ -16,8 +19,20 @@ public class Limelight extends Subsystem {
     private NetworkTableEntry ta;
 
      */
+    private AprilTagFieldLayout layout;
 
     public Limelight(){
+        layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+        layout.setOrigin(AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide); //if we're on the blue side
+
+                /*
+                public final void setOrigin(OriginPosition origin) {
+    switch (origin) {
+      case kBlueAllianceWallRightSide:
+        setOrigin(new Pose3d());
+        break;
+      case kRedAllianceWallRightSide:
+                 */
 
     }
     public void setPipline(int n){
@@ -50,6 +65,10 @@ public class Limelight extends Subsystem {
         Object[] objects = new Object[2];
         if(isThereTarget()) //only if we detect aprilTag
         {
+            double aprilTagId = LimelightHelpers.getFiducialID("limelight-banana");
+            SmartDashboard.putNumber("aprilTagId",aprilTagId);
+
+            layout.getTagPose((int)(aprilTagId)); //position of apriltag (x,y)
             //traslating aprilTagAngle from us -> getting gyro angle
             //translating apilTagLocation -> getting Pose2D
 
