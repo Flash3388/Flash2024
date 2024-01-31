@@ -73,6 +73,46 @@ public class Limelight extends Subsystem {
         Object[] objects = new Object[2];
         if(isThereTarget()) //only if we detect aprilTag
         {
+            Pose3d cameraToRobot = LimelightHelpers.getCameraPose3d_RobotSpace("limelight-banana");
+            double aprilTagId = LimelightHelpers.getFiducialID("limelight-banana");
+            SmartDashboard.putNumber("aprilTagId",aprilTagId);
+            Optional<Pose3d> apriltagPose = layout.getTagPose((int)(aprilTagId)); //position of apriltag
+            Pose3d actualAprilTagPose = apriltagPose.get();
+
+            if (apriltagPose.isPresent()) {
+                Pose3d cameraToTarget = LimelightHelpers.getTargetPose3d_CameraSpace("limelight-banana");
+                Transform3d cameraToTargetTransform = new Transform3d(cameraToTarget.getTranslation(),cameraToTarget.getRotation());
+                Rotation3d cameraToTargetRotation = cameraToTargetTransform.getRotation();
+                Transform3d cameraToRobotTransform = new Transform3d(cameraToRobot.getTranslation(),cameraToRobot.getRotation());
+
+                Pose3d robotPoseAbsolute = actualAprilTagPose.transformBy(cameraToTargetTransform.inverse()).transformBy(cameraToRobotTransform.inverse());
+                Pose3d robotPoseAbsoluteRotation = actualAprilTagPose.rotateBy(cameraToTargetRotation);
+
+                swerve.setOdometer(new Rotation2d(Math.toRadians(swerve.getHeadingDegrees())),
+                        new Pose2d(robotPoseAbsolute.getX(),robotPoseAbsolute.getY(),robotPoseAbsoluteRotation.toPose2d().getRotation()));
+
+                /*
+                odometer.resetPosition(gyro, getModulePositions(),
+                new Pose2d(new Translation2d(0, 0), new Rotation2d(0)));
+                 */
+
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             double aprilTagId = LimelightHelpers.getFiducialID("limelight-banana");
             SmartDashboard.putNumber("aprilTagId",aprilTagId);
 
@@ -90,7 +130,9 @@ public class Limelight extends Subsystem {
             // a-angle between camera and aprilTag
 
 
-            swerve.setOdometer(gyro-using target rotation as well, new Pose2d(x2,y2,new Rotation2d(Math.toRadians(gyro))));
+            swerve.setOdometer(new Rotation2d(Math.toRadians(swerve.getHeadingDegrees())),
+                    new Pose2d(x2,y2,new Rotation2d(Math.toRadians(rotation.getZ() + swerve.getHeadingDegrees()))));
+
             //traslating aprilTagAngle from us -> getting gyro angle
             //translating apilTagLocation -> getting Pose2D
 
