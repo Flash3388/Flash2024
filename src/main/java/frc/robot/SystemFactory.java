@@ -2,9 +2,8 @@ package frc.robot;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
-import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import subSystems.Arm;
+import frc.robot.subSystems.Arm;
 
 public class SystemFactory {
     public static Arm createArm(){

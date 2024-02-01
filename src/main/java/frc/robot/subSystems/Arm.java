@@ -1,12 +1,10 @@
-package subSystems;
+package frc.robot.subSystems;
 
-import com.flash3388.flashlib.robot.RunningRobot;
 import com.flash3388.flashlib.scheduling.Subsystem;
 import com.flash3388.flashlib.time.Time;
 import com.revrobotics.CANSparkMax;
 import com.flash3388.flashlib.robot.control.PidController;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Arm extends Subsystem {
 
@@ -29,7 +27,7 @@ public class Arm extends Subsystem {
         this.follower = follower;
         this.encoder = encoder;
 
-        follower.follow(master);
+        follower.follow(master, true);
 
         this.pid = PidController.newNamedController("PID", KP, KI, KD, KF);
 
@@ -43,7 +41,7 @@ public class Arm extends Subsystem {
     }
 
     public double getAngle2Target(){
-        return encoder.getAbsolutePosition();
+        return encoder.getAbsolutePosition() * 360;
     }
 
     public double speed(){
