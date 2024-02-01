@@ -19,20 +19,20 @@ public class ShooterSystem extends Subsystem {
     private final double KI = 0;
     private final double KP = 0;
     private PidController pid;
-    private double ERROR = 0.05;
-    private static final double SPEED_POINT = 0.5; // TODO: Figure ideal value for this variable.
+    private double ERROR = 50;
+    private static final double SPEED_POINT = 4000; // TODO: Figure ideal value for this variable.
 
     public ShooterSystem(CANSparkMax master, CANSparkMax follower){
         this.master = master;
         this.follower = follower;
         this.encoder = (RelativeEncoder) master.getEncoder();
-        this.follower.follow(master, true); // TODO: Make sure this needs to be inverted.
+        this.follower.follow(master, false);
         this.pid = new PidController(RunningRobot.getControl().getClock(),
                 ()-> SmartDashboard.getNumber("KP", KP),
                 ()-> SmartDashboard.getNumber("KI", KI),
                 ()-> SmartDashboard.getNumber("KD", KD),
                 ()-> SmartDashboard.getNumber("KF", KF));
-        pid.setOutputLimit(-0.5,0.5);
+        pid.setOutputLimit(-0.4,0.4);
         pid.setTolerance(ERROR, Time.milliseconds(500));
         SmartDashboard.putNumber("KP", KP);
         SmartDashboard.putNumber("KI", KI);
@@ -44,23 +44,39 @@ public class ShooterSystem extends Subsystem {
         double speed = pid.applyAsDouble(getSpeed(),SPEED_POINT);
 
         SmartDashboard.putNumber("Speed", speed);
+        SmartDashboard.putBoolean("isStopped",false);
         return speed;
     }
 
-    public void shoot(){
-        this.master.set(getPID());
+    public void setPIDStop(){
+        double speed = pid.applyAsDouble(getSpeed(),0);
+
+        SmartDashboard.putNumber("Speed", speed);
+        SmartDashboard.putBoolean("GOT TO HEREEEEEEEEEEEEEEE", true);
+        SmartDashboard.putBoolean("isStopped",true);
+        this.master.set(-speed);
     }
 
-    public void reverse(){
+
+    public void shoot(){
         this.master.set(-getPID());
     }
 
+    public void reverse(){
+        this.master.set(getPID());
+    }
+
     public double getSpeed(){
+        SmartDashboard.putNumber("RPM", this.encoder.getVelocity());
         return this.encoder.getVelocity();
+    }
+    public void resetPID(){
+        pid.reset();
     }
 
     public void stop(){
-        this.master.stopMotor();
+        SmartDashboard.putBoolean("isStopped",true);
+        this.master.set(0.0);
     }
 }
 
@@ -74,7 +90,7 @@ HELLO TOM MEET THE CODE CAT.
  / /     .-```-.   / ^`-.
  \ \    /       \_/  (|) `o
   \ \  /   .-.   \\ _  ,--'
-   \ \/   /   )   \( `^^^
+   \ \/   /   )   \( __^^^
     \   \/    (    )
      \   )     )  /
 Hey   ) /__    | (__

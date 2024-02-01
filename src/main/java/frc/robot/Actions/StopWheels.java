@@ -3,28 +3,29 @@ package frc.robot.Actions;
 import com.flash3388.flashlib.scheduling.ActionControl;
 import com.flash3388.flashlib.scheduling.FinishReason;
 import com.flash3388.flashlib.scheduling.actions.ActionBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Subsystems.ShooterSystem;
 
-public class ReverseShooter extends ActionBase {
+public class StopWheels extends ActionBase {
     private ShooterSystem shooter;
 
-    public ReverseShooter(ShooterSystem shooter){
+    public StopWheels(ShooterSystem shooter){
         this.shooter = shooter;
         requires(shooter);
     }
 
     @Override
     public void initialize(ActionControl control) {
-        shooter.resetPID();
+
     }
 
     @Override
     public void execute(ActionControl actionControl) {
-        shooter.reverse();
+        shooter.setPIDStop();
     }
 
     @Override
     public void end(FinishReason reason) {
-        new StopWheels(shooter).start();
+        shooter.stop();
     }
 }

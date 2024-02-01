@@ -3,6 +3,7 @@ package frc.robot.Actions;
 import com.flash3388.flashlib.scheduling.ActionControl;
 import com.flash3388.flashlib.scheduling.FinishReason;
 import com.flash3388.flashlib.scheduling.actions.ActionBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Subsystems.ShooterSystem;
 
 public class ForwardShooter extends ActionBase {
@@ -15,16 +16,22 @@ public class ForwardShooter extends ActionBase {
 
     @Override
     public void initialize(ActionControl control) {
-
+        shooter.resetPID();
     }
 
     @Override
     public void execute(ActionControl actionControl) {
+        SmartDashboard.putBoolean("ForwardBool", true);
         shooter.shoot();
     }
 
     @Override
     public void end(FinishReason reason) {
-        shooter.stop();
+        SmartDashboard.putBoolean("hgjkglkjhjkhjkhlhjlkhjlkhkljhjlkj",true);
+        new StopWheels(shooter).start();
+
+
+
+
     }
 }
