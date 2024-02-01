@@ -7,11 +7,11 @@ import com.flash3388.flashlib.scheduling.actions.ActionBase;
 import frc.robot.subSystems.Arm;
 
 
-public class MoveToSpeaker extends ActionBase {
+public class MoveToSpeakerFixed extends ActionBase {
 
     private Arm arm;
 
-    public MoveToSpeaker(Arm arm){
+    public MoveToSpeakerFixed(Arm arm){
         this.arm = arm;
         requires(arm);
     }
@@ -24,7 +24,7 @@ public class MoveToSpeaker extends ActionBase {
 
     @Override
     public void execute(ActionControl control) {
-        arm.moveToSpeaker();
+        arm.moveToSpeakerFixed();
     }
 
     @Override
