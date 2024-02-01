@@ -5,6 +5,7 @@ import com.flash3388.flashlib.time.Time;
 import com.revrobotics.CANSparkMax;
 import com.flash3388.flashlib.robot.control.PidController;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Arm extends Subsystem {
 
@@ -37,6 +38,7 @@ public class Arm extends Subsystem {
         pid.setTolerance(ERROR, Time.milliseconds(500));
         pid.setOutputLimit(LIMIT);
 
+
     }
 
     public void angleReset(){
@@ -44,7 +46,7 @@ public class Arm extends Subsystem {
     }
 
     public double getAngle2Target(){
-        return encoder.getAbsolutePosition() * 360;
+        return (encoder.getAbsolutePosition()- encoder.getPositionOffset()) * 360;
     }
 
     public double SpeedHigh(){
@@ -66,4 +68,7 @@ public class Arm extends Subsystem {
     }
 
     public void stop(){ master.set(SPEED);}
+    public void print(){
+        SmartDashboard.putNumber("offSet", encoder.getAbsolutePosition());
+    }
 }

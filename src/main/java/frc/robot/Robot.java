@@ -31,7 +31,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
     @Override
     public void teleopPeriodic() {
-
+        arm.print();
     }
 
     @Override
