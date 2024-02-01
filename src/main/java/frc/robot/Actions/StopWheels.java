@@ -12,6 +12,8 @@ public class StopWheels extends ActionBase {
     public StopWheels(ShooterSystem shooter){
         this.shooter = shooter;
         requires(shooter);
+
+        configure().setName("StopWheels").save();
     }
 
     @Override

@@ -11,6 +11,8 @@ public class ReverseShooter extends ActionBase {
     public ReverseShooter(ShooterSystem shooter){
         this.shooter = shooter;
         requires(shooter);
+
+        configure().setName("ReverseShooter").save();
     }
 
     @Override
@@ -25,6 +27,6 @@ public class ReverseShooter extends ActionBase {
 
     @Override
     public void end(FinishReason reason) {
-        new StopWheels(shooter).start();
+        //new StopWheels(shooter).start();
     }
 }

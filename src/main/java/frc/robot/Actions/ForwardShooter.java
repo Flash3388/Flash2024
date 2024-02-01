@@ -12,6 +12,8 @@ public class ForwardShooter extends ActionBase {
     public ForwardShooter(ShooterSystem shooter){
         this.shooter = shooter;
         requires(shooter);
+
+        configure().setName("ForwardShooter").save();
     }
 
     @Override
@@ -28,7 +30,7 @@ public class ForwardShooter extends ActionBase {
     @Override
     public void end(FinishReason reason) {
         SmartDashboard.putBoolean("hgjkglkjhjkhjkhlhjlkhjlkhkljhjlkj",true);
-        new StopWheels(shooter).start();
+        //new StopWheels(shooter).start();
 
 
 

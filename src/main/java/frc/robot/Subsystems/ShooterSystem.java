@@ -54,7 +54,7 @@ public class ShooterSystem extends Subsystem {
         SmartDashboard.putNumber("Speed", speed);
         SmartDashboard.putBoolean("GOT TO HEREEEEEEEEEEEEEEE", true);
         SmartDashboard.putBoolean("isStopped",true);
-        this.master.set(-speed);
+        this.master.set(speed);
     }
 
 
