@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class Arm extends Subsystem {
 
-    private double angle2Target;
     private CANSparkMax master;
     private CANSparkMax follower;
     private DutyCycleEncoder encoder;
@@ -20,33 +19,33 @@ public class Arm extends Subsystem {
     private static final double KD = 0;
     private static final double KF = 0;
     private static final double ERROR = 1;
-    private static final double LIMIT = 1;
+    private static final double LIMIT = 0.4;
     private static final double SPEED = 0.2;
 
-    private static final double HIGH_ANGLE = 40;
-    private static final double AMP_ANGLE = 20;
+    public static final double SPEAKER_ANGLE = 40;
+    public static final double AMP_ANGLE = 20;
+    public static final double FLOOR_ANGLE = -10;
 
     private static final double SLOW_SPEED_DOWN = -0.1;
     private static final double SLOW_SPEED_UP = 0.2;
 
-    private static final double MOTOR_SAFEGUARD_TIMEOUT_IN_SECONDS = 120;
+    private static final double MOTOR_SAFEGUARD_TIMEOUT_IN_SECONDS = 30.0;
     private final Timer timer = new Timer();
 
 
-    public Arm(double angle2Target, CANSparkMax master, CANSparkMax follower, DutyCycleEncoder encoder){
-        this.angle2Target = angle2Target;
+    public Arm(CANSparkMax master, CANSparkMax follower, DutyCycleEncoder encoder){
         this.master = master;
         this.follower = follower;
         this.encoder = encoder;
 
         follower.follow(master, true);
 
-        this.pid = PidController.newNamedController("PID", KP, KI, KD, KF);
+        this.pid = PidController.newNamedController("ARM PID", KP, KI, KD, KF);
 
         pid.setTolerance(ERROR, Time.milliseconds(500));
         pid.setOutputLimit(LIMIT);
 
-
+        encoder.setPositionOffset(85.5 / 360);
     }
 // 1. What happens if the PID reaches the required angle? 
 //      Will the arm start to fall down because the motor is receiving 0 velocity?
@@ -60,6 +59,7 @@ public class Arm extends Subsystem {
         timer.start();
     }
 
+    // in case measurements do not work
     public void moveUp(){
         master.set(SLOW_SPEED_UP);
     }
@@ -68,9 +68,9 @@ public class Arm extends Subsystem {
         master.set(SLOW_SPEED_DOWN);
     }
 
-    // in case measurements do not work
+
     public void moveToSpeakerFixed(){
-        moveToAngle(HIGH_ANGLE);
+        moveToAngle(SPEAKER_ANGLE);
 
     }
 
@@ -79,7 +79,7 @@ public class Arm extends Subsystem {
     }
 
     public void moveTofloor(){
-        moveToAngle(AMP_ANGLE);
+        moveToAngle(FLOOR_ANGLE);
     }
   
     // When we reach the floor we would like this to be called 
@@ -98,8 +98,6 @@ public class Arm extends Subsystem {
             stopMotors();
         }
     }
-
-   
 
 ///////////////////////
 

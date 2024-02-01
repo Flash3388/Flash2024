@@ -7,12 +7,7 @@ import com.flash3388.flashlib.frc.robot.base.iterative.IterativeFrcRobot;
 import com.flash3388.flashlib.hid.XboxButton;
 import com.flash3388.flashlib.hid.XboxController;
 
-import frc.robot.actions.AutoAim;
-import frc.robot.actions.MoveDown;
-import frc.robot.actions.MoveToAmp;
-import frc.robot.actions.MoveToFloor;
-import frc.robot.actions.MoveToSpeakerFixed;
-import frc.robot.actions.MoveUp;
+import frc.robot.actions.*;
 import frc.robot.subSystems.Arm;
 
 public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobot {
@@ -20,7 +15,6 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     private Arm arm;
     private XboxController xbox;
     public Robot(FrcRobotControl robotControl) {
-
         super(robotControl);
         arm = SystemFactory.createArm();
         
@@ -54,6 +48,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     @Override
     public void teleopPeriodic() {
         arm.print();
+        arm.checkTimer();
     }
 
     @Override

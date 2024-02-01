@@ -19,7 +19,6 @@ public class AutoAim extends ActionBase {
     @Override
     public void initialize(ActionControl control) {
         arm.pidReset();
-        arm.angleReset();
     }
 
     @Override
