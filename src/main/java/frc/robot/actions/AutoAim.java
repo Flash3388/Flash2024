@@ -7,16 +7,12 @@ import com.flash3388.flashlib.scheduling.actions.ActionBase;
 import frc.robot.subSystems.Arm;
 
 
-public class SetAngle extends ActionBase {
+public class AutoAim extends ActionBase {
 
     private Arm arm;
-    private boolean high;
-    private boolean low;
-    public SetAngle(Arm arm, boolean high, boolean low){   //high true
-        this.arm = arm;
-        this.high = true;
-        this.low = false;
 
+    public AutoAim(Arm arm){
+        this.arm = arm;
         requires(arm);
     }
 
@@ -28,17 +24,10 @@ public class SetAngle extends ActionBase {
 
     @Override
     public void execute(ActionControl control) {
-        if(high){
-            arm.moveHigh();
-        }
-        else{
-            arm.moveLow();
-        }
+        //arm.autoAim();
     }
 
     @Override
     public void end(FinishReason reason) {
-
-        arm.stop();
     }
 }
