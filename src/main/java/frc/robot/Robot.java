@@ -15,15 +15,15 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     private Swerve swerve;
     private ShooterSystem shooter;
     private final XboxController xbox;
-    private Limelight limelight = new Limelight(swerve);
-    private DigitalInput in = new DigitalInput(0);
+    private Limelight limelight;
+    private DigitalInput in = new DigitalInput(6);
 
     public Robot(FrcRobotControl robotControl) {
         super(robotControl);
         swerve = SystemFactory.createSwerveSystem();
         xbox = getHidInterface().newXboxController(RobotMap.XBOX);
         shooter = SystemFactory.createShooter();
-
+        limelight = new Limelight(swerve);
 
 
    //     xbox.getButton(XboxButton.X).whileActive(new ForwardShooter(shooter));
@@ -50,6 +50,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
         boolean on = in.get(); //if the sensor senses a note
         SmartDashboard.putBoolean("isNoteIn",on);
+        SmartDashboard.putBoolean("SeeTarget",false);
 
         double driveY = -xbox.getAxis(XboxAxis.LeftStickY).getAsDouble() ;
         double driveX = -xbox.getAxis(XboxAxis.LeftStickX).getAsDouble() ;
@@ -60,11 +61,15 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         rotation = Math.abs(rotation) > 0.4 ? rotation * Swerve.MAX_SPEED : 0;
 
         boolean isFiledRelative = SmartDashboard.getBoolean("Is Field Relative?", false);
-        this.swerve.drive(driveY /3 ,driveX/3 ,rotation/3, true);
-
+        // this.swerve.drive(driveY /3 ,driveX/3 ,rotation/3, true);
+        this.swerve.drive(driveY/3,driveX/3,rotation/3);
         if(limelight.isThereTarget()){
-
+            SmartDashboard.putBoolean("SeeTarget",true);
+            limelight.getPositionInField();
         }
+        SmartDashboard.putNumber("rotation",swerve.getPose2D().getRotation().getRadians());
+        SmartDashboard.putNumber("xTrans",swerve.getPose2D().getTranslation().getX());
+        SmartDashboard.putNumber("yTrans",swerve.getPose2D().getTranslation().getY());
 
 
 

@@ -15,6 +15,7 @@ import edu.wpi.first.units.Angle;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Voltage;
 import edu.wpi.first.math.kinematics.*;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import frc.robot.SwerveModule;
@@ -39,6 +40,7 @@ public class Swerve extends Subsystem {
 
     private SwerveDriveOdometry odometer;
     private Limelight limelight = new Limelight(this);
+    private final Field2d field2d = new Field2d();
 
 
     public Swerve(SwerveModule[] swerveModules, WPI_Pigeon2 gyro) {
@@ -61,6 +63,8 @@ public class Swerve extends Subsystem {
                 swerveDriveKinematics,
                 new Rotation2d(0),
                 getModulePositions(), new Pose2d(0,0,new Rotation2d(Math.toRadians(0))));
+        SmartDashboard.putData("Field", field2d);
+        field2d.setRobotPose(odometer.getPoseMeters());
     }
 
     public double getHeadingDegrees() {
@@ -122,7 +126,8 @@ public class Swerve extends Subsystem {
             swerveModuleStates = swerveDriveKinematics.toSwerveModuleStates(new ChassisSpeeds(speedY, speedX, rotation));
         }
         setDesiredStates(swerveModuleStates);
-
+        updateOdometer();
+        field2d.setRobotPose(odometer.getPoseMeters());
     }
 
 
@@ -133,6 +138,9 @@ public class Swerve extends Subsystem {
         currentAngle = getHeadingDegrees();
 
         setDesiredStates(swerveModuleStates);
+        updateOdometer();
+    //    SmartDashboard.putNumberArray("x,y,rotation",odometer.getPoseMeters().getX(),odometer.getPoseMeters().getY(),odometer.getPoseMeters().getRotation())
+        field2d.setRobotPose(odometer.getPoseMeters());
     }
 
     public void resetWheels() {
@@ -161,6 +169,9 @@ public class Swerve extends Subsystem {
         odometer.update(
                 getSwerveRotation2D(),
                 getModulePositions());
+    }
+    public void updateField(){
+        field2d.setRobotPose(odometer.getPoseMeters());
     }
     public void setOdometer(Rotation2d gyro, Pose2d pose2d) {
         odometer.resetPosition(gyro, getModulePositions(),

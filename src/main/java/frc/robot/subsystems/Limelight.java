@@ -69,34 +69,34 @@ public class Limelight extends Subsystem {
                 new Pose2d(new Translation2d(0, 0), new Rotation2d(0)));
      */
 
-    public Object[] getPositionInField(){
-        Object[] objects = new Object[2];
-        if(isThereTarget()) //only if we detect aprilTag
-        {
-            Pose3d cameraToRobot = LimelightHelpers.getCameraPose3d_RobotSpace("limelight-banana");
-            double aprilTagId = LimelightHelpers.getFiducialID("limelight-banana");
-            SmartDashboard.putNumber("aprilTagId",aprilTagId);
-            Optional<Pose3d> apriltagPose = layout.getTagPose((int)(aprilTagId)); //position of apriltag
-            Pose3d actualAprilTagPose = apriltagPose.get();
+    public void getPositionInField(){
 
-            if (apriltagPose.isPresent()) {
-                Pose3d cameraToTarget = LimelightHelpers.getTargetPose3d_CameraSpace("limelight-banana");
-                Transform3d cameraToTargetTransform = new Transform3d(cameraToTarget.getTranslation(),cameraToTarget.getRotation());
-                Rotation3d cameraToTargetRotation = cameraToTargetTransform.getRotation();
-                Transform3d cameraToRobotTransform = new Transform3d(cameraToRobot.getTranslation(),cameraToRobot.getRotation());
+        SmartDashboard.putBoolean("aprilTagPresent",false);
+        Pose3d cameraToRobot = LimelightHelpers.getCameraPose3d_RobotSpace("limelight-banana");
+        double aprilTagId = LimelightHelpers.getFiducialID("limelight-banana");
+        SmartDashboard.putNumber("aprilTagId",aprilTagId);
+        Optional<Pose3d> apriltagPose = layout.getTagPose((int)(aprilTagId)); //position of apriltag
+        Pose3d actualAprilTagPose = apriltagPose.get();
 
-                Pose3d robotPoseAbsolute = actualAprilTagPose.transformBy(cameraToTargetTransform.inverse()).transformBy(cameraToRobotTransform.inverse());
-                Pose3d robotPoseAbsoluteRotation = actualAprilTagPose.rotateBy(cameraToTargetRotation);
+        if (apriltagPose.isPresent()) {
+            SmartDashboard.putBoolean("aprilTagPresent",true);
+            Pose3d cameraToTarget = LimelightHelpers.getTargetPose3d_CameraSpace("limelight-banana");
+            Transform3d cameraToTargetTransform = new Transform3d(cameraToTarget.getTranslation(),cameraToTarget.getRotation());
+            //  Rotation3d cameraToTargetRotation = cameraToTargetTransform.getRotation();
+            Transform3d cameraToRobotTransform = new Transform3d(cameraToRobot.getTranslation(),cameraToRobot.getRotation());
+            // Rotation3d cameraToRobotRotation = cameraToRobot.getRotation();
 
-                swerve.setOdometer(new Rotation2d(Math.toRadians(swerve.getHeadingDegrees())),
-                        new Pose2d(robotPoseAbsolute.getX(),robotPoseAbsolute.getY(),robotPoseAbsoluteRotation.toPose2d().getRotation()));
+            Pose3d robotPoseAbsolute = actualAprilTagPose.transformBy(cameraToTargetTransform.inverse()).transformBy(cameraToRobotTransform.inverse());
+           //  Pose3d robotPoseAbsoluteRotation = actualAprilTagPose.rotateBy(cameraToRobotTransform.getRotation()).rotateBy(cameraToRobotTransform.getRotation());
 
+            swerve.setOdometer(new Rotation2d(Math.toRadians(swerve.getHeadingDegrees())),
+                    new Pose2d(robotPoseAbsolute.getX(),robotPoseAbsolute.getY(),cameraToRobotTransform.getRotation().toRotation2d()));
+            swerve.updateField();
                 /*
                 odometer.resetPosition(gyro, getModulePositions(),
                 new Pose2d(new Translation2d(0, 0), new Rotation2d(0)));
                  */
 
-            }
 
 
 
@@ -110,10 +110,11 @@ public class Limelight extends Subsystem {
 
 
 
+/*
 
 
 
-            double aprilTagId = LimelightHelpers.getFiducialID("limelight-banana");
+          //  double aprilTagId = LimelightHelpers.getFiducialID("limelight-banana");
             SmartDashboard.putNumber("aprilTagId",aprilTagId);
 
             Optional<Pose3d> aprilTagPose3d = layout.getTagPose((int)(aprilTagId)); //position of apriltag
@@ -135,7 +136,7 @@ public class Limelight extends Subsystem {
 
             //traslating aprilTagAngle from us -> getting gyro angle
             //translating apilTagLocation -> getting Pose2D
-
+                */
         }
     }
 
