@@ -67,7 +67,7 @@ public class Arm extends Subsystem {
         pid.reset();
     }
 
-    public void stop(){ master.set(SPEED);}
+    public void slow(){ master.set(SPEED);}
     public void print(){
         SmartDashboard.putNumber("offSet", encoder.getAbsolutePosition());
     }
