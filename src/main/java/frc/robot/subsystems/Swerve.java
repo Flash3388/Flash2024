@@ -126,7 +126,6 @@ public class Swerve extends Subsystem {
             swerveModuleStates = swerveDriveKinematics.toSwerveModuleStates(new ChassisSpeeds(speedY, speedX, rotation));
         }
         setDesiredStates(swerveModuleStates);
-        updateOdometer();
         field2d.setRobotPose(odometer.getPoseMeters());
     }
 
@@ -138,7 +137,6 @@ public class Swerve extends Subsystem {
         currentAngle = getHeadingDegrees();
 
         setDesiredStates(swerveModuleStates);
-        updateOdometer();
     //    SmartDashboard.putNumberArray("x,y,rotation",odometer.getPoseMeters().getX(),odometer.getPoseMeters().getY(),odometer.getPoseMeters().getRotation())
         field2d.setRobotPose(odometer.getPoseMeters());
     }
@@ -169,13 +167,14 @@ public class Swerve extends Subsystem {
         odometer.update(
                 getSwerveRotation2D(),
                 getModulePositions());
+        updateField();
     }
     public void updateField(){
         field2d.setRobotPose(odometer.getPoseMeters());
     }
-    public void setOdometer(Rotation2d gyro, Pose2d pose2d) {
-        odometer.resetPosition(gyro, getModulePositions(),
-                new Pose2d(new Translation2d(0, 0), new Rotation2d(0)));
+    public void setOdometer(Pose2d pose2d) {
+        odometer.resetPosition(gyro.getRotation2d(), getModulePositions(), pose2d);
+        updateField();
     }
     public void resetOdometer() {
         odometer.resetPosition(Rotation2d.fromDegrees(0), getModulePositions(),
@@ -183,8 +182,7 @@ public class Swerve extends Subsystem {
     }
 
     public Rotation2d getSwerveRotation2D() {
-        return new Rotation2d(
-                Math.toRadians(this.getHeadingDegrees()));
+        return gyro.getRotation2d();
     }
 
     public Pose2d getPose2D() {

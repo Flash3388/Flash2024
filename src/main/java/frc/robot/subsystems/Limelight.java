@@ -4,11 +4,8 @@ import com.flash3388.flashlib.scheduling.Subsystem;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.*;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.Publisher;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.LimelightHelpers;
 
@@ -60,7 +57,7 @@ public class Limelight extends Subsystem {
     }
     public void CheckTargetAndUpdateOdometer(){
         if(isThereTarget()){
-            getPositionInField();
+            updateRobotPositionByAprilTag();
         }
     }
     /*
@@ -69,29 +66,35 @@ public class Limelight extends Subsystem {
                 new Pose2d(new Translation2d(0, 0), new Rotation2d(0)));
      */
 
-    public void getPositionInField(){
+    public void updateRobotPositionByAprilTag(){
+        if (!isThereTarget()) {
+            SmartDashboard.putBoolean("aprilTagPresent",false);
+            return;
+        }
 
-        SmartDashboard.putBoolean("aprilTagPresent",false);
-        Pose3d cameraToRobot = LimelightHelpers.getCameraPose3d_RobotSpace("limelight-banana");
+        Pose3d robotToCamera = LimelightHelpers.getCameraPose3d_RobotSpace("limelight-banana");
         double aprilTagId = LimelightHelpers.getFiducialID("limelight-banana");
         SmartDashboard.putNumber("aprilTagId",aprilTagId);
         Optional<Pose3d> apriltagPose = layout.getTagPose((int)(aprilTagId)); //position of apriltag
-        Pose3d actualAprilTagPose = apriltagPose.get();
-
         if (apriltagPose.isPresent()) {
+            /*Pose3d actualAprilTagPose = apriltagPose.get();
             SmartDashboard.putBoolean("aprilTagPresent",true);
             Pose3d cameraToTarget = LimelightHelpers.getTargetPose3d_CameraSpace("limelight-banana");
             Transform3d cameraToTargetTransform = new Transform3d(cameraToTarget.getTranslation(),cameraToTarget.getRotation());
             //  Rotation3d cameraToTargetRotation = cameraToTargetTransform.getRotation();
-            Transform3d cameraToRobotTransform = new Transform3d(cameraToRobot.getTranslation(),cameraToRobot.getRotation());
+            Transform3d robotToCameraTransform = new Transform3d(robotToCamera.getTranslation(),robotToCamera.getRotation());
             // Rotation3d cameraToRobotRotation = cameraToRobot.getRotation();
 
-            Pose3d robotPoseAbsolute = actualAprilTagPose.transformBy(cameraToTargetTransform.inverse()).transformBy(cameraToRobotTransform.inverse());
+            Pose3d robotPoseAbsolute = actualAprilTagPose.transformBy(cameraToTargetTransform.inverse()).transformBy(robotToCameraTransform.inverse());
            //  Pose3d robotPoseAbsoluteRotation = actualAprilTagPose.rotateBy(cameraToRobotTransform.getRotation()).rotateBy(cameraToRobotTransform.getRotation());
 
-            swerve.setOdometer(new Rotation2d(Math.toRadians(swerve.getHeadingDegrees())),
-                    new Pose2d(robotPoseAbsolute.getX(),robotPoseAbsolute.getY(),cameraToRobotTransform.getRotation().toRotation2d()));
-            swerve.updateField();
+            SmartDashboard.putString("robotToCamera", robotToCamera.toString());
+            SmartDashboard.putString("aprilTagPose", actualAprilTagPose.toString());
+            SmartDashboard.putString("cameraToTarget", cameraToTarget.toString());
+            SmartDashboard.putString("robotPoseAbsolute", robotPoseAbsolute.toString());*/
+
+            Pose2d robotPose = LimelightHelpers.getBotPose2d_wpiBlue("limelight-banana");
+            swerve.setOdometer(robotPose);
                 /*
                 odometer.resetPosition(gyro, getModulePositions(),
                 new Pose2d(new Translation2d(0, 0), new Rotation2d(0)));

@@ -63,10 +63,6 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         boolean isFiledRelative = SmartDashboard.getBoolean("Is Field Relative?", false);
         // this.swerve.drive(driveY /3 ,driveX/3 ,rotation/3, true);
         this.swerve.drive(driveY/3,driveX/3,rotation/3);
-        if(limelight.isThereTarget()){
-            SmartDashboard.putBoolean("SeeTarget",true);
-            limelight.getPositionInField();
-        }
         SmartDashboard.putNumber("rotation",swerve.getPose2D().getRotation().getRadians());
         SmartDashboard.putNumber("xTrans",swerve.getPose2D().getTranslation().getX());
         SmartDashboard.putNumber("yTrans",swerve.getPose2D().getTranslation().getY());
@@ -98,7 +94,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
     @Override
     public void robotPeriodic() {
-
+        limelight.updateRobotPositionByAprilTag();
+        swerve.updateOdometer();
     }
 
     @Override
