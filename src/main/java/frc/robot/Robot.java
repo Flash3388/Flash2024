@@ -17,7 +17,6 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     public Robot(FrcRobotControl robotControl) {
         super(robotControl);
         arm = SystemFactory.createArm();
-        
         xbox = getHidInterface().newXboxController(RoboRio.newHidChannel(0));
 
         xbox.getButton(XboxButton.A).whenActive(new MoveToFloor(arm));
@@ -25,8 +24,17 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xbox.getButton(XboxButton.X).whenActive(new MoveToAmp(arm));
         //xbox.getButton(XboxButton.B).whenActive(new AutoAim(arm, vision));
 
+        /* possible?
+        xbox.getButton(XboxButton.A).whenActive(new ArmToKnownAngle(arm, Arm.ArmPosition.Amp));
+        xbox.getButton(XboxButton.B).whenActive(new ArmToKnownAngle(arm, Arm.ArmPosition.Speaker));
+        xbox.getButton(XboxButton.X).whenActive(new ArmToKnownAngle(arm, Arm.ArmPosition.Floor));
+        */
+
+
         xbox.getDpad().up().whileActive(new MoveUp(arm));
         xbox.getDpad().down().whileActive(new MoveDown(arm));
+
+        arm.setDefaultAction(new StayOnAngle(arm));
 
     }
 
@@ -48,7 +56,6 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     @Override
     public void teleopPeriodic() {
         arm.print();
-        arm.checkTimer();
     }
 
     @Override

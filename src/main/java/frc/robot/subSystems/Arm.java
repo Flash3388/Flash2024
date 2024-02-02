@@ -2,6 +2,7 @@ package frc.robot.subSystems;
 
 import com.flash3388.flashlib.scheduling.Subsystem;
 import com.flash3388.flashlib.time.Time;
+import com.jmath.ExtendedMath;
 import com.revrobotics.CANSparkMax;
 import com.flash3388.flashlib.robot.control.PidController;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
@@ -29,7 +30,7 @@ public class Arm extends Subsystem {
     private static final double SLOW_SPEED_DOWN = -0.1;
     private static final double SLOW_SPEED_UP = 0.2;
 
-    private static final double MOTOR_SAFEGUARD_TIMEOUT_IN_SECONDS = 30.0;
+    private static final double MOTOR_SAFEGUARD_TIMEOUT_IN_SECONDS = 120.0;
     private final Timer timer = new Timer();
 
     public enum ArmPosition{
@@ -59,7 +60,7 @@ public class Arm extends Subsystem {
 //////////////////////
 
     public void moveToAngle(double angle){
-        master.set(pid.applyAsDouble(getAngle2Target(), angle));
+        master.set(pid.applyAsDouble(getAngle(), angle));
         timer.reset();
         timer.start();
     }
@@ -95,7 +96,7 @@ public class Arm extends Subsystem {
     }
 
     public void stayOnAngle(){
-        moveToAngle(getAngle2Target());
+        moveToAngle(getAngle());
     }
 
     public void checkTimer(){
@@ -110,7 +111,7 @@ public class Arm extends Subsystem {
         encoder.reset();
     }
 
-    public double getAngle2Target(){
+    public double getAngle(){
         return (encoder.getAbsolutePosition()- encoder.getPositionOffset()) * 360;
     }
 
@@ -121,5 +122,17 @@ public class Arm extends Subsystem {
     public void stop(){ master.set(SPEED);}
     public void print(){
         SmartDashboard.putNumber("offSet", encoder.getAbsolutePosition());
+        SmartDashboard.putNumber("Arm's Angle", getAngle());
+    }
+
+
+    public boolean AtAmp(){
+        return ExtendedMath.constrained(getAngle(), AMP_ANGLE -2, AMP_ANGLE +2);
+    }
+    public boolean AtSpeaker(){
+        return ExtendedMath.constrained(getAngle(), SPEAKER_ANGLE -2, SPEAKER_ANGLE +2);
+    }
+    public boolean AtFloor(){
+        return ExtendedMath.constrained(getAngle(), FLOOR_ANGLE -2, FLOOR_ANGLE +2);
     }
 }
