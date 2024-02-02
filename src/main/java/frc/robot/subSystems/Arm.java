@@ -18,7 +18,7 @@ public class Arm extends Subsystem {
     private static final double KI = 0;
     private static final double KD = 0;
     private static final double KF = 0;
-    private static final double ERROR = 1;
+    private static final double ERROR = 2;
     private static final double LIMIT = 0.4;
     private static final double SPEED = 0.2;
 
@@ -32,6 +32,11 @@ public class Arm extends Subsystem {
     private static final double MOTOR_SAFEGUARD_TIMEOUT_IN_SECONDS = 30.0;
     private final Timer timer = new Timer();
 
+    public enum ArmPosition{
+        Floor,
+        Speaker,
+        Amp
+    };
 
     public Arm(CANSparkMax master, CANSparkMax follower, DutyCycleEncoder encoder){
         this.master = master;
