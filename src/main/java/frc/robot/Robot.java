@@ -4,10 +4,9 @@ import com.flash3388.flashlib.frc.robot.FrcRobotControl;
 import com.flash3388.flashlib.frc.robot.RoboRio;
 import com.flash3388.flashlib.frc.robot.base.iterative.DelegatingFrcRobotControl;
 import com.flash3388.flashlib.frc.robot.base.iterative.IterativeFrcRobot;
-import com.flash3388.flashlib.hid.XboxButton;
 import com.flash3388.flashlib.hid.XboxController;
-
-import frc.robot.actions.*;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.actions.ArmController;
 import frc.robot.subSystems.Arm;
 
 public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobot {
@@ -19,9 +18,6 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         arm = SystemFactory.createArm();
         xbox = getHidInterface().newXboxController(RoboRio.newHidChannel(0));
 
-        xbox.getButton(XboxButton.A).whenActive(new MoveToFloor(arm));
-        xbox.getButton(XboxButton.Y).whenActive(new MoveToSpeakerFixed(arm));
-        xbox.getButton(XboxButton.X).whenActive(new MoveToAmp(arm));
         //xbox.getButton(XboxButton.B).whenActive(new AutoAim(arm, vision));
 
         /* possible?
@@ -30,12 +26,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xbox.getButton(XboxButton.X).whenActive(new ArmToKnownAngle(arm, Arm.ArmPosition.Floor));
         */
 
-
-        xbox.getDpad().up().whileActive(new MoveUp(arm));
-        xbox.getDpad().down().whileActive(new MoveDown(arm));
-
-        arm.setDefaultAction(new StayOnAngle(arm));
-
+        //arm.setDefaultAction(new ArmController(arm));
+        arm.setPositioningNotControlled();
     }
 
     @Override
@@ -55,7 +47,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
     @Override
     public void teleopPeriodic() {
-        arm.print();
+
     }
 
     @Override
@@ -70,17 +62,19 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
     @Override
     public void testInit() {
-
+        SmartDashboard.putNumber("setpointy", 0);
+        arm.pidReset();
     }
 
     @Override
     public void testPeriodic() {
-
+        double d = SmartDashboard.getNumber("setpointy", 0);
+        arm.moveToAngle(d);
     }
 
     @Override
     public void robotPeriodic() {
-
+        arm.print();
     }
 
     @Override
