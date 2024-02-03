@@ -5,10 +5,8 @@ import com.flash3388.flashlib.frc.robot.base.iterative.DelegatingFrcRobotControl
 import com.flash3388.flashlib.frc.robot.base.iterative.IterativeFrcRobot;
 import com.flash3388.flashlib.hid.XboxButton;
 import com.flash3388.flashlib.hid.XboxController;
-import com.flash3388.flashlib.scheduling.ActionControl;
 import frc.robot.Actions.ForwardShooter;
 import frc.robot.Actions.ReverseShooter;
-import frc.robot.Actions.StopWheels;
 import frc.robot.Subsystems.ShooterSystem;
 
 public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobot {
@@ -20,7 +18,6 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
         this.shooter = SystemFactory.createShooter();
         xboxController = getHidInterface().newXboxController(RobotMap.XBOX);
-        shooter.setDefaultAction(new StopWheels(shooter));
         xboxController.getButton(XboxButton.X).whileActive(new ForwardShooter(shooter));
         xboxController.getButton(XboxButton.Y).whileActive(new ReverseShooter(shooter));
     }

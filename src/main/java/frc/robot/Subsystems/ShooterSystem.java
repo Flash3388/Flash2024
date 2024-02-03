@@ -4,7 +4,6 @@ import com.flash3388.flashlib.robot.RunningRobot;
 import com.flash3388.flashlib.robot.control.PidController;
 import com.flash3388.flashlib.scheduling.Subsystem;
 import com.flash3388.flashlib.time.Time;
-import com.jmath.ExtendedMath;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -46,15 +45,6 @@ public class ShooterSystem extends Subsystem {
         SmartDashboard.putNumber("Speed", speed);
         SmartDashboard.putBoolean("isStopped",false);
         return speed;
-    }
-
-    public void setPIDStop(){
-        double speed = pid.applyAsDouble(getSpeed(),0);
-
-        SmartDashboard.putNumber("Speed", speed);
-        SmartDashboard.putBoolean("GOT TO HEREEEEEEEEEEEEEEE", true);
-        SmartDashboard.putBoolean("isStopped",true);
-        this.master.set(speed);
     }
 
 

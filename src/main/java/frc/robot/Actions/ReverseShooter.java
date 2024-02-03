@@ -27,6 +27,6 @@ public class ReverseShooter extends ActionBase {
 
     @Override
     public void end(FinishReason reason) {
-        //new StopWheels(shooter).start();
+        shooter.stop();
     }
 }

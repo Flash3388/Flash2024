@@ -29,11 +29,6 @@ public class ForwardShooter extends ActionBase {
 
     @Override
     public void end(FinishReason reason) {
-        SmartDashboard.putBoolean("hgjkglkjhjkhjkhlhjlkhjlkhkljhjlkj",true);
-        //new StopWheels(shooter).start();
-
-
-
-
+        shooter.stop();
     }
 }
