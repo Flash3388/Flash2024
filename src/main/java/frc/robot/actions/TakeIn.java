@@ -24,7 +24,11 @@ public class TakeIn extends ActionBase {
 
     @Override
     public void execute(ActionControl control) {
-    this.intake.takeIn();
+        if(!this.intake.isIN())
+        {
+            this.intake.takeIn();
+        }
+        else{control.finish();}
     }
 
     @Override
