@@ -24,22 +24,25 @@ public class Arm extends Subsystem {
 
 
     // Smart Motion's Constants
-    private static final double KP = 0;
-    private static final double KI = 0;
-    private static final double KD = 0;
-    private static final double KF = 0; // is it KFF?
-    private static final double KIZ = 0; //?
-    private static final double K_MAX_OUTPUT = 0; //?
-    private static final double K_MIN_OUTPUT = 0; //?
-    private static final double K_MAX_RPM = 0; //?
-    private static final double K_MAX_VELOCITY = 0; //? rpm
-    private static final double K_MIN_VELOCITY = 0; //?
-    private static final double K_MAX_ACC = 0; //?
-    private static final double ERROR = 2; // is it allowedErr
+    private static double KP = 0;
+    private static double KI = 0;
+    private static double KD = 0;
+    private static double KF = 0;
+    private static double KIZ = 0;
+    private static double K_MAX_OUTPUT = 0.5;
+    private static double K_MIN_OUTPUT = -0.5;
+    private static double K_MAX_VELOCITY = 0;
+    private static double K_MIN_VELOCITY = 0;
+    private static double K_MAX_ACC = 0;
+    private static final double ERROR = 0;
+
+    // These are used for our positioning checks but not for the spark PID controller
+    private static final double STABLE_ERROR = 0.5;
+    private static final double STABLE_OUTPUT = 0.1;
 
     // Other Constants
-    public static final double SPEAKER_ANGLE = 40;
-    public static final double AMP_ANGLE = 20;
+    public static final double SPEAKER_ANGLE = 40; // todo: find the right angle
+    public static final double AMP_ANGLE = 20; // todo: find the right angle
     public static final double FLOOR_ANGLE = -10;
 
     private static final double SLOW_SPEED_DOWN = -0.1;
@@ -60,22 +63,32 @@ public class Arm extends Subsystem {
         follower.follow(master, true);
 
         this.pidController = master.getPIDController();
-      //  pid.setOutputRampRate(0.01);
+      //pid.setOutputRampRate(0.01);
 
-        print();
+        // display PID coefficients on SmartDashboard
+        SmartDashboard.putNumber("ARM P Gain", KP);
+        SmartDashboard.putNumber("ARM I Gain", KI);
+        SmartDashboard.putNumber("ARM D Gain", KD);
+        SmartDashboard.putNumber("ARM I Zone", KIZ);
+        SmartDashboard.putNumber("ARM Feed Forward", KF);
+        SmartDashboard.putNumber("ARM Max Output", K_MAX_OUTPUT);
+        SmartDashboard.putNumber("ARM Min Output", K_MIN_OUTPUT);
+        SmartDashboard.putNumber("ARM Max Velocity", K_MAX_VELOCITY);
+        SmartDashboard.putNumber("ARM Min Velocity", K_MIN_VELOCITY);
+        SmartDashboard.putNumber("ARM Max Acceleration", K_MAX_ACC);
+        SmartDashboard.putNumber("ARM Allowed Closed Loop Error", ERROR);
 
-        pidController.setP(()-> SmartDashboard.getNumber("P Gain", KP));
-        pidController.setI(()-> SmartDashboard.getNumber("I Gain", KI));
-        pidController.setD(()-> SmartDashboard.getNumber("D Gain", KD));
-        pidController.setFF(()-> SmartDashboard.getNumber("Feed Forward", KF));
-        pidController.setIZone(KIZ);
+        pidController.setP(KP);
+        pidController.setI(KI);
+        pidController.setD(KD);
+        pidController.setFF(KF);
+        pidController.setIZone(KIZ); //
         pidController.setOutputRange(K_MIN_OUTPUT, K_MAX_OUTPUT);
 
-        int smartMotionSlot = 0; // what is this?
-        pidController.setSmartMotionMaxVelocity(K_MAX_VELOCITY, smartMotionSlot);
-        pidController.setSmartMotionMinOutputVelocity(K_MIN_VELOCITY, smartMotionSlot);
-        pidController.setSmartMotionMaxAccel(K_MAX_ACC, smartMotionSlot);
-        pidController.setSmartMotionAllowedClosedLoopError(ERROR, smartMotionSlot);
+        pidController.setSmartMotionMaxVelocity(K_MAX_VELOCITY, 0);
+        pidController.setSmartMotionMinOutputVelocity(K_MIN_VELOCITY, 0);
+        pidController.setSmartMotionMaxAccel(K_MAX_ACC, 0);
+        pidController.setSmartMotionAllowedClosedLoopError(ERROR, 0);
 
         this.absEncoder.setPositionOffset(85.5 / 360);
         this.relEncoder.setPosition((this.absEncoder.getAbsolutePosition() - this.absEncoder.getPositionOffset()) / GEAR_RATIO);
@@ -85,7 +98,7 @@ public class Arm extends Subsystem {
     }
 
     public void moveToAngle(double angle){
-        pidController.setReference(angle, CANSparkMax.ControlType.kSmartMotion);
+        pidController.setReference(angle / 360 / GEAR_RATIO, CANSparkMax.ControlType.kSmartMotion);
 
     }
 
@@ -105,7 +118,6 @@ public class Arm extends Subsystem {
         master.stopMotor();
     }
 
-///////////////////////
 
     public double getCurrentAngle(){
         return relEncoder.getPosition() * GEAR_RATIO * 360;
@@ -123,38 +135,23 @@ public class Arm extends Subsystem {
         SmartDashboard.putNumber("arm 18 amp", powerDistribution.getCurrent(18));
         SmartDashboard.putNumber("arm 19 amp", powerDistribution.getCurrent(19));
 
-        // display PID coefficients on SmartDashboard
-        SmartDashboard.putNumber("P Gain", KP);
-        SmartDashboard.putNumber("I Gain", KI);
-        SmartDashboard.putNumber("D Gain", KD);
-        SmartDashboard.putNumber("I Zone", KIZ);
-        SmartDashboard.putNumber("Feed Forward", KF);
-        SmartDashboard.putNumber("Max Output", K_MAX_OUTPUT);
-        SmartDashboard.putNumber("Min Output", K_MIN_OUTPUT);
-
         // display Smart Motion coefficients
-        SmartDashboard.putNumber("Max Velocity", K_MAX_VELOCITY);
-        SmartDashboard.putNumber("Min Velocity", K_MIN_VELOCITY);
-        SmartDashboard.putNumber("Max Acceleration", K_MAX_ACC);
-        SmartDashboard.putNumber("Allowed Closed Loop Error", ERROR);
         SmartDashboard.putNumber("Set Position", 0);
         SmartDashboard.putNumber("Set Velocity", 0);
     }
 
     public void changePidValues(){
-        double p = SmartDashboard.getNumber("P Gain", 0);
-        double i = SmartDashboard.getNumber("I Gain", 0);
-        double d = SmartDashboard.getNumber("D Gain", 0);
-        double iz = SmartDashboard.getNumber("I Zone", 0);
-        double ff = SmartDashboard.getNumber("Feed Forward", 0);
-        double max = SmartDashboard.getNumber("Max Output", 0);
-        double min = SmartDashboard.getNumber("Min Output", 0);
-        double maxV = SmartDashboard.getNumber("Max Velocity", 0);
-        double minV = SmartDashboard.getNumber("Min Velocity", 0);
-        double maxA = SmartDashboard.getNumber("Max Acceleration", 0);
-        double allE = SmartDashboard.getNumber("Allowed Closed Loop Error", 0);
+        double p = SmartDashboard.getNumber("ARM P Gain", 0);
+        double i = SmartDashboard.getNumber("ARM I Gain", 0);
+        double d = SmartDashboard.getNumber("ARM D Gain", 0);
+        double iz = SmartDashboard.getNumber("ARM I Zone", 0);
+        double ff = SmartDashboard.getNumber("ARM Feed Forward", 0);
+        double max = SmartDashboard.getNumber("ARM Max Output", 0);
+        double min = SmartDashboard.getNumber("ARM Min Output", 0);
+        double maxV = SmartDashboard.getNumber("ARM Max Velocity", 0);
+        double minV = SmartDashboard.getNumber("ARM Min Velocity", 0);
+        double maxA = SmartDashboard.getNumber("ARM Max Acceleration", 0);
 
-        // TODO: if I am going o use this, remove he 'final'
         // if PID coefficients on SmartDashboard have changed, write new values to controller
         if((p != KP)) { pidController.setP(p); KP = p; }
         if((i != KI)) { pidController.setI(i); KI = i; }
@@ -168,7 +165,6 @@ public class Arm extends Subsystem {
         if((maxV != K_MAX_VELOCITY)) { pidController.setSmartMotionMaxVelocity(maxV,0); K_MAX_VELOCITY = maxV; }
         if((minV != K_MIN_VELOCITY)) { pidController.setSmartMotionMinOutputVelocity(minV,0); K_MIN_VELOCITY = minV; }
         if((maxA != K_MAX_ACC)) { pidController.setSmartMotionMaxAccel(maxA,0); K_MAX_ACC = maxA; }
-        if((allE != ERROR)) { pidController.setSmartMotionAllowedClosedLoopError(allE,0); ERROR = allE; }
     }
 
     public double getSetPointAngle() {
@@ -183,11 +179,21 @@ public class Arm extends Subsystem {
         setSetPointAngle(Double.MIN_VALUE);
     }
 
-    public boolean isStabilizedAtTargetedPosition() { // how to do this with this controller?
-        return pidController.isInTolerance(getCurrentAngle(), setPointAngle);
+    public boolean isPositioningControlled() {
+        return setPointAngle != Double.MIN_VALUE;
+    }
+
+    public boolean isStabilizedAtTargetedPosition() {
+        if (!isPositioningControlled()) {
+            return true;
+        }
+
+        return ExtendedMath.constrained(getCurrentAngle(), setPointAngle - STABLE_ERROR, setPointAngle + STABLE_ERROR) &&
+                Math.abs(master.getAppliedOutput()) < STABLE_OUTPUT;
     }
 
     public boolean isAtBottom() {
-        return setPointAngle == FLOOR_ANGLE && ExtendedMath.constrained(getCurrentAngle(), FLOOR_ANGLE - ERROR, FLOOR_ANGLE + ERROR);
+        return setPointAngle == FLOOR_ANGLE &&
+                ExtendedMath.constrained(getCurrentAngle(), FLOOR_ANGLE - STABLE_ERROR, FLOOR_ANGLE + STABLE_ERROR);
     }
 }
