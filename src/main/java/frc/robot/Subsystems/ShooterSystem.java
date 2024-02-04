@@ -19,7 +19,7 @@ public class ShooterSystem extends Subsystem {
     private final double KP = 0;
     private PidController pid;
     private double ERROR = 50;
-    private static final double SPEED_POINT = 4000; // TODO: Figure ideal value for this variable.
+    private static final double SPEED_POINT = 5000; // TODO: Figure ideal value for this variable.
 
     public ShooterSystem(CANSparkMax master, CANSparkMax follower){
         this.master = master;
@@ -27,11 +27,11 @@ public class ShooterSystem extends Subsystem {
         this.encoder = (RelativeEncoder) master.getEncoder();
         this.follower.follow(master, false);
         this.pid = new PidController(RunningRobot.getControl().getClock(),
-                ()-> SmartDashboard.getNumber("KP", KP),
-                ()-> SmartDashboard.getNumber("KI", KI),
-                ()-> SmartDashboard.getNumber("KD", KD),
-                ()-> SmartDashboard.getNumber("KF", KF));
-        pid.setOutputLimit(-0.4,0.4);
+                ()-> {return SmartDashboard.getNumber("KP", KP);},
+                ()-> { return SmartDashboard.getNumber("KI", KI);},
+                ()-> {return SmartDashboard.getNumber("KD", KD); },
+                ()-> {return SmartDashboard.getNumber("KF", KF);});
+        pid.setOutputLimit(1);
         pid.setTolerance(ERROR, Time.milliseconds(500));
         SmartDashboard.putNumber("KP", KP);
         SmartDashboard.putNumber("KI", KI);
@@ -57,8 +57,8 @@ public class ShooterSystem extends Subsystem {
     }
 
     public double getSpeed(){
-        SmartDashboard.putNumber("RPM", this.encoder.getVelocity());
-        return this.encoder.getVelocity();
+        SmartDashboard.putNumber("RPM", -this.encoder.getVelocity());
+        return -this.encoder.getVelocity();
     }
     public void resetPID(){
         pid.reset();
@@ -66,7 +66,7 @@ public class ShooterSystem extends Subsystem {
 
     public void stop(){
         SmartDashboard.putBoolean("isStopped",true);
-        this.master.set(0.0);
+        this.master.stopMotor();
     }
 }
 
