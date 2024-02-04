@@ -26,5 +26,6 @@ public class Intake extends Subsystem {
     public void takeOut(){
         this.motor.set(-SPEED);
     }
-    public boolean isIN(){ return this.in.get();}
+    public boolean isIN(){ return !this.in.get();
+    }
 }
