@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subSystems;
 
 import com.flash3388.flashlib.scheduling.Subsystem;
 import com.revrobotics.CANSparkMax;
