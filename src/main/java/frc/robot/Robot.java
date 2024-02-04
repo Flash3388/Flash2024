@@ -83,9 +83,10 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
 
         absEncoder = new DutyCycleEncoder(9);
-        absEncoder.setPositionOffset(85.5 / 360);
+        //absEncoder.setPositionOffset(85.5 / 360);
 
-        relativeEncoder.setPosition((absEncoder.getAbsolutePosition() - this.absEncoder.getPositionOffset()) / GEAR_RATIO /360);
+     //   relativeEncoder.setPosition((absEncoder.getAbsolutePosition() - this.absEncoder.getPositionOffset()) / GEAR_RATIO /360);
+        relativeEncoder.setPosition((absEncoder.getAbsolutePosition()) / GEAR_RATIO /360);
 
         motorPid.setP(KP);
         motorPid.setI(KI);

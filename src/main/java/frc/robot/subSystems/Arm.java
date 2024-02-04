@@ -28,7 +28,7 @@ public class Arm extends Subsystem {
     private static double KI = 0;
     private static double KD = 0;
     private static double KF = 0;
-    private static double KIZ = 0;
+    private static double KIZ = 0; //
     private static double K_MAX_OUTPUT = 0.5;
     private static double K_MIN_OUTPUT = -0.5;
     private static double K_MAX_VELOCITY = 0;
