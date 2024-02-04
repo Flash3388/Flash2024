@@ -19,7 +19,7 @@ public class ShooterSystem extends Subsystem {
     private final double KP = 0;
     private PidController pid;
     private double ERROR = 50;
-    private static final double SPEED_POINT = 4000; // TODO: Figure ideal value for this variable.
+    private static final double SPEED_POINT = 500; // TODO: Figure ideal value for this variable.
 
     public ShooterSystem(CANSparkMax master, CANSparkMax follower){
         this.master = master;
@@ -31,7 +31,7 @@ public class ShooterSystem extends Subsystem {
                 ()-> { return SmartDashboard.getNumber("KI", KI);},
                 ()-> {return SmartDashboard.getNumber("KD", KD); },
                 ()-> {return SmartDashboard.getNumber("KF", KF);});
-        pid.setOutputLimit(1);
+        pid.setOutputLimit(-0.002,1);
         pid.setTolerance(ERROR, Time.milliseconds(500));
         SmartDashboard.putNumber("KP", KP);
         SmartDashboard.putNumber("KI", KI);
