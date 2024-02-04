@@ -123,7 +123,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     @Override
     public void autonomousInit() {
         // set wanted final setpoint for the motor, 70 degrees, and stop at 0 velocity.
-        endMotorSetPoint = new TrapezoidProfile.State(50.0, 0);
+       // endMotorSetPoint = new TrapezoidProfile.State(50.0, 0);
+        endMotorSetPoint = new TrapezoidProfile.State(9.0, 0);
         // set this to the current position (angle) and velocity (0).
         // for real robot, use the position supplied by the encoder
        // currentMotorSetPoint = new TrapezoidProfile.State(getArmPosition(), 0);
@@ -143,12 +144,12 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
         // feed the info to the motor
         double positionForMotor = currentMotorSetPoint.position / 360.0 * GEAR_RATIO;
-        /*motorPid.setReference(
+      /*  motorPid.setReference(
                 positionForMotor,
                 CANSparkBase.ControlType.kPosition,
                 PID_SLOT,
                 feedForward,
-                SparkPIDController.ArbFFUnits.kVoltage);*/
+                SparkPIDController.ArbFFUnits.kVoltage); */
 
         changePidValues();
         SmartDashboard.putNumber("Arm position", getArmPosition());
@@ -168,10 +169,13 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     }
     private double getRelativeArmPosition(){
         //return relativeEncoder.getPosition() * GEAR_RATIO  * 360;
-        SmartDashboard.putNumber("rel position 1", relativeEncoder1.getPosition() * GEAR_RATIO  * 360);
-        SmartDashboard.putNumber("rel position 2", relativeEncoder2.getPosition() * GEAR_RATIO  * 360);
-        double avgRelativeEncoder = (relativeEncoder2.getPosition() + relativeEncoder1.getPosition()) * GEAR_RATIO * 360 / 2;
+        SmartDashboard.putNumber("rel position 1", relativeEncoder1.getPosition() * GEAR_RATIO /360);
+        SmartDashboard.putNumber(" raw rel position 1", relativeEncoder1.getPosition() / 360);
+        SmartDashboard.putNumber("rel position 1 real", relativeEncoder1.getPosition());
+        double avgRelativeEncoder = (relativeEncoder2.getPosition() + relativeEncoder1.getPosition())  / GEAR_RATIO / 360 / 2;
         //  return (absEncoder.getAbsolutePosition()-absEncoder.getPositionOffset()) * 360;
+        SmartDashboard.putNumber("avg rel position", avgRelativeEncoder);
+
         return avgRelativeEncoder;
         //return (absEncoder.getAbsolutePosition() - absEncoder.getPositionOffset())  * 360;
     }
