@@ -147,14 +147,16 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
         changePidValues();
         SmartDashboard.putNumber("Arm position", getArmPosition());
-        SmartDashboard.putNumber("OFFSET", absEncoder.getAbsolutePosition() * 360);
+       // SmartDashboard.putNumber("OFFSET", absEncoder.getAbsolutePosition() * 360);
+        SmartDashboard.putNumber("OFFSET", getArmPosition());
     }
 
     private double getArmPosition(){
         //return relativeEncoder.getPosition() * GEAR_RATIO  * 360;
         SmartDashboard.putNumber("rel position", relativeEncoder.getPosition() * GEAR_RATIO  * 360);
 
-        return (absEncoder.getAbsolutePosition()-absEncoder.getPositionOffset()) * 360;
+      //  return (absEncoder.getAbsolutePosition()-absEncoder.getPositionOffset()) * 360;
+        return (absEncoder.getAbsolutePosition()) * 360;
         //return (absEncoder.getAbsolutePosition() - absEncoder.getPositionOffset())  * 360;
     }
 
