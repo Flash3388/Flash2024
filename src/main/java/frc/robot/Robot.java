@@ -10,6 +10,7 @@ import frc.robot.Actions.ReverseShooter;
 import frc.robot.Subsystems.ShooterSystem;
 
 public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobot {
+    private Intake intake;
     private ShooterSystem shooter;
     private final XboxController xboxController;
 
@@ -20,6 +21,11 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xboxController = getHidInterface().newXboxController(RobotMap.XBOX);
         xboxController.getButton(XboxButton.X).whileActive(new ForwardShooter(shooter));
         xboxController.getButton(XboxButton.Y).whileActive(new ReverseShooter(shooter));
+        this.intake = SystemFactory.createIntake();
+        xboxController.getButton(XboxButton.A).whileActive(new TakeOut(intake));
+        xboxController.getButton(XboxButton.B).whenActive(new TakeIn(intake));
+
+
     }
 
     @Override
