@@ -55,7 +55,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     private static  double VELOCITY_GAIN = 0; // volts * seconds / radians // tune this
 
     private static final double LOOP_TIME_SECONDS = 0.02; // this is a global constant for the robot code
-    private static final double GEAR_RATIO = 1.0 / 70.0 ; // driver / driven
+    private static final double GEAR_RATIO = 1.0/70.0  ; // driver / driven
     private static final int PID_SLOT = 0; // default slot to use
 
     private final CANSparkMax motor;
@@ -148,7 +148,10 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     }
 
     private double getArmPosition(){
-        return relativeEncoder.getPosition() * GEAR_RATIO  * 360;
+        //return relativeEncoder.getPosition() * GEAR_RATIO  * 360;
+        SmartDashboard.putNumber("rel position", relativeEncoder.getPosition() * GEAR_RATIO  * 360);
+
+        return (absEncoder.getAbsolutePosition()-absEncoder.getPositionOffset()) * 360;
         //return (absEncoder.getAbsolutePosition() - absEncoder.getPositionOffset())  * 360;
     }
 
