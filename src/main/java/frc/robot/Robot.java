@@ -63,7 +63,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     private final SparkPIDController motorPid;
     private final TrapezoidProfile motorPositionProfile;
     private final ArmFeedforward motorFeedForward;
-    private final RelativeEncoder relativeEncoder;
+    private final RelativeEncoder relativeEncoder1;
+    private final RelativeEncoder relativeEncoder2;
     private final DutyCycleEncoder absEncoder;
 
     private TrapezoidProfile.State currentMotorSetPoint;
@@ -78,15 +79,18 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         motorPid = motor.getPIDController();
         motorPositionProfile = new TrapezoidProfile(new TrapezoidProfile.Constraints(MAX_VELOCITY, MAX_ACCELERATION));
         motorFeedForward = new ArmFeedforward(STATIC_GAIN, GRAVITY_GAIN, VELOCITY_GAIN);
-        relativeEncoder = motor.getEncoder();
+        relativeEncoder1 = motor.getEncoder();
+        relativeEncoder2 = follower.getEncoder();
 
 
 
         absEncoder = new DutyCycleEncoder(9);
-        //absEncoder.setPositionOffset(85.5 / 360);
+      //  absEncoder.setPositionOffset(81.79668 / 360);
+        absEncoder.setPositionOffset(81.79668);
 
      //   relativeEncoder.setPosition((absEncoder.getAbsolutePosition() - this.absEncoder.getPositionOffset()) / GEAR_RATIO /360);
-        relativeEncoder.setPosition((absEncoder.getAbsolutePosition()) / GEAR_RATIO /360);
+        relativeEncoder1.setPosition((absEncoder.getAbsolutePosition() - this.absEncoder.getPositionOffset()) / GEAR_RATIO /360);
+        relativeEncoder2.setPosition((absEncoder.getAbsolutePosition() - this.absEncoder.getPositionOffset()) / GEAR_RATIO /360);
 
         motorPid.setP(KP);
         motorPid.setI(KI);
@@ -122,7 +126,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         endMotorSetPoint = new TrapezoidProfile.State(50.0, 0);
         // set this to the current position (angle) and velocity (0).
         // for real robot, use the position supplied by the encoder
-        currentMotorSetPoint = new TrapezoidProfile.State(getArmPosition(), 0);
+       // currentMotorSetPoint = new TrapezoidProfile.State(getArmPosition(), 0);
+        currentMotorSetPoint = new TrapezoidProfile.State(getRelativeArmPosition(), 0);
     }
 
     @Override
@@ -149,28 +154,40 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         SmartDashboard.putNumber("Arm position", getArmPosition());
        // SmartDashboard.putNumber("OFFSET", absEncoder.getAbsolutePosition() * 360);
         SmartDashboard.putNumber("OFFSET", getArmPosition());
+        SmartDashboard.putNumber("GetRelativePosition", getRelativeArmPosition());
+
     }
 
     private double getArmPosition(){
         //return relativeEncoder.getPosition() * GEAR_RATIO  * 360;
-        SmartDashboard.putNumber("rel position", relativeEncoder.getPosition() * GEAR_RATIO  * 360);
+      //  SmartDashboard.putNumber("rel position", relativeEncoder1.getPosition() * GEAR_RATIO  * 360);
 
       //  return (absEncoder.getAbsolutePosition()-absEncoder.getPositionOffset()) * 360;
-        return (absEncoder.getAbsolutePosition()) * 360;
+        return absEncoder.getAbsolutePosition() * 360;
+        //return (absEncoder.getAbsolutePosition() - absEncoder.getPositionOffset())  * 360;
+    }
+    private double getRelativeArmPosition(){
+        //return relativeEncoder.getPosition() * GEAR_RATIO  * 360;
+        SmartDashboard.putNumber("rel position 1", relativeEncoder1.getPosition() * GEAR_RATIO  * 360);
+        SmartDashboard.putNumber("rel position 2", relativeEncoder2.getPosition() * GEAR_RATIO  * 360);
+        double avgRelativeEncoder = (relativeEncoder2.getPosition() + relativeEncoder1.getPosition()) * GEAR_RATIO * 360 / 2;
+        //  return (absEncoder.getAbsolutePosition()-absEncoder.getPositionOffset()) * 360;
+        return avgRelativeEncoder;
         //return (absEncoder.getAbsolutePosition() - absEncoder.getPositionOffset())  * 360;
     }
 
+
     public void changePidValues(){
-        double p = SmartDashboard.getNumber("ARM P Gain", 0);
+        double p = SmartDashboard.getNumber("ARM P Gain", 0.001);
         double i = SmartDashboard.getNumber("ARM I Gain", 0);
         double d = SmartDashboard.getNumber("ARM D Gain", 0);
         double iz = SmartDashboard.getNumber("ARM I Zone", 0);
         double staticGain = SmartDashboard.getNumber("ARM Feed Forward", 0);
         double gravityG = SmartDashboard.getNumber("ARM Max Output", 0);
 
-        double maxV = SmartDashboard.getNumber("ARM Max Velocity", 0);
-        double velocityG = SmartDashboard.getNumber("ARM Min Velocity", 0);
-        double maxA = SmartDashboard.getNumber("ARM Max Acceleration", 0);
+        double maxV = SmartDashboard.getNumber("ARM Max Velocity", 0.01);
+        double velocityG = SmartDashboard.getNumber("ARM Min Velocity", 0.01);
+        double maxA = SmartDashboard.getNumber("ARM Max Acceleration", 0.001);
 
         // if PID coefficients on SmartDashboard have changed, write new values to controller
         if((p != KP)) { motorPid.setP(p); KP = p; }
