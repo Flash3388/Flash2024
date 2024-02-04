@@ -2,12 +2,10 @@ package frc.robot;
 
 import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
-import edu.wpi.first.wpilibj.AddressableLED;
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DigitalInput;
-import frc.robot.subsystems.Intake;
+import frc.robot.subSystems.Intake;
 
-import frc.robot.Subsystems.ShooterSystem;
+import frc.robot.subSystems.ShooterSystem;
 
 public class SystemFactory {
     public static ShooterSystem createShooter() {
@@ -23,4 +21,5 @@ public class SystemFactory {
         }
 
     }
-}
+
+

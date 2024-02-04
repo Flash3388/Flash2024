@@ -4,7 +4,7 @@ import com.flash3388.flashlib.scheduling.ActionControl;
 import com.flash3388.flashlib.scheduling.FinishReason;
 import com.flash3388.flashlib.scheduling.Requirement;
 import com.flash3388.flashlib.scheduling.actions.ActionBase;
-import frc.robot.subsystems.Intake;
+import frc.robot.subSystems.Intake;
 
 import java.lang.module.ModuleDescriptor;
 

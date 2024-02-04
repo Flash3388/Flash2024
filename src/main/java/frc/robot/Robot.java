@@ -5,9 +5,12 @@ import com.flash3388.flashlib.frc.robot.base.iterative.DelegatingFrcRobotControl
 import com.flash3388.flashlib.frc.robot.base.iterative.IterativeFrcRobot;
 import com.flash3388.flashlib.hid.XboxButton;
 import com.flash3388.flashlib.hid.XboxController;
-import frc.robot.Actions.ForwardShooter;
-import frc.robot.Actions.ReverseShooter;
-import frc.robot.Subsystems.ShooterSystem;
+import frc.robot.actions.ForwardShooter;
+import frc.robot.actions.ReverseShooter;
+import frc.robot.actions.TakeIn;
+import frc.robot.actions.TakeOut;
+import frc.robot.subSystems.Intake;
+import frc.robot.subSystems.ShooterSystem;
 
 public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobot {
     private Intake intake;
