@@ -53,7 +53,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     // can use this to help tune
 
     private static  double STATIC_GAIN = 0; // volts // tune this
-    private static  double GRAVITY_GAIN = 1; // volts // tune this
+    private static  double GRAVITY_GAIN = 0; // volts // tune this
     private static  double VELOCITY_GAIN = 0; // volts * seconds / radians // tune this
 
     private static final double LOOP_TIME_SECONDS = 0.02; // this is a global constant for the robot code
@@ -78,6 +78,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         motor = new CANSparkMax(15, CANSparkLowLevel.MotorType.kBrushless);
         follower = new CANSparkMax(16, CANSparkLowLevel.MotorType.kBrushless);
         follower.follow(motor, true);
+
         motorPid = motor.getPIDController();
         motorPositionProfile = new TrapezoidProfile(new TrapezoidProfile.Constraints(MAX_VELOCITY, MAX_ACCELERATION));
         motorFeedForward = new ArmFeedforward(STATIC_GAIN, GRAVITY_GAIN, VELOCITY_GAIN);
@@ -88,11 +89,26 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
         absEncoder = new DutyCycleEncoder(9);
       //  absEncoder.setPositionOffset(81.79668 / 360);
-        absEncoder.setPositionOffset(81.79668);
+        absEncoder.setPositionOffset(81.79668 / 360);
 
-     //   relativeEncoder.setPosition((absEncoder.getAbsolutePosition() - this.absEncoder.getPositionOffset()) / GEAR_RATIO /360);
-        relativeEncoder1.setPosition((absEncoder.getAbsolutePosition() - this.absEncoder.getPositionOffset()) / GEAR_RATIO /360);
-        relativeEncoder2.setPosition((absEncoder.getAbsolutePosition() - this.absEncoder.getPositionOffset()) / GEAR_RATIO /360);
+     // I have found out that the method "absEncoder.getAbsolutePosition()" returns 0 in the constructor. this must be the problem.
+          relativeEncoder1.setPosition(-7.68 / GEAR_RATIO / 360 );
+          SmartDashboard.putNumber("Abs positon start", (absEncoder.getAbsolutePosition() - absEncoder.getPositionOffset()) *360);
+          relativeEncoder2.setPosition(-7.68 / GEAR_RATIO / 360);
+
+         SmartDashboard.putNumber("ARM P Gain", 0.0);
+         SmartDashboard.putNumber("ARM I Gain", 0);
+         SmartDashboard.putNumber("ARM D Gain", 0);
+         SmartDashboard.putNumber("ARM IZ Zone", 0);
+         SmartDashboard.putNumber("ARM Static Gain", 0);
+         SmartDashboard.putNumber("ARM Gravity", 0);
+
+         SmartDashboard.putNumber("ARM Max Velocity", 0.01);
+         SmartDashboard.putNumber("ARM Velocity Gain", 0.01);
+         SmartDashboard.putNumber("ARM Max Acceleration", 0.001);
+
+
+
 
         motorPid.setP(KP);
         motorPid.setI(KI);
@@ -126,7 +142,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     public void autonomousInit() {
         // set wanted final setpoint for the motor, 70 degrees, and stop at 0 velocity.
        // endMotorSetPoint = new TrapezoidProfile.State(50.0, 0);
-        endMotorSetPoint = new TrapezoidProfile.State(9.0, 0);
+        endMotorSetPoint = new TrapezoidProfile.State(9.0 / 360, 0);
         // set this to the current position (angle) and velocity (0).
         // for real robot, use the position supplied by the encoder
        // currentMotorSetPoint = new TrapezoidProfile.State(getArmPosition(), 0);
@@ -135,7 +151,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
     @Override
     public void autonomousPeriodic() {
-        // this will calculate our next setpoint for the motor,
+        // this will calculate our next setPoint for the motor,
         currentMotorSetPoint = motorPositionProfile.calculate(LOOP_TIME_SECONDS, currentMotorSetPoint, endMotorSetPoint);
         // currentMotorSetPoint.position == position [degrees] to move the arm to
         // currentMotorSetPoint.velocity == velocity [degrees/second] to move the arm at
@@ -144,38 +160,42 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         double feedForward = motorFeedForward.calculate(Math.toRadians(currentMotorSetPoint.position), currentMotorSetPoint.velocity);
         // feedForward = volts to add to the motor output (if PID says output=5, then the real output will be 5+feedForward)
 
+        changePidValues();
+
         // feed the info to the motor
-        double positionForMotor = currentMotorSetPoint.position / 360.0 * GEAR_RATIO;
-      /*  motorPid.setReference(
+        double positionForMotor = currentMotorSetPoint.position;
+        motorPid.setReference(
                 positionForMotor,
                 CANSparkBase.ControlType.kPosition,
                 PID_SLOT,
                 feedForward,
-                SparkPIDController.ArbFFUnits.kVoltage); */
+                SparkPIDController.ArbFFUnits.kVoltage);
 
-        changePidValues();
+
         SmartDashboard.putNumber("Arm position", getArmPosition());
        // SmartDashboard.putNumber("OFFSET", absEncoder.getAbsolutePosition() * 360);
-        SmartDashboard.putNumber("OFFSET", getArmPosition());
-        SmartDashboard.putNumber("GetRelativePosition", getRelativeArmPosition());
 
+        SmartDashboard.putNumber("GetRelativePosition", getRelativeArmPosition() * 360 * GEAR_RATIO);
     }
 
     private double getArmPosition(){
-        //return relativeEncoder.getPosition() * GEAR_RATIO  * 360;
+        // return relativeEncoder.getPosition() * GEAR_RATIO  * 360;
       //  SmartDashboard.putNumber("rel position", relativeEncoder1.getPosition() * GEAR_RATIO  * 360);
 
       //  return (absEncoder.getAbsolutePosition()-absEncoder.getPositionOffset()) * 360;
-        return absEncoder.getAbsolutePosition() * 360;
+        return (absEncoder.getAbsolutePosition() - absEncoder.getPositionOffset()) * 360;
         //return (absEncoder.getAbsolutePosition() - absEncoder.getPositionOffset())  * 360;
     }
+
     private double getRelativeArmPosition(){
-        //return relativeEncoder.getPosition() * GEAR_RATIO  * 360;
-        SmartDashboard.putNumber("rel position 1", relativeEncoder1.getPosition() * GEAR_RATIO /360);
-        SmartDashboard.putNumber(" raw rel position 1", relativeEncoder1.getPosition() / 360);
-        SmartDashboard.putNumber("rel position 1 real", relativeEncoder1.getPosition());
-        double avgRelativeEncoder = (relativeEncoder2.getPosition() + relativeEncoder1.getPosition())  / GEAR_RATIO / 360 / 2;
-        //  return (absEncoder.getAbsolutePosition()-absEncoder.getPositionOffset()) * 360;
+        relativeEncoder1.setPosition((absEncoder.getAbsolutePosition() - absEncoder.getPositionOffset()) / GEAR_RATIO);
+        relativeEncoder2.setPosition((absEncoder.getAbsolutePosition() - absEncoder.getPositionOffset()) / GEAR_RATIO);
+
+        SmartDashboard.putNumber("rel position 1", relativeEncoder1.getPosition() * GEAR_RATIO * 360);
+        SmartDashboard.putNumber("rel position 2", relativeEncoder2.getPosition() * GEAR_RATIO * 360);
+
+        double avgRelativeEncoder = (relativeEncoder2.getPosition() + relativeEncoder1.getPosition()) /2;
+
         SmartDashboard.putNumber("avg rel position", avgRelativeEncoder);
 
         return avgRelativeEncoder;
@@ -184,16 +204,16 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
 
     public void changePidValues(){
-        double p = SmartDashboard.getNumber("ARM P Gain", 0.001);
+        double p = SmartDashboard.getNumber("ARM P Gain", 0.3);
         double i = SmartDashboard.getNumber("ARM I Gain", 0);
         double d = SmartDashboard.getNumber("ARM D Gain", 0);
-        double iz = SmartDashboard.getNumber("ARM I Zone", 0);
-        double staticGain = SmartDashboard.getNumber("ARM Feed Forward", 0);
-        double gravityG = SmartDashboard.getNumber("ARM Max Output", 0);
+        double iz = SmartDashboard.getNumber("ARM IZ Zone", 0);
+        double staticGain = SmartDashboard.getNumber("ARM Static Gain", 0);
+        double gravityG = SmartDashboard.getNumber("ARM Gravity", 1);
 
         double maxV = SmartDashboard.getNumber("ARM Max Velocity", 0.01);
-        double velocityG = SmartDashboard.getNumber("ARM Min Velocity", 0.01);
-        double maxA = SmartDashboard.getNumber("ARM Max Acceleration", 0.001);
+        double velocityG = SmartDashboard.getNumber("ARM Velocity Gain", 0.01);
+        double maxA = SmartDashboard.getNumber("ARM Max Acceleration", .01);
 
         // if PID coefficients on SmartDashboard have changed, write new values to controller
         if((p != KP)) { motorPid.setP(p); KP = p; }
