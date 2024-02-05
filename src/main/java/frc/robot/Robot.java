@@ -141,11 +141,11 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     public void autonomousInit() {
         // set wanted final setpoint for the motor, 70 degrees, and stop at 0 velocity.
        // endMotorSetPoint = new TrapezoidProfile.State(50.0, 0);
-        endMotorSetPoint = new TrapezoidProfile.State(9.0 / 360, 0);
+        endMotorSetPoint = new TrapezoidProfile.State(9.0, 0);
         // set this to the current position (angle) and velocity (0).
         // for real robot, use the position supplied by the encoder
        // currentMotorSetPoint = new TrapezoidProfile.State(getArmPosition(), 0);
-        currentMotorSetPoint = new TrapezoidProfile.State(getRelativeArmPosition(), 0);
+        currentMotorSetPoint = new TrapezoidProfile.State(getRelativeArmPosition() * GEAR_RATIO * 360, 0);
     }
 
     @Override
@@ -160,9 +160,11 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         // feedForward = volts to add to the motor output (if PID says output=5, then the real output will be 5+feedForward)
 
         changePidValues();
+        SmartDashboard.putNumber("SET POINTS", currentMotorSetPoint.position);
+
 
         // feed the info to the motor
-        double positionForMotor = currentMotorSetPoint.position;
+        double positionForMotor = currentMotorSetPoint.position / 360.0 / GEAR_RATIO;
         motorPid.setReference(
                 positionForMotor,
                 CANSparkBase.ControlType.kPosition,
