@@ -52,6 +52,7 @@ public class Limelight extends Subsystem {
         );
         return distance;
     }
+
     public boolean isThereTarget(){
         return LimelightHelpers.getTV("limelight-banana"); //tv=1.0 means a target is detected
     }

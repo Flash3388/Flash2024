@@ -4,9 +4,11 @@ import com.flash3388.flashlib.frc.robot.FrcRobotControl;
 import com.flash3388.flashlib.frc.robot.base.iterative.DelegatingFrcRobotControl;
 import com.flash3388.flashlib.frc.robot.base.iterative.IterativeFrcRobot;
 import com.flash3388.flashlib.hid.XboxAxis;
+import com.flash3388.flashlib.hid.XboxButton;
 import com.flash3388.flashlib.hid.XboxController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.actions.LimelightAutoAlign;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.ShooterSystem;
 import frc.robot.subsystems.Swerve;
@@ -26,7 +28,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         limelight = new Limelight(swerve);
 
 
-   //     xbox.getButton(XboxButton.X).whileActive(new ForwardShooter(shooter));
+        xbox.getButton(XboxButton.X).whileActive(new LimelightAutoAlign(limelight,swerve));
    //     xbox.getButton(XboxButton.Y).whileActive(new ReverseShooter(shooter));
     }
 
@@ -90,6 +92,12 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     @Override
     public void testPeriodic() {
 
+        double angle2T = limelight.getXAngleToTarget();
+        SmartDashboard.putNumber("angle2T",angle2T); //check if the value is correct-it may be the wrong one, so switch
+        // to cameraPoseTargetSpace[4]
+
+        double distance = limelight.getDistanceToTarget();
+        SmartDashboard.putNumber("distance",distance); //it may not work 100% accuratly, i need to tune it when i'm in the room
     }
 
     @Override
