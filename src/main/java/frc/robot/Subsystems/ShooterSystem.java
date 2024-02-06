@@ -33,7 +33,7 @@ public class ShooterSystem extends Subsystem {
                 ()-> {return SmartDashboard.getNumber("KI", KI);},
                 ()-> {return SmartDashboard.getNumber("KD", KD); },
                 ()-> {return SmartDashboard.getNumber("KF", KF);});
-        pid.setOutputLimit(-0.002,1);
+        pid.setOutputLimit(0,1);
         pid.setTolerance(ERROR, Time.milliseconds(500));
         SmartDashboard.putNumber("KP", KP);
         SmartDashboard.putNumber("KI", KI);
@@ -44,25 +44,29 @@ public class ShooterSystem extends Subsystem {
         follower.setIdleMode(CANSparkBase.IdleMode.kCoast);
     }
 
-    public double getPID(double SPEED_POINT){
-        double speed = pid.applyAsDouble(getSpeed(),SPEED_POINT);
-
-        SmartDashboard.putNumber("Speed", speed);
-        SmartDashboard.putBoolean("isStopped",false);
-        return speed;
-    }
-
 
     public void shootSpeaker(){
-        this.master.set(-getPID(SPEED_TARGET_SPEAKER));
+        double speed = pid.applyAsDouble(getSpeed(),SPEED_TARGET_SPEAKER);
+
+        SmartDashboard.putNumber("Speed", -speed);
+        SmartDashboard.putBoolean("isStopped",false);
+        this.master.set(-speed);
     }
 
     public void shootAmp(){
-        this.master.set(-getPID(SPEED_TARGET_AMP));
+        double speed = pid.applyAsDouble(getSpeed(),SPEED_TARGET_AMP);
+
+        SmartDashboard.putNumber("Speed", -speed);
+        SmartDashboard.putBoolean("isStopped",false);
+        this.master.set(-speed);
     }
 
     public void reverse(){
-        this.master.set(getPID(SPEED_TARGET_SPEAKER));
+        double speed = pid.applyAsDouble(getSpeed(),SPEED_TARGET_SPEAKER);
+
+        SmartDashboard.putNumber("Speed", speed);
+        SmartDashboard.putBoolean("isStopped",false);
+        this.master.set(speed);
     }
 
     public double getSpeed(){
@@ -76,6 +80,8 @@ public class ShooterSystem extends Subsystem {
 
     public void stop(){
         SmartDashboard.putBoolean("isStopped",true);
+        SmartDashboard.putBoolean("AMPBool", false);
+        SmartDashboard.putBoolean("SpeakerBool", false);
         this.master.stopMotor();
     }
 }
