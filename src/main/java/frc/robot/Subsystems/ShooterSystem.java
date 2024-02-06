@@ -4,6 +4,7 @@ import com.flash3388.flashlib.robot.RunningRobot;
 import com.flash3388.flashlib.robot.control.PidController;
 import com.flash3388.flashlib.scheduling.Subsystem;
 import com.flash3388.flashlib.time.Time;
+import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -19,7 +20,8 @@ public class ShooterSystem extends Subsystem {
     private final double KP = 0;
     private PidController pid;
     private double ERROR = 50;
-    private static final double SPEED_POINT = 4000; // TODO: Figure ideal value for this variable.
+    private static final double SPEED_TARGET_SPEAKER = 4000;
+    private static final double SPEED_TARGET_AMP = 2000;
 
     public ShooterSystem(CANSparkMax master, CANSparkMax follower){
         this.master = master;
@@ -27,19 +29,22 @@ public class ShooterSystem extends Subsystem {
         this.encoder = (RelativeEncoder) master.getEncoder();
         this.follower.follow(master, false);
         this.pid = new PidController(RunningRobot.getControl().getClock(),
-                ()-> SmartDashboard.getNumber("KP", KP),
-                ()-> SmartDashboard.getNumber("KI", KI),
-                ()-> SmartDashboard.getNumber("KD", KD),
-                ()-> SmartDashboard.getNumber("KF", KF));
-        pid.setOutputLimit(-0.4,0.4);
+                ()-> {return SmartDashboard.getNumber("KP", KP);},
+                ()-> {return SmartDashboard.getNumber("KI", KI);},
+                ()-> {return SmartDashboard.getNumber("KD", KD); },
+                ()-> {return SmartDashboard.getNumber("KF", KF);});
+        pid.setOutputLimit(-0.002,1);
         pid.setTolerance(ERROR, Time.milliseconds(500));
         SmartDashboard.putNumber("KP", KP);
         SmartDashboard.putNumber("KI", KI);
         SmartDashboard.putNumber("KD", KD);
         SmartDashboard.putNumber("KF", KF);
+
+        master.setIdleMode(CANSparkBase.IdleMode.kCoast);
+        follower.setIdleMode(CANSparkBase.IdleMode.kCoast);
     }
 
-    public double getPID(){
+    public double getPID(double SPEED_POINT){
         double speed = pid.applyAsDouble(getSpeed(),SPEED_POINT);
 
         SmartDashboard.putNumber("Speed", speed);
@@ -48,25 +53,30 @@ public class ShooterSystem extends Subsystem {
     }
 
 
-    public void shoot(){
-        this.master.set(-getPID());
+    public void shootSpeaker(){
+        this.master.set(-getPID(SPEED_TARGET_SPEAKER));
+    }
+
+    public void shootAmp(){
+        this.master.set(-getPID(SPEED_TARGET_AMP));
     }
 
     public void reverse(){
-        this.master.set(getPID());
+        this.master.set(getPID(SPEED_TARGET_SPEAKER));
     }
 
     public double getSpeed(){
-        SmartDashboard.putNumber("RPM", this.encoder.getVelocity());
-        return this.encoder.getVelocity();
+        SmartDashboard.putNumber("RPM", -this.encoder.getVelocity());
+        return -this.encoder.getVelocity();
     }
+
     public void resetPID(){
         pid.reset();
     }
 
     public void stop(){
         SmartDashboard.putBoolean("isStopped",true);
-        this.master.set(0.0);
+        this.master.stopMotor();
     }
 }
 

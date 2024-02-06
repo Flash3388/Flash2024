@@ -6,14 +6,14 @@ import com.flash3388.flashlib.scheduling.actions.ActionBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Subsystems.ShooterSystem;
 
-public class ForwardShooter extends ActionBase {
+public class ShooterAMP extends ActionBase {
     private ShooterSystem shooter;
 
-    public ForwardShooter(ShooterSystem shooter){
+    public ShooterAMP(ShooterSystem shooter){
         this.shooter = shooter;
         requires(shooter);
 
-        configure().setName("ForwardShooter").save();
+        configure().setName("ShooterAMP").save();
     }
 
     @Override
@@ -23,8 +23,8 @@ public class ForwardShooter extends ActionBase {
 
     @Override
     public void execute(ActionControl actionControl) {
-        SmartDashboard.putBoolean("ForwardBool", true);
-        shooter.shoot();
+            SmartDashboard.putBoolean("AMPBool", true);
+        shooter.shootAmp();
     }
 
     @Override
