@@ -5,10 +5,7 @@ import com.flash3388.flashlib.frc.robot.base.iterative.DelegatingFrcRobotControl
 import com.flash3388.flashlib.frc.robot.base.iterative.IterativeFrcRobot;
 import com.flash3388.flashlib.hid.XboxButton;
 import com.flash3388.flashlib.hid.XboxController;
-import frc.robot.actions.ForwardShooter;
-import frc.robot.actions.ReverseShooter;
-import frc.robot.actions.TakeIn;
-import frc.robot.actions.TakeOut;
+import frc.robot.actions.*;
 import frc.robot.subSystems.Intake;
 import frc.robot.subSystems.ShooterSystem;
 
@@ -20,12 +17,13 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     public Robot(FrcRobotControl robotControl) {
         super(robotControl);
 
+        this.intake = SystemFactory.createIntake();
         this.shooter = SystemFactory.createShooter();
         xboxController = getHidInterface().newXboxController(RobotMap.XBOX);
-        xboxController.getButton(XboxButton.X).whileActive(new ForwardShooter(shooter));
+        xboxController.getButton(XboxButton.X).whileActive(new ShooterSpeaker(shooter));
+        xboxController.getButton(XboxButton.A).whileActive(new ShooterAMP(shooter));
         xboxController.getButton(XboxButton.Y).whileActive(new ReverseShooter(shooter));
-        this.intake = SystemFactory.createIntake();
-        xboxController.getButton(XboxButton.A).whileActive(new TakeOut(intake));
+        xboxController.getButton(XboxButton.Y).whileActive(new TakeOut(intake));
         xboxController.getButton(XboxButton.B).whenActive(new TakeIn(intake));
 
 

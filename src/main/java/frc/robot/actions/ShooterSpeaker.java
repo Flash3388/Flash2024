@@ -3,16 +3,17 @@ package frc.robot.actions;
 import com.flash3388.flashlib.scheduling.ActionControl;
 import com.flash3388.flashlib.scheduling.FinishReason;
 import com.flash3388.flashlib.scheduling.actions.ActionBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subSystems.ShooterSystem;
 
-public class ReverseShooter extends ActionBase {
+public class ShooterSpeaker extends ActionBase {
     private ShooterSystem shooter;
 
-    public ReverseShooter(ShooterSystem shooter){
+    public ShooterSpeaker(ShooterSystem shooter){
         this.shooter = shooter;
         requires(shooter);
 
-        configure().setName("ReverseShooter").save();
+        configure().setName("ShooterSpeaker").save();
     }
 
     @Override
@@ -22,7 +23,8 @@ public class ReverseShooter extends ActionBase {
 
     @Override
     public void execute(ActionControl actionControl) {
-        shooter.reverse();
+        SmartDashboard.putBoolean("SpeakerBool", true);
+        shooter.shootSpeaker();
     }
 
     @Override
