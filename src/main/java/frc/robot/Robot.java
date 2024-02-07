@@ -3,10 +3,13 @@ package frc.robot;
 import com.flash3388.flashlib.frc.robot.FrcRobotControl;
 import com.flash3388.flashlib.frc.robot.base.iterative.DelegatingFrcRobotControl;
 import com.flash3388.flashlib.frc.robot.base.iterative.IterativeFrcRobot;
+import com.flash3388.flashlib.robot.control.PidController;
 import com.jmath.ExtendedMath;
 import com.revrobotics.*;
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -40,10 +43,10 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     // as it will allow increased acceleration for the arm and thus cause it to accelerate quicly.
 
     // for motor PID
-    private static  double KP = 0.0082; // tune this
-    private static  double KI = 0.0027; // tune this
+    private static  double KP = 0.012; // tune this
+    private static  double KI = 0.0006; // tune this
     private static  double KD = 0; // tune this
-    private static  double I_ZONE = 0; // tune this
+    private static  double I_ZONE = 15; // tune this
 
     // for trapezoid profile
     private static  double MAX_VELOCITY = 1; // meters per second
@@ -59,9 +62,9 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
     private final CANSparkMax master;
     private final CANSparkMax follower;
-    private ArmFeedforward motorFeedForward;
+    private SimpleMotorFeedforward motorFeedForward;
     private final DutyCycleEncoder absEncoder;
-    private ProfiledPIDController pid;
+    private PidController pid;
 
     public Robot(FrcRobotControl robotControl) {
         super(robotControl);
@@ -71,13 +74,11 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         follower.follow(master, true);
         master.follow(CANSparkBase.ExternalFollower.kFollowerDisabled, 0); // this is to make sure the master won't follow anyone
 
-        motorFeedForward = new ArmFeedforward(STATIC_GAIN, GRAVITY_GAIN, VELOCITY_GAIN);
+        motorFeedForward = new SimpleMotorFeedforward(STATIC_GAIN, VELOCITY_GAIN);
 
 
         absEncoder = new DutyCycleEncoder(9);
         absEncoder.setPositionOffset(81.79668 / 360);
-
-
         SmartDashboard.putNumber("ARM P Gain", KP);
         SmartDashboard.putNumber("ARM I Gain", KI);
         SmartDashboard.putNumber("ARM D Gain", KD);
@@ -92,8 +93,11 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
          SmartDashboard.putNumber("set point A", 20);
 
 
+         SmartDashboard.putNumber("speed master", 0);
 
-        pid = new ProfiledPIDController(KP, KI, KD, new TrapezoidProfile.Constraints(MAX_VELOCITY, MAX_ACCELERATION));
+
+        pid = PidController.newNamedController("drive", KP, KI, KD, 0);
+        pid.setIZone(I_ZONE);
     }
 
     @Override
@@ -112,12 +116,11 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
     @Override
     public void teleopPeriodic() {
-
     }
 
     @Override
     public void autonomousInit() {
-        pid.reset(getArmPosition());
+        pid.reset();
     }
 
     @Override
@@ -128,17 +131,17 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         SmartDashboard.putNumber("master set velocity", master.get());
 
         double setPoint = SmartDashboard.getNumber("set point A", 20); // here we get the setPoint
+//
+        //TrapezoidProfile.State setPointT = pid.getSetpoint(); // the TrapezoidProfile calculate its setPoints
+        //double feedForward = motorFeedForward.calculate(Math.toRadians(setPointT.position), setPointT.velocity); // how we find the right feedForward
 
-        TrapezoidProfile.State setPointT = pid.getSetpoint(); // the TrapezoidProfile calculate its setPoints
-        double feedForward = motorFeedForward.calculate(Math.toRadians(setPointT.position), setPointT.velocity); // how we find the right feedForward
-
-        double speed = pid.calculate(getArmPosition(), setPoint) ;
+        double speed = pid.applyAsDouble(getArmPosition(), setPoint) ;
         speed = ExtendedMath.constrain(speed, -0.5, 0.5);
 
         SmartDashboard.putNumber("MOTOR Set Point", speed) ;
-        SmartDashboard.putNumber("MOTOR Feed Forward", feedForward);
+        SmartDashboard.putNumber("MOTOR Feed Forward", 0);
 
-        master.set(speed + feedForward/12.0);
+        master.set(speed);
 
 
 
@@ -162,24 +165,11 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         double maxV = SmartDashboard.getNumber("ARM Max Velocity", MAX_VELOCITY);
         double maxA = SmartDashboard.getNumber("ARM Max Acceleration", MAX_ACCELERATION);
 
-        // if PID coefficients on SmartDashboard have changed, write new values to controller
-        if((p != KP)) { pid.setP(p); KP = p; }
-        if((i != KI)) { pid.setI(i); KI = i; }
-        if((d != KD)) { pid.setD(d); KD = d; }
-        if((iz != I_ZONE)) { pid.setIZone(iz); I_ZONE = iz; }
-
-        if ((maxV != MAX_VELOCITY) || (maxA != MAX_ACCELERATION)) {
-            MAX_VELOCITY = maxV;
-            MAX_ACCELERATION = maxA;
-            pid.setConstraints(new TrapezoidProfile.Constraints(maxV, maxA));
+        if (iz != I_ZONE) {
+            I_ZONE = iz;
+            pid.setIZone(iz);
         }
 
-        if((staticGain != STATIC_GAIN) || (gravityG != GRAVITY_GAIN) || (velocityG != VELOCITY_GAIN)) {
-            STATIC_GAIN = staticGain;
-            GRAVITY_GAIN = gravityG;
-            VELOCITY_GAIN = velocityG;
-            motorFeedForward = new ArmFeedforward(STATIC_GAIN, GRAVITY_GAIN, VELOCITY_GAIN);
-        }
     }
 
     @Override
