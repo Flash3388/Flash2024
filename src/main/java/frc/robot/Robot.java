@@ -44,8 +44,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
     // for motor PID
     private static  double KP = 0.012; // tune this
-    private static  double KI = 0.0006; // tune this
-    private static  double KD = 0; // tune this
+    private static  double KI = 0.00055; // tune this
+    private static  double KD = 0.000001; // tune this
     private static  double I_ZONE = 15; // tune this
 
     // for trapezoid profile
