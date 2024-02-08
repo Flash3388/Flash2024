@@ -43,8 +43,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     // as it will allow increased acceleration for the arm and thus cause it to accelerate quicly.
 
     // for motor PID
-    private static  double KP = 0.012; // tune this
-    private static  double KI = 0.00055; // tune this
+    private static  double KP = 0.0099; // tune this
+    private static  double KI = 0.0004; // tune this
     private static  double KD = 0.000001; // tune this
     private static  double I_ZONE = 15; // tune this
 
