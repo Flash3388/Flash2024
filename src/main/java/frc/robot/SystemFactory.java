@@ -6,10 +6,10 @@ import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.DigitalInput;
-import frc.robot.subsystems.Intake;
+import frc.robot.subSystems.Intake;
 
-import frc.robot.subsystems.ShooterSystem;
-import frc.robot.subsystems.Swerve;
+import frc.robot.subSystems.ShooterSystem;
+import frc.robot.subSystems.Swerve;
 
 public class SystemFactory {
     public static Swerve createSwerveSystem(){

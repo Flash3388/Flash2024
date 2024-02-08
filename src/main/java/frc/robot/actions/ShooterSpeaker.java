@@ -4,7 +4,7 @@ import com.flash3388.flashlib.scheduling.ActionControl;
 import com.flash3388.flashlib.scheduling.FinishReason;
 import com.flash3388.flashlib.scheduling.actions.ActionBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.subsystems.ShooterSystem;
+import frc.robot.subSystems.ShooterSystem;
 
 public class ShooterSpeaker extends ActionBase {
     private ShooterSystem shooter;

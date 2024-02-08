@@ -3,7 +3,7 @@ package frc.robot.actions;
 import com.flash3388.flashlib.scheduling.ActionControl;
 import com.flash3388.flashlib.scheduling.FinishReason;
 import com.flash3388.flashlib.scheduling.actions.ActionBase;
-import frc.robot.subsystems.Intake;
+import frc.robot.subSystems.Intake;
 
 public class TakeIn extends ActionBase {
     private Intake intake;

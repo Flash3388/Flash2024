@@ -8,8 +8,8 @@ import com.flash3388.flashlib.scheduling.actions.ActionBase;
 import com.flash3388.flashlib.time.Time;
 import com.jmath.ExtendedMath;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.subsystems.Limelight;
-import frc.robot.subsystems.Swerve;
+import frc.robot.subSystems.Limelight;
+import frc.robot.subSystems.Swerve;
 
 public class LimelightAutoAlign  extends ActionBase {
     private final Limelight limelight;
