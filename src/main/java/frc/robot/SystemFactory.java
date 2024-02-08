@@ -3,9 +3,9 @@ package frc.robot;
 import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.DigitalInput;
-import frc.robot.subSystems.Intake;
+import frc.robot.subsystems.Intake;
 
-import frc.robot.subSystems.ShooterSystem;
+import frc.robot.subsystems.ShooterSystem;
 
 public class SystemFactory {
     public static ShooterSystem createShooter() {

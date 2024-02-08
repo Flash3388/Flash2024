@@ -5,26 +5,36 @@ import com.flash3388.flashlib.frc.robot.base.iterative.DelegatingFrcRobotControl
 import com.flash3388.flashlib.frc.robot.base.iterative.IterativeFrcRobot;
 import com.flash3388.flashlib.hid.XboxButton;
 import com.flash3388.flashlib.hid.XboxController;
+import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.actions.*;
-import frc.robot.subSystems.Intake;
-import frc.robot.subSystems.ShooterSystem;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.ShooterSystem;
+import frc.robot.subsystems.Swerve;
 
 public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobot {
+    private Swerve swerve;
     private Intake intake;
     private ShooterSystem shooter;
-    private final XboxController xboxController;
+    private Limelight limelight;
+
+    private final XboxController xbox;
+    private DigitalInput in = new DigitalInput(6);
+
 
     public Robot(FrcRobotControl robotControl) {
         super(robotControl);
         this.intake = SystemFactory.createIntake();
         this.shooter = SystemFactory.createShooter();
-        xboxController = getHidInterface().newXboxController(RobotMap.XBOX);
+        xbox = getHidInterface().newXboxController(RobotMap.XBOX);
 
-        xboxController.getButton(XboxButton.X).whileActive(new ShooterSpeaker(shooter));
-        xboxController.getButton(XboxButton.A).whileActive(new ShooterAMP(shooter));
-        xboxController.getButton(XboxButton.Y).whileActive(new ReverseShooter(shooter));
-        xboxController.getButton(XboxButton.Y).whileActive(new TakeOut(intake));
-        xboxController.getButton(XboxButton.B).whenActive(new TakeIn(intake));
+        xbox.getButton(XboxButton.X).whenActive(new LimelightAutoAlign(limelight,swerve));
+
+       // xboxController.getButton(XboxButton.X).whileActive(new ShooterSpeaker(shooter));
+        xbox.getButton(XboxButton.A).whileActive(new ShooterAMP(shooter));
+   //     xboxController.getButton(XboxButton.Y).whileActive(new ReverseShooter(shooter));
+        xbox.getButton(XboxButton.Y).whileActive(new TakeOut(intake));
+        xbox.getButton(XboxButton.B).whenActive(new TakeIn(intake));
 
     }
 

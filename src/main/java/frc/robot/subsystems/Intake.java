@@ -1,8 +1,7 @@
-package frc.robot.subSystems;
+package frc.robot.subsystems;
 
 import com.flash3388.flashlib.scheduling.Subsystem;
 import com.revrobotics.CANSparkMax;
-import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.DigitalInput;
 
 public class Intake extends Subsystem {
