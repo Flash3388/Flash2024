@@ -9,6 +9,7 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobot {
@@ -92,7 +93,6 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
          SmartDashboard.putNumber("set point A", 20);
 
 
-
         pid = new ProfiledPIDController(KP, KI, KD, new TrapezoidProfile.Constraints(MAX_VELOCITY, MAX_ACCELERATION));
     }
 
@@ -124,10 +124,12 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     public void autonomousPeriodic() {
 
         changePidValues();
+
         SmartDashboard.putNumber("follower set velocity", follower.get());
         SmartDashboard.putNumber("master set velocity", master.get());
 
         double setPoint = SmartDashboard.getNumber("set point A", 20); // here we get the setPoint
+
 
         TrapezoidProfile.State setPointT = pid.getSetpoint(); // the TrapezoidProfile calculate its setPoints
         double feedForward = motorFeedForward.calculate(Math.toRadians(setPointT.position), setPointT.velocity); // how we find the right feedForward
@@ -138,8 +140,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         SmartDashboard.putNumber("MOTOR Set Point", speed) ;
         SmartDashboard.putNumber("MOTOR Feed Forward", feedForward);
 
-        master.set(speed + feedForward/12.0);
-
+        master.set(speed + feedForward/ RobotController.getBatteryVoltage());
 
 
     }
