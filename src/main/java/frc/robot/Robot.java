@@ -13,6 +13,18 @@ import frc.robot.subSystems.Intake;
 import frc.robot.subSystems.Limelight;
 import frc.robot.subSystems.ShooterSystem;
 import frc.robot.subSystems.Swerve;
+import com.flash3388.flashlib.robot.control.PidController;
+import com.jmath.ExtendedMath;
+import com.revrobotics.*;
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.actions.ArmController;
+import frc.robot.subSystems.Arm;
 
 public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobot {
     private Swerve swerve;
@@ -24,8 +36,13 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     private DigitalInput in = new DigitalInput(6);
 
 
+   private Arm arm;
+
     public Robot(FrcRobotControl robotControl) {
         super(robotControl);
+        this.arm = SystemFactory.createArm();
+
+        arm.setDefaultAction(new ArmController(arm));
         swerve = SystemFactory.createSwerveSystem();
         intake = SystemFactory.createIntake();
         shooter = SystemFactory.createShooter();
@@ -78,12 +95,14 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
     @Override
     public void autonomousInit() {
+        arm.resetPID();
 
     }
 
     @Override
     public void autonomousPeriodic() {
-
+        double setPoint = SmartDashboard.getNumber("set point A", 20);
+        arm.setSetPointAngle(setPoint);
     }
 
     @Override
@@ -103,6 +122,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
     @Override
     public void robotPeriodic() {
+       arm.print();
         limelight.updateRobotPositionByAprilTag();
         swerve.updateOdometer();
     }
