@@ -28,7 +28,8 @@ public class ShooterSpeaker extends ActionBase {
     public void execute(ActionControl actionControl) {
         SmartDashboard.putBoolean("SpeakerBool", true);
         shooter.shootSpeaker();
-        intake.shoot();
+        if(shooter.gotToTarget(ShooterSystem.SPEED_TARGET_SPEAKER))
+            intake.shoot();
     }
 
     @Override

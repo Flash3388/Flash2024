@@ -33,7 +33,6 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     private Limelight limelight;
 
     private final XboxController xbox;
-    private DigitalInput in = new DigitalInput(6);
 
 
    private Arm arm;
@@ -74,22 +73,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
     @Override
     public void teleopPeriodic() {
-        boolean on = in.get(); //if the sensor senses a note
-        SmartDashboard.putBoolean("isNoteIn",on);
-        double driveY = -xbox.getAxis(XboxAxis.LeftStickY).getAsDouble() ;
-        double driveX = -xbox.getAxis(XboxAxis.LeftStickX).getAsDouble() ;
-        double rotation = -xbox.getAxis(XboxAxis.RightStickX).getAsDouble();
 
-        driveY = Math.abs(driveY) > 0.2 ? driveY * Swerve.MAX_SPEED    : 0;
-        driveX = Math.abs(driveX) > 0.2 ? driveX  * Swerve.MAX_SPEED : 0;
-        rotation = Math.abs(rotation) > 0.4 ? rotation * Swerve.MAX_SPEED : 0;
 
-        boolean isFiledRelative = SmartDashboard.getBoolean("Is Field Relative?", false);
-        // this.swerve.drive(driveY /3 ,driveX/3 ,rotation/3, true);
-        this.swerve.drive(driveY/3,driveX/3,rotation/3);
-        SmartDashboard.putNumber("rotation",swerve.getPose2D().getRotation().getRadians());
-        SmartDashboard.putNumber("xTrans",swerve.getPose2D().getTranslation().getX());
-        SmartDashboard.putNumber("yTrans",swerve.getPose2D().getTranslation().getY());
     }
 
     @Override
@@ -119,6 +104,22 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
         double setPoint = SmartDashboard.getNumber("set point A", 20);
         arm.setSetPointAngle(setPoint);
+
+
+        double driveY = -xbox.getAxis(XboxAxis.LeftStickY).getAsDouble() ;
+        double driveX = -xbox.getAxis(XboxAxis.LeftStickX).getAsDouble() ;
+        double rotation = -xbox.getAxis(XboxAxis.RightStickX).getAsDouble();
+
+        driveY = Math.abs(driveY) > 0.2 ? driveY * Swerve.MAX_SPEED    : 0;
+        driveX = Math.abs(driveX) > 0.2 ? driveX  * Swerve.MAX_SPEED : 0;
+        rotation = Math.abs(rotation) > 0.4 ? rotation * Swerve.MAX_SPEED : 0;
+
+        boolean isFiledRelative = SmartDashboard.getBoolean("Is Field Relative?", false);
+        // this.swerve.drive(driveY /3 ,driveX/3 ,rotation/3, true);
+        this.swerve.drive(driveY/3,driveX/3,rotation/3);
+        SmartDashboard.putNumber("rotation",swerve.getPose2D().getRotation().getRadians());
+        SmartDashboard.putNumber("xTrans",swerve.getPose2D().getTranslation().getX());
+        SmartDashboard.putNumber("yTrans",swerve.getPose2D().getTranslation().getY());
     }
 
     @Override

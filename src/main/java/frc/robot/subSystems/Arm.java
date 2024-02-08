@@ -42,7 +42,7 @@ public class Arm extends Subsystem {
     // Other Constants
     public static final double SPEAKER_ANGLE = 40; // todo: find the right angle
     public static final double AMP_ANGLE = 20; // todo: find the right angle
-    public static final double FLOOR_ANGLE = -4.8;
+    public static final double FLOOR_ANGLE = -8.7;
 
     private static final double SLOW_SPEED_DOWN = -0.1;
     private static final double SLOW_SPEED_UP = 0.2;

@@ -29,7 +29,8 @@ public class ShooterAMP extends ActionBase {
     public void execute(ActionControl actionControl) {
             SmartDashboard.putBoolean("AMPBool", true);
         shooter.shootAmp();
-        intake.takeIn();
+        if(shooter.gotToTarget(ShooterSystem.SPEED_TARGET_AMP))
+            intake.takeIn();
     }
 
     @Override
