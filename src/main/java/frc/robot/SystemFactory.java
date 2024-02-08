@@ -6,6 +6,8 @@ import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import frc.robot.subSystems.Arm;
 import frc.robot.subSystems.Intake;
 
 import frc.robot.subSystems.ShooterSystem;

@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subSystems;
 
 import com.flash3388.flashlib.robot.RunningRobot;
 import com.flash3388.flashlib.scheduling.Subsystem;
@@ -8,7 +8,7 @@ import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.LimelightHelpers;
+import frc.robot.LimelightHelpers.LimelightHelpers;
 
 import java.util.Optional;
 

@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subSystems;
 
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.flash3388.flashlib.robot.RunningRobot;
@@ -39,7 +39,7 @@ public class Swerve extends Subsystem {
     private PidController pid;
 
     private SwerveDriveOdometry odometer;
-    private frc.robot.subsystems.Limelight limelight = new frc.robot.subsystems.Limelight(this);
+    private frc.robot.subSystems.Limelight limelight = new frc.robot.subSystems.Limelight(this);
     private final Field2d field2d = new Field2d();
 
 
