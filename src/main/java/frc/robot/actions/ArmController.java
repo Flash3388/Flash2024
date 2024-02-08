@@ -32,7 +32,7 @@ public class ArmController extends ActionBase {
             if (lastSetPoint != Double.MIN_VALUE) {
                 timer.reset();
                 timer.start();
-                arm.pidReset();
+                arm.resetPID();
             } else {
                 timer.stop();
                 arm.stopMotors();
