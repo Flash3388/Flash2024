@@ -41,21 +41,20 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     public Robot(FrcRobotControl robotControl) {
         super(robotControl);
         this.arm = SystemFactory.createArm();
-
-        arm.setDefaultAction(new ArmController(arm));
         swerve = SystemFactory.createSwerveSystem();
         intake = SystemFactory.createIntake();
         shooter = SystemFactory.createShooter();
         xbox = getHidInterface().newXboxController(RobotMap.XBOX);
         limelight = new Limelight(swerve);
+
         xbox.getButton(XboxButton.X).whenActive(new LimelightAutoAlign(limelight,swerve));
 
-       // xboxController.getButton(XboxButton.X).whileActive(new ShooterSpeaker(shooter));
-        xbox.getButton(XboxButton.A).whileActive(new ShooterAMP(shooter));
-   //     xboxController.getButton(XboxButton.Y).whileActive(new ReverseShooter(shooter));
+        xbox.getDpad().up().whileActive(new ShooterSpeaker(shooter, intake));
+        xbox.getButton(XboxButton.A).whileActive(new ShooterAMP(shooter, intake));
+        xbox.getButton(XboxButton.Y).whileActive(new ReverseShooter(shooter));
         xbox.getButton(XboxButton.Y).whileActive(new TakeOut(intake));
         xbox.getButton(XboxButton.B).whenActive(new TakeIn(intake));
-
+        arm.setDefaultAction(new ArmController(arm));
     }
 
     @Override
@@ -95,19 +94,18 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
     @Override
     public void autonomousInit() {
-        arm.resetPID();
+
 
     }
 
     @Override
     public void autonomousPeriodic() {
-        double setPoint = SmartDashboard.getNumber("set point A", 20);
-        arm.setSetPointAngle(setPoint);
+
     }
 
     @Override
     public void testInit() {
-
+        arm.resetPID();
     }
 
     @Override
@@ -118,6 +116,9 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
         double distance = limelight.getDistanceToTarget();
         SmartDashboard.putNumber("distance",distance); //it may not work 100% accuratly, i need to tune it when i'm in the room
+
+        double setPoint = SmartDashboard.getNumber("set point A", 20);
+        arm.setSetPointAngle(setPoint);
     }
 
     @Override
