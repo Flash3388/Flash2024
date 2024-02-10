@@ -32,7 +32,7 @@ public class ShooterSystem extends Subsystem {
 
 
 
-    public static final double SPEED_TARGET_SPEAKER = 3000;
+    public static final double SPEED_TARGET_SPEAKER = 3650;
     public static final double SPEED_TARGET_AMP = 2000;
 
     public ShooterSystem(CANSparkMax rightEC, CANSparkMax leftEC){

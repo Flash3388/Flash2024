@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 public class Intake extends Subsystem {
     private CANSparkMax motor;
     private final static double INTAKE_SPEED = 0.5;
-    private static final double SHOOT_SPEED = 0.7;
+    private static final double SHOOT_SPEED = 0.9;
     private DigitalInput in;
 
     public Intake(CANSparkMax motor,  DigitalInput digitalInput){

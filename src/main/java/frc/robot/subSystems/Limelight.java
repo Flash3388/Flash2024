@@ -29,7 +29,7 @@ public class Limelight extends Subsystem {
     public void setPipline(int n){
         table.getEntry("pipeline").setValue(n);
     }
-    public double getXAngleToTarget() {
+    public double getXAngleToTarget() {////
         //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
         if (isThereTarget()) {
             cameraPoseTargetSpace = LimelightHelpers.getCameraPose_TargetSpace("limelight-banana");
@@ -42,6 +42,20 @@ public class Limelight extends Subsystem {
         }
         return 0;
     }
+    public double getYAngleToTarget() {////
+        //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
+        if (isThereTarget()) {
+            SmartDashboard.putNumber("ty", table.getEntry("ty").getDouble(0.0));
+
+            return table.getEntry("ty").getDouble(0.0);
+
+            // return table.getEntry("tx").getDouble(0.0);
+        }
+        return 0;
+    }
+
+
+
     public double getDistanceToTarget() {
         //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
         if (isThereTarget()) {

@@ -6,6 +6,8 @@ import com.flash3388.flashlib.frc.robot.base.iterative.IterativeFrcRobot;
 import com.flash3388.flashlib.hid.XboxAxis;
 import com.flash3388.flashlib.hid.XboxButton;
 import com.flash3388.flashlib.hid.XboxController;
+import com.flash3388.flashlib.scheduling.actions.Action;
+import com.flash3388.flashlib.scheduling.actions.Actions;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.actions.*;
@@ -25,6 +27,8 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.actions.ArmController;
 import frc.robot.subSystems.Arm;
+
+import javax.swing.*;
 
 public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobot {
     private Swerve swerve;
@@ -47,7 +51,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         limelight = new Limelight(swerve);
 
         xbox.getButton(XboxButton.X).whenActive(new LimelightAutoAlign(limelight,swerve));
-
+        xbox.getDpad().down().whenActive(Actions.instant(() -> arm.setPositioningNotControlled()));
         xbox.getDpad().up().whileActive(new ShooterSpeaker(shooter, intake));
         xbox.getButton(XboxButton.A).whileActive(new ShooterAMP(shooter, intake));
         xbox.getButton(XboxButton.Y).whileActive(new ReverseShooter(shooter));
@@ -101,6 +105,10 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
         double distance = limelight.getDistanceToTarget();
         SmartDashboard.putNumber("distance",distance); //it may not work 100% accuratly, i need to tune it when i'm in the room
+
+
+        double actud= Math.cos((limelight.getYAngleToTarget()+25)/distance);
+        SmartDashboard.putNumber("actual distance",actud); //it may not work 100% accuratly, i need to tune it when i'm in the room
 
         double setPoint = SmartDashboard.getNumber("set point A", Arm.FLOOR_ANGLE);
         arm.setSetPointAngle(setPoint);
