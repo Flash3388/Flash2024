@@ -4,6 +4,7 @@ import com.flash3388.flashlib.scheduling.ActionControl;
 import com.flash3388.flashlib.scheduling.FinishReason;
 import com.flash3388.flashlib.scheduling.actions.ActionBase;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subSystems.Arm;
 
 public class ArmController extends ActionBase {
@@ -21,11 +22,13 @@ public class ArmController extends ActionBase {
 
     @Override
     public void initialize(ActionControl control) {
-        lastSetPoint = arm.getSetPointAngle() - 1;
+        lastSetPoint = arm.getSetPointAngle() - 1; // what if I stop this action with setPositioningNotControlled and then returns to it?
+        // is it going to throw an error due to the minValue - 1?
     }
 
     @Override
     public void execute(ActionControl control) {
+
         if(arm.getSetPointAngle() != lastSetPoint){
             lastSetPoint = arm.getSetPointAngle();
 
@@ -47,7 +50,9 @@ public class ArmController extends ActionBase {
             }
         }
 
+        SmartDashboard.putNumber("Time counted", timer.get());
         // todo: maybe support stall to manually maintain position
+        // doing that with constant speed and updating the set point angle to the current angle
     }
 
     @Override

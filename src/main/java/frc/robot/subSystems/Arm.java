@@ -31,23 +31,22 @@ public class Arm extends Subsystem {
 
     private final CANSparkMax master;
     private final CANSparkMax follower;
-    private ArmFeedforward motorFeedForward;
     private final DutyCycleEncoder absEncoder;
     private PidController pid;
 
 
-    private static final double STABLE_ERROR = 0.5;
+    private static final double STABLE_ERROR = 2;
     private static final double STABLE_OUTPUT = 0.1;
 
     // Other Constants
     public static final double SPEAKER_ANGLE = 40; // todo: find the right angle
     public static final double AMP_ANGLE = 20; // todo: find the right angle
-    public static final double FLOOR_ANGLE = -8.7; // the floor angle
+    public static final double FLOOR_ANGLE = -6.5; // the floor angle
 
     private static final double SLOW_SPEED_DOWN = -0.1;
     private static final double SLOW_SPEED_UP = 0.2;
 
-    public static final double MOTOR_SAFEGUARD_TIMEOUT_IN_SECONDS = 120.0;
+    public static final double MOTOR_SAFEGUARD_TIMEOUT_IN_SECONDS = 100.0;
 
     private static final double GEAR_RATIO = 1/70.0;
 
@@ -71,7 +70,7 @@ public class Arm extends Subsystem {
         SmartDashboard.putNumber("ARM Max Velocity", MAX_VELOCITY);
         SmartDashboard.putNumber("ARM Max Acceleration", MAX_ACCELERATION);
 
-        SmartDashboard.putNumber("set point A", 20);
+        SmartDashboard.putNumber("set point A", FLOOR_ANGLE);
 
 
         pid = PidController.newNamedController("drive", KP, KI, KD, 0);
@@ -79,6 +78,10 @@ public class Arm extends Subsystem {
 
         master.setSmartCurrentLimit(80);
         follower.setSmartCurrentLimit(80);
+
+
+        master.setIdleMode(CANSparkBase.IdleMode.kBrake);
+        follower.setIdleMode(CANSparkBase.IdleMode.kBrake);
     }
 
     public void moveToAngle(double angle){
@@ -138,12 +141,17 @@ public class Arm extends Subsystem {
     }
 
     public void setSetPointAngle(double setPointAngle) {
-        setPointAngle = ExtendedMath.constrain(setPointAngle, FLOOR_ANGLE, 65);
-        this.setPointAngle = setPointAngle;
+        if(setPointAngle == Double.MIN_VALUE)
+            this.setPointAngle = setPointAngle;
+        else {
+            setPointAngle = ExtendedMath.constrain(setPointAngle, FLOOR_ANGLE, 65);
+            this.setPointAngle = setPointAngle;
+        }
     }
 
     public void setPositioningNotControlled() {
         setSetPointAngle(Double.MIN_VALUE);
+        SmartDashboard.putNumber("set point A", Double.MIN_VALUE);
     }
 
     public boolean isPositioningControlled() {
