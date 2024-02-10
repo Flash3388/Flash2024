@@ -128,17 +128,17 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         swerve.updateOdometer();
 
 
-       PowerDistribution a = new PowerDistribution(); //
+       PowerDistribution a = new PowerDistribution(1, PowerDistribution.ModuleType.kRev);
        // module – The CAN ID of the PDP/PDH. moduleType – Module type (CTRE or REV
 
         double currentMaster = a.getCurrent(18);
         double currentFollower = a.getCurrent(19);
 
-        if (Math.abs(currentMaster - currentFollower) > 2) {
+        if (Math.abs(currentMaster - currentFollower) > 3) {
             DriverStation.reportWarning("Current difference between arm master and follower", false);
         }
 
-        */
+
     }
 
     @Override
