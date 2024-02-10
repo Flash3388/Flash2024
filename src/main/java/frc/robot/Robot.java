@@ -9,6 +9,8 @@ import com.flash3388.flashlib.hid.XboxController;
 import com.flash3388.flashlib.scheduling.actions.Action;
 import com.flash3388.flashlib.scheduling.actions.Actions;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.actions.*;
 import frc.robot.subSystems.Intake;
@@ -121,9 +123,22 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
     @Override
     public void robotPeriodic() {
-       arm.print();
+        arm.print();
         limelight.updateRobotPositionByAprilTag();
         swerve.updateOdometer();
+
+
+       PowerDistribution a = new PowerDistribution(); //
+       // module – The CAN ID of the PDP/PDH. moduleType – Module type (CTRE or REV
+
+        double currentMaster = a.getCurrent(18);
+        double currentFollower = a.getCurrent(19);
+
+        if (Math.abs(currentMaster - currentFollower) > 2) {
+            DriverStation.reportWarning("Current difference between arm master and follower", false);
+        }
+
+        */
     }
 
     @Override
