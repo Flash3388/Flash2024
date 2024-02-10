@@ -31,22 +31,28 @@ public class Limelight extends Subsystem {
     }
     public double getXAngleToTarget() {
         //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
-        cameraPoseTargetSpace = LimelightHelpers.getCameraPose_TargetSpace("limelight-banana");
-        SmartDashboard.putNumber("cameraPtoTRotation",cameraPoseTargetSpace[5]);
-        SmartDashboard.putNumber("tx",table.getEntry("tx").getDouble(0.0));
+        if (isThereTarget()) {
+            cameraPoseTargetSpace = LimelightHelpers.getCameraPose_TargetSpace("limelight-banana");
+            SmartDashboard.putNumber("cameraPtoTRotation", cameraPoseTargetSpace[5]);
+            SmartDashboard.putNumber("tx", table.getEntry("tx").getDouble(0.0));
 
-        return cameraPoseTargetSpace[5];
+            return cameraPoseTargetSpace[5];
 
-        // return table.getEntry("tx").getDouble(0.0);
+            // return table.getEntry("tx").getDouble(0.0);
+        }
+        return 0;
     }
-    public double getDistanceToTarget(){
+    public double getDistanceToTarget() {
         //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
-        double distance = Math.sqrt(
-                Math.pow(cameraPoseTargetSpace[0],2) +
-                        Math.pow(cameraPoseTargetSpace[1],2) +
-                        Math.pow(cameraPoseTargetSpace[2],2)
-        );
-        return distance;
+        if (isThereTarget()) {
+            double distance = Math.sqrt(
+                    Math.pow(cameraPoseTargetSpace[0], 2) +
+                            Math.pow(cameraPoseTargetSpace[1], 2) +
+                            Math.pow(cameraPoseTargetSpace[2], 2)
+            );
+            return distance;
+        }
+        return 0;
     }
 
     public boolean isThereTarget(){
