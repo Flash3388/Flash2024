@@ -53,6 +53,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xbox.getButton(XboxButton.Y).whileActive(new ReverseShooter(shooter));
         xbox.getButton(XboxButton.Y).whileActive(new TakeOut(intake));
         xbox.getButton(XboxButton.B).whenActive(new TakeIn(intake));
+        swerve.setDefaultAction(new DriveWithXbox(swerve, xbox));
         arm.setDefaultAction(new ArmController(arm));
     }
 
@@ -97,29 +98,17 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     public void testPeriodic() {
         double angle2T = limelight.getXAngleToTarget();
         SmartDashboard.putNumber("angle2T",angle2T); //check if the value is correct-it may be the wrong one, so switch
-        // to cameraPoseTargetSpace[4]
 
         double distance = limelight.getDistanceToTarget();
         SmartDashboard.putNumber("distance",distance); //it may not work 100% accuratly, i need to tune it when i'm in the room
 
-        double setPoint = SmartDashboard.getNumber("set point A", 20);
+        double setPoint = SmartDashboard.getNumber("set point A", Arm.FLOOR_ANGLE);
         arm.setSetPointAngle(setPoint);
 
 
-        double driveY = -xbox.getAxis(XboxAxis.LeftStickY).getAsDouble() ;
-        double driveX = -xbox.getAxis(XboxAxis.LeftStickX).getAsDouble() ;
-        double rotation = -xbox.getAxis(XboxAxis.RightStickX).getAsDouble();
-
-        driveY = Math.abs(driveY) > 0.2 ? driveY * Swerve.MAX_SPEED    : 0;
-        driveX = Math.abs(driveX) > 0.2 ? driveX  * Swerve.MAX_SPEED : 0;
-        rotation = Math.abs(rotation) > 0.4 ? rotation * Swerve.MAX_SPEED : 0;
-
-        boolean isFiledRelative = SmartDashboard.getBoolean("Is Field Relative?", false);
-        // this.swerve.drive(driveY /3 ,driveX/3 ,rotation/3, true);
-        this.swerve.drive(driveY/3,driveX/3,rotation/3);
-        SmartDashboard.putNumber("rotation",swerve.getPose2D().getRotation().getRadians());
+       /* SmartDashboard.putNumber("rotation",swerve.getPose2D().getRotation().getRadians());
         SmartDashboard.putNumber("xTrans",swerve.getPose2D().getTranslation().getX());
-        SmartDashboard.putNumber("yTrans",swerve.getPose2D().getTranslation().getY());
+        SmartDashboard.putNumber("yTrans",swerve.getPose2D().getTranslation().getY());*/
     }
 
     @Override
