@@ -96,6 +96,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     @Override
     public void testInit() {
         arm.resetPID();
+        shooter.resetI();
     }
 
     @Override
@@ -112,11 +113,15 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
         double setPoint = SmartDashboard.getNumber("set point A", Arm.FLOOR_ANGLE);
         arm.setSetPointAngle(setPoint);
+        SmartDashboard.putBoolean("see target",limelight.isThereTarget());
 
 
        /* SmartDashboard.putNumber("rotation",swerve.getPose2D().getRotation().getRadians());
         SmartDashboard.putNumber("xTrans",swerve.getPose2D().getTranslation().getX());
         SmartDashboard.putNumber("yTrans",swerve.getPose2D().getTranslation().getY());*/
+
+        shooter.changePidValues();
+        shooter.setVelocity(SmartDashboard.getNumber("set point velocity", 0));
     }
 
     @Override
@@ -124,6 +129,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
        arm.print();
         limelight.updateRobotPositionByAprilTag();
         swerve.updateOdometer();
+        shooter.print();
     }
 
     @Override

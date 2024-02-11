@@ -45,7 +45,10 @@ public class Limelight extends Subsystem {
     public double getYAngleToTarget() {////
         //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
         if (isThereTarget()) {
+            cameraPoseTargetSpace = LimelightHelpers.getCameraPose_TargetSpace("limelight-banana");
+
             SmartDashboard.putNumber("ty", table.getEntry("ty").getDouble(0.0));
+            SmartDashboard.putNumber("ty 4", cameraPoseTargetSpace[4]);
 
             return table.getEntry("ty").getDouble(0.0);
 
