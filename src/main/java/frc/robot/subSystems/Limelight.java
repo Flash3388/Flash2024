@@ -42,18 +42,32 @@ public class Limelight extends Subsystem {
         }
         return 0;
     }
-    public double getYAngleToTarget() {////
+    public double getYAngleToTarget() {
         //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
         if (isThereTarget()) {
+            cameraPoseTargetSpace = LimelightHelpers.getCameraPose_TargetSpace("limelight-banana");
+            SmartDashboard.putNumber("cameraPtoTRotation 4", cameraPoseTargetSpace[4]);
             SmartDashboard.putNumber("ty", table.getEntry("ty").getDouble(0.0));
 
-            return table.getEntry("ty").getDouble(0.0);
-
-            // return table.getEntry("tx").getDouble(0.0);
+            return cameraPoseTargetSpace[4];
         }
         return 0;
     }
+    public double getTargetHeight() {
+        //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
+        if (isThereTarget()) {
+            double height = 0;
+            double aprilTagId = LimelightHelpers.getFiducialID("limelight-banana");
+            SmartDashboard.putNumber("aprilTagId",aprilTagId);
+            Optional<Pose3d> apriltagPose = layout.getTagPose((int)(aprilTagId)); //position of apriltag
+            if (apriltagPose.isPresent()){
+                 height = apriltagPose.get().getZ();
+            }
 
+            return height;
+        }
+        return 0;
+    }
 
 
     public double getDistanceToTarget() {
@@ -68,6 +82,7 @@ public class Limelight extends Subsystem {
         }
         return 0;
     }
+
 
     public boolean isThereTarget(){
         return LimelightHelpers.getTV("limelight-banana"); //tv=1.0 means a target is detected

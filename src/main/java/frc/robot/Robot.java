@@ -39,6 +39,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     private Limelight limelight;
 
     private final XboxController xbox;
+    PowerDistribution a = new PowerDistribution(1, PowerDistribution.ModuleType.kRev);
 
 
    private Arm arm;
@@ -61,6 +62,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xbox.getButton(XboxButton.B).whenActive(new TakeIn(intake));
         swerve.setDefaultAction(new DriveWithXbox(swerve, xbox));
         arm.setDefaultAction(new ArmController(arm));
+
+        limelight.setPipline(2);
     }
 
     @Override
@@ -109,8 +112,15 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         SmartDashboard.putNumber("distance",distance); //it may not work 100% accuratly, i need to tune it when i'm in the room
 
 
-        double actud= Math.cos((limelight.getYAngleToTarget()+25)/distance);
+        double actud= Math.cos((limelight.getYAngleToTarget()+65)/distance);
         SmartDashboard.putNumber("actual distance",actud); //it may not work 100% accuratly, i need to tune it when i'm in the room
+
+
+        double cameraHeight = 0.52;
+        double actualDis = Math.sqrt(Math.pow(distance,2) - Math.pow(limelight.getTargetHeight() - cameraHeight,2));
+
+        SmartDashboard.putNumber("hopefully real distance",actualDis); //it may not work 100% accuratly, i need to tune it when i'm in the room
+
 
         double setPoint = SmartDashboard.getNumber("set point A", Arm.FLOOR_ANGLE);
         arm.setSetPointAngle(setPoint);
@@ -128,15 +138,17 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         swerve.updateOdometer();
 
 
-       PowerDistribution a = new PowerDistribution(1, PowerDistribution.ModuleType.kRev);
-       // module – The CAN ID of the PDP/PDH. moduleType – Module type (CTRE or REV
 
+       // module – The CAN ID of the PDP/PDH. moduleType – Module type (CTRE or REV
+/*
         double currentMaster = a.getCurrent(18);
         double currentFollower = a.getCurrent(19);
 
         if (Math.abs(currentMaster - currentFollower) > 3) {
             DriverStation.reportWarning("Current difference between arm master and follower", false);
         }
+
+ */
 
 
     }
