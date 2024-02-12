@@ -102,6 +102,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     public void testInit() {
         arm.resetPID();
         shooter.resetI();
+        limelight.init();
     }
 
     @Override
@@ -110,7 +111,9 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         SmartDashboard.putNumber("angle2T",angle2T); //check if the value is correct-it may be the wrong one, so switch
 
         double distance = limelight.getDistanceToTarget();
+        double avgDistance = limelight.getAvgDistance();
         SmartDashboard.putNumber("distance",distance); //it may not work 100% accuratly, i need to tune it when i'm in the room
+        SmartDashboard.putNumber("avg Distance",avgDistance); //it may not work 100% accuratly, i need to tune it when i'm in the room
 
 
         double actud= Math.cos((limelight.getYAngleToTarget()+65)/distance);

@@ -84,23 +84,36 @@ public class Limelight extends Subsystem {
         return 0;
     }
     private int Window_size =10;
-    double[] readings = new double[Window_size];
-    int numOfReadings=0;
+    private double[] readings = new double[Window_size];
+    public int numOfReadings=0;
+    public double sum = 0;
+
+    public void init() {
+        numOfReadings = 0;
+        sum = 0;
+    }
     public double getAvgDistance(){
 
         double reading=getDistanceToTarget();
         if(reading!=0){
+            sum += reading;
+            if (numOfReadings > Window_size) {
+                sum -= readings[numOfReadings % 10];
+            }
             readings[numOfReadings%10]=reading;
+
             numOfReadings++;
         }
-        int loopSize = numOfReadings;
-        if(numOfReadings>Window_size){
-            loopSize = Window_size;
+        int loopSize = Window_size;
+        if(numOfReadings<=Window_size){
+            loopSize = numOfReadings;
         }
-        double sum = 0;
-        for (int i = 0; i < loopSize; i++) {
-            sum+=readings[i];
+
+        sum = 0;
+        for (int i = 0; i < loopSize ; i++) {
+            sum += readings[i];
         }
+
         double avg=0;
         if(loopSize>0){
             avg=sum/loopSize;
