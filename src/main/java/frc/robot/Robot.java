@@ -7,6 +7,7 @@ import com.flash3388.flashlib.hid.XboxAxis;
 import com.flash3388.flashlib.hid.XboxButton;
 import com.flash3388.flashlib.hid.XboxController;
 import com.flash3388.flashlib.scheduling.actions.Action;
+import com.flash3388.flashlib.scheduling.actions.ActionGroup;
 import com.flash3388.flashlib.scheduling.actions.Actions;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -52,13 +53,15 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
         xbox.getButton(XboxButton.X).whenActive(new LimelightAutoAlign(limelight,swerve));
         xbox.getDpad().down().whenActive(Actions.instant(() -> arm.setPositioningNotControlled()));
-        xbox.getDpad().up().whenActive(new ShooterSpeaker(shooter, intake));
+        xbox.getDpad().up().whenActive(new ShooterSpeaker(shooter, intake, arm));
         xbox.getButton(XboxButton.A).whileActive(new ShooterAMP(shooter, intake));
         xbox.getButton(XboxButton.Y).whileActive(new ReverseShooter(shooter));
         xbox.getButton(XboxButton.Y).whileActive(new TakeOut(intake));
         xbox.getButton(XboxButton.B).whenActive(new TakeIn(intake));
         swerve.setDefaultAction(new DriveWithXbox(swerve, xbox));
         arm.setDefaultAction(new ArmController(arm));
+
+        ActionGroup shootSpeaker = new TakeIn(intake).andThen(new ShooterSpeaker(shooter, intake, arm));
     }
 
     @Override
@@ -116,7 +119,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         SmartDashboard.putNumber("hopefully real distance",actualDis);
 
         double setPoint = SmartDashboard.getNumber("set point A", Arm.FLOOR_ANGLE);
-        arm.setSetPointAngle(setPoint);
+        arm.setSetPointAngle(calculateAngle(setPoint));
+
         SmartDashboard.putBoolean("see target",limelight.isThereTarget());
 
        /* SmartDashboard.putNumber("rotation",swerve.getPose2D().getRotation().getRadians());
@@ -125,6 +129,17 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
         shooter.changePidValues();
       //  shooter.setVelocity(SmartDashboard.getNumber("set point velocity", 0));
+    }
+    public double calculateAngle(double distance){
+        if(distance == Double.MIN_VALUE) {
+            arm.setPositioningNotControlled();
+            return Double.MIN_VALUE;
+        }
+        else {
+            double angle = -1.05 * Math.pow(distance, 2) + 11.2 * distance + 18.4;
+            return angle;
+        }
+
     }
 
 
