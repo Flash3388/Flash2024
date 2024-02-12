@@ -73,6 +73,7 @@ public class Limelight extends Subsystem {
     public double getDistanceToTarget() {
         //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
         if (isThereTarget()) {
+            cameraPoseTargetSpace = LimelightHelpers.getCameraPose_TargetSpace("limelight-banana");
             double distance = Math.sqrt(
                     Math.pow(cameraPoseTargetSpace[0], 2) +
                             Math.pow(cameraPoseTargetSpace[1], 2) +
@@ -82,7 +83,6 @@ public class Limelight extends Subsystem {
         }
         return 0;
     }
-
 
     public boolean isThereTarget(){
         return LimelightHelpers.getTV("limelight-banana"); //tv=1.0 means a target is detected
