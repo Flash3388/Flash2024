@@ -116,7 +116,9 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         SmartDashboard.putNumber("actual distance",actud); //it may not work 100% accuratly, i need to tune it when i'm in the room
 
 
-        double cameraHeight = 0.52;
+        double cameraHeight = 0.555;
+        SmartDashboard.putNumber("target height",limelight.getTargetHeight()); //it may not work 100% accuratly, i need to tune it when i'm in the room
+
         double actualDis = Math.sqrt(Math.pow(distance,2) - Math.pow(limelight.getTargetHeight() - cameraHeight,2));
 
         SmartDashboard.putNumber("hopefully real distance",actualDis); //it may not work 100% accuratly, i need to tune it when i'm in the room
