@@ -83,6 +83,31 @@ public class Limelight extends Subsystem {
         }
         return 0;
     }
+    private int Window_size =10;
+    double[] readings = new double[Window_size];
+    int numOfReadings=0;
+    public double getAvgDistance(){
+
+        double reading=getDistanceToTarget();
+        if(reading!=0){
+            readings[numOfReadings%10]=reading;
+            numOfReadings++;
+        }
+        int loopSize = numOfReadings;
+        if(numOfReadings>Window_size){
+            loopSize = Window_size;
+        }
+        double sum = 0;
+        for (int i = 0; i < loopSize; i++) {
+            sum+=readings[i];
+        }
+        double avg=0;
+        if(loopSize>0){
+            avg=sum/loopSize;
+        }
+
+        return avg;
+    }
 
     public boolean isThereTarget(){
         return LimelightHelpers.getTV("limelight-banana"); //tv=1.0 means a target is detected
