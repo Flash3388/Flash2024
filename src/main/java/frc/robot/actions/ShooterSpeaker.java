@@ -31,6 +31,10 @@ public class ShooterSpeaker extends ActionBase {
         shooter.shootSpeaker();
         if(shooter.gotToTarget(ShooterSystem.SPEED_TARGET_SPEAKER))
             intake.shoot();
+
+        if(!intake.isIN()){
+            actionControl.finish();
+        }
     }
 
     @Override

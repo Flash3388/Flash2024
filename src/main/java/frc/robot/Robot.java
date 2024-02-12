@@ -52,7 +52,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
         xbox.getButton(XboxButton.X).whenActive(new LimelightAutoAlign(limelight,swerve));
         xbox.getDpad().down().whenActive(Actions.instant(() -> arm.setPositioningNotControlled()));
-        xbox.getDpad().up().whileActive(new ShooterSpeaker(shooter, intake));
+        xbox.getDpad().up().whenActive(new ShooterSpeaker(shooter, intake));
         xbox.getButton(XboxButton.A).whileActive(new ShooterAMP(shooter, intake));
         xbox.getButton(XboxButton.Y).whileActive(new ReverseShooter(shooter));
         xbox.getButton(XboxButton.Y).whileActive(new TakeOut(intake));
@@ -119,7 +119,6 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         arm.setSetPointAngle(setPoint);
         SmartDashboard.putBoolean("see target",limelight.isThereTarget());
 
-
        /* SmartDashboard.putNumber("rotation",swerve.getPose2D().getRotation().getRadians());
         SmartDashboard.putNumber("xTrans",swerve.getPose2D().getTranslation().getX());
         SmartDashboard.putNumber("yTrans",swerve.getPose2D().getTranslation().getY());*/
@@ -127,6 +126,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         shooter.changePidValues();
       //  shooter.setVelocity(SmartDashboard.getNumber("set point velocity", 0));
     }
+
+
 
     @Override
     public void robotPeriodic() {
