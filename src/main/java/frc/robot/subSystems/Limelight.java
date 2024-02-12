@@ -42,7 +42,22 @@ public class Limelight extends Subsystem {
         }
         return 0;
     }
-    public double getYAngleToTarget() {
+    public double getTargetHeight() {
+        //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
+        if (isThereTarget()) {
+            double height = 0;
+            double aprilTagId = LimelightHelpers.getFiducialID("limelight-banana");
+            SmartDashboard.putNumber("aprilTagId",aprilTagId);
+            Optional<Pose3d> apriltagPose = layout.getTagPose((int)(aprilTagId)); //position of apriltag
+            if (apriltagPose.isPresent()){
+                height = apriltagPose.get().getZ();
+            }
+
+            return height;
+        }
+        return 0;
+    }
+    public double getYAngleToTarget() {////
         //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
         if (isThereTarget()) {
             cameraPoseTargetSpace = LimelightHelpers.getCameraPose_TargetSpace("limelight-banana");
@@ -53,28 +68,12 @@ public class Limelight extends Subsystem {
         }
         return 0;
     }
-    public double getTargetHeight() {
-        //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
-        if (isThereTarget()) {
-            double height = 0;
-            double aprilTagId = LimelightHelpers.getFiducialID("limelight-banana");
-            SmartDashboard.putNumber("aprilTagId",aprilTagId);
-            Optional<Pose3d> apriltagPose = layout.getTagPose((int)(aprilTagId)); //position of apriltag
-            if (apriltagPose.isPresent()){
-                 height = apriltagPose.get().getZ();
-            }
 
-            return height;
-        }
-        return 0;
-    }
 
 
     public double getDistanceToTarget() {
         //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
-
         if (isThereTarget()) {
-            cameraPoseTargetSpace = LimelightHelpers.getCameraPose_TargetSpace("limelight-banana");
             double distance = Math.sqrt(
                     Math.pow(cameraPoseTargetSpace[0], 2) +
                             Math.pow(cameraPoseTargetSpace[1], 2) +

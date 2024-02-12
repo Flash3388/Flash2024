@@ -55,7 +55,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
         xbox.getButton(XboxButton.X).whenActive(new LimelightAutoAlign(limelight,swerve));
         xbox.getDpad().down().whenActive(Actions.instant(() -> arm.setPositioningNotControlled()));
-        xbox.getDpad().up().whileActive(new ShooterSpeaker(shooter, intake));
+        xbox.getDpad().up().whenActive(new ShooterSpeaker(shooter, intake));
         xbox.getButton(XboxButton.A).whileActive(new ShooterAMP(shooter, intake));
         xbox.getButton(XboxButton.Y).whileActive(new ReverseShooter(shooter));
         xbox.getButton(XboxButton.Y).whileActive(new TakeOut(intake));
@@ -101,6 +101,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     @Override
     public void testInit() {
         arm.resetPID();
+        shooter.resetI();
     }
 
     @Override
@@ -115,29 +116,30 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         double actud= Math.cos((limelight.getYAngleToTarget()+65)/distance);
         SmartDashboard.putNumber("actual distance",actud); //it may not work 100% accuratly, i need to tune it when i'm in the room
 
-
-        double cameraHeight = 0.555;
-        SmartDashboard.putNumber("target height",limelight.getTargetHeight()); //it may not work 100% accuratly, i need to tune it when i'm in the room
-
+        double cameraHeight = 0.485;
         double actualDis = Math.sqrt(Math.pow(distance,2) - Math.pow(limelight.getTargetHeight() - cameraHeight,2));
-
-        SmartDashboard.putNumber("hopefully real distance",actualDis); //it may not work 100% accuratly, i need to tune it when i'm in the room
-
+        SmartDashboard.putNumber("hopefully real distance",actualDis);
 
         double setPoint = SmartDashboard.getNumber("set point A", Arm.FLOOR_ANGLE);
         arm.setSetPointAngle(setPoint);
-
+        SmartDashboard.putBoolean("see target",limelight.isThereTarget());
 
        /* SmartDashboard.putNumber("rotation",swerve.getPose2D().getRotation().getRadians());
         SmartDashboard.putNumber("xTrans",swerve.getPose2D().getTranslation().getX());
         SmartDashboard.putNumber("yTrans",swerve.getPose2D().getTranslation().getY());*/
+
+        shooter.changePidValues();
+      //  shooter.setVelocity(SmartDashboard.getNumber("set point velocity", 0));
     }
+
+
 
     @Override
     public void robotPeriodic() {
         arm.print();
         limelight.updateRobotPositionByAprilTag();
         swerve.updateOdometer();
+        shooter.print();
 
 
 

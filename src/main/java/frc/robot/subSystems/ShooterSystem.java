@@ -1,9 +1,6 @@
 package frc.robot.subSystems;
 
-import com.flash3388.flashlib.robot.RunningRobot;
-import com.flash3388.flashlib.robot.control.PidController;
 import com.flash3388.flashlib.scheduling.Subsystem;
-import com.flash3388.flashlib.time.Time;
 import com.jmath.ExtendedMath;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
@@ -15,58 +12,63 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class ShooterSystem extends Subsystem {
     private CANSparkMax rightEC;
     private CANSparkMax leftEC;
-    private RelativeEncoder encoder_1;
-    private RelativeEncoder encoder_2;
+    private RelativeEncoder rightEncoder;
+    private RelativeEncoder leftEncoder;
     private SparkPIDController pidRight;
     private SparkPIDController pidLeft;
-    private final double KP_1 = 1e-7; // we need to find the value
-    private final double KI_1 = 1e-7;
-    private final double KD_1 = 0;
-    private final double KF_1 = 0;
+    private  double KP_RIGHT = 0.0000065; // we need to find the value
+    private  double KI_RIGHT = 0.0000002;
+    private  double KD_RIGHT = 0;
+    private  double KF_RIGHT = 0;
 
-    private final double KP_2 = 1e-7; // we need to find the value
-    private final double KI_2 = 1e-7;
-    private final double KD_2 = 0;
-
-    private final double KF_2 = 0;
-
+    private  double KP_LEFT = 0.0000065; // we need to find the value
+    private  double KI_LEFT = 0.0000002;
+    private  double KD_LEFT = 0;
+    private  double KF_LEFT = 0;
 
 
-    public static final double SPEED_TARGET_SPEAKER = 3650;
+
+    public static final double SPEED_TARGET_SPEAKER = 4000;
     public static final double SPEED_TARGET_AMP = 2000;
 
     public ShooterSystem(CANSparkMax rightEC, CANSparkMax leftEC){
         this.rightEC = rightEC;
         this.leftEC = leftEC;
-        this.encoder_1 = rightEC.getEncoder();
-        this.encoder_2 = leftEC.getEncoder();
+
+        this.rightEncoder = rightEC.getEncoder();
+        this.leftEncoder = leftEC.getEncoder();
+
         this.pidRight = rightEC.getPIDController();
         this.pidLeft = leftEC.getPIDController();
-        SmartDashboard.putNumber("KP 1", KP_1);
-        SmartDashboard.putNumber("KI 1", KI_1);
-        SmartDashboard.putNumber("KD 1", KD_1);
-        SmartDashboard.putNumber("KF 1", KD_1);
 
-        SmartDashboard.putNumber("KP 2", KP_2);
-        SmartDashboard.putNumber("KI 2", KI_2);
-        SmartDashboard.putNumber("KD 2", KD_2);
-        SmartDashboard.putNumber("KF 2", KF_2);
+        SmartDashboard.putNumber("KP RIGHT", KP_RIGHT);
+        SmartDashboard.putNumber("KI RIGHT", KI_RIGHT);
+        SmartDashboard.putNumber("KD RIGHT", KD_RIGHT);
+        SmartDashboard.putNumber("KF RIGHT", KD_RIGHT);
 
-        pidRight.setP(KP_1);
-        pidRight.setI(KI_1);
-        pidRight.setD(KD_1);
-        pidRight.setFF(KF_1);
+        SmartDashboard.putNumber("KP LEFT", KP_LEFT);
+        SmartDashboard.putNumber("KI LEFT", KI_LEFT);
+        SmartDashboard.putNumber("KD LEFT", KD_LEFT);
+        SmartDashboard.putNumber("KF LEFT", KF_LEFT);
 
-        pidLeft.setP(KP_2);
-        pidLeft.setI(KI_2);
-        pidLeft.setD(KD_2);
-        pidLeft.setFF(KF_2);
+        SmartDashboard.putNumber("set point velocity", 0);
+
+        pidRight.setP(KP_RIGHT);
+        pidRight.setI(KI_RIGHT);
+        pidRight.setD(KD_RIGHT);
+        pidRight.setFF(KF_RIGHT);
+
+        pidLeft.setP(KP_LEFT);
+        pidLeft.setI(KI_LEFT);
+        pidLeft.setD(KD_LEFT);
+        pidLeft.setFF(KF_LEFT);
 
         pidRight.setOutputRange(-1,1);
         pidLeft.setOutputRange(-1,1);
 
         rightEC.setIdleMode(CANSparkBase.IdleMode.kCoast);
         leftEC.setIdleMode(CANSparkBase.IdleMode.kCoast);
+
 
     }
 
@@ -102,8 +104,8 @@ public class ShooterSystem extends Subsystem {
     }
 
     public double getSpeed(){
-        SmartDashboard.putNumber("RPM", (encoder_1.getVelocity() + encoder_2.getVelocity()) / 2);
-        return (encoder_1.getVelocity() + encoder_2.getVelocity()) / 2;
+        SmartDashboard.putNumber("RPM", (rightEncoder.getVelocity() + leftEncoder.getVelocity()) / 2);
+        return (rightEncoder.getVelocity() + leftEncoder.getVelocity()) / 2;
     }
 
     public void resetPID(){
@@ -117,8 +119,48 @@ public class ShooterSystem extends Subsystem {
         this.rightEC.stopMotor();
         this.leftEC.stopMotor();
     }
+
     public boolean gotToTarget(double rpmVal){
         return ExtendedMath.constrained(getSpeed(),rpmVal - 100, rpmVal +100);
+    }
+
+    public void print(){
+        SmartDashboard.putNumber("right velocity", rightEncoder.getVelocity());
+        SmartDashboard.putNumber("left velocity", leftEncoder.getVelocity());
+
+    }
+
+    public void changePidValues(){
+        double pR = SmartDashboard.getNumber("KP RIGHT", KP_RIGHT);
+        double iR = SmartDashboard.getNumber("KI RIGHT", KI_RIGHT);
+        double dR = SmartDashboard.getNumber("KD RIGHT", KD_RIGHT);
+
+
+        if((pR != KP_RIGHT)) { pidRight.setP(pR); KP_RIGHT = pR; }
+        if((iR != KI_RIGHT)) { pidRight.setI(iR); KI_RIGHT = iR; }
+        if((dR != KD_RIGHT)) { pidRight.setD(dR); KD_RIGHT = dR; }
+
+
+        double pL = SmartDashboard.getNumber("KP LEFT", KP_LEFT);
+        double iL = SmartDashboard.getNumber("KI LEFT", KI_LEFT);
+        double dL = SmartDashboard.getNumber("KD LEFT", KD_LEFT);
+
+
+        if((pL != KP_LEFT)) { pidLeft.setP(pL); KP_LEFT = pL; }
+        if((iL != KI_LEFT)) { pidLeft.setI(iL); KI_LEFT = iL; }
+        if((dL != KD_LEFT)) { pidLeft.setD(dL); KD_LEFT = dL; }
+
+
+    }
+
+    public void setVelocity(double velocity){
+        pidRight.setReference(velocity, CANSparkBase.ControlType.kVelocity);
+        pidLeft.setReference(velocity, CANSparkBase.ControlType.kVelocity);
+    }
+
+    public void resetI(){
+        pidRight.setIAccum(0);
+        pidLeft.setIAccum(0);
     }
 }
 

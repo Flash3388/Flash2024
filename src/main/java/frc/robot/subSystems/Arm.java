@@ -9,6 +9,7 @@ import com.flash3388.flashlib.robot.control.PidController;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Power;
@@ -46,7 +47,7 @@ public class Arm extends Subsystem {
     private static final double SLOW_SPEED_DOWN = -0.1;
     private static final double SLOW_SPEED_UP = 0.2;
 
-    public static final double MOTOR_SAFEGUARD_TIMEOUT_IN_SECONDS = 100.0;
+    public static final double MOTOR_SAFEGUARD_TIMEOUT_IN_SECONDS = 60.0;
 
     private static final double GEAR_RATIO = 1/70.0;
 
@@ -85,13 +86,14 @@ public class Arm extends Subsystem {
     }
 
     public void moveToAngle(double angle){
+        if(getArmPosition() <= 0){
+            angle = 10;
+        }
 
         double speed = pid.applyAsDouble(getArmPosition(), angle) ;
         speed = ExtendedMath.constrain(speed, -0.5, 0.5);
 
-
         master.set(speed);
-
     }
 
 
@@ -141,10 +143,11 @@ public class Arm extends Subsystem {
     }
 
     public void setSetPointAngle(double setPointAngle) {
+      //  SmartDashboard.putNumber("set point A", setPointAngle);
         if(setPointAngle == Double.MIN_VALUE)
             this.setPointAngle = setPointAngle;
         else {
-            setPointAngle = ExtendedMath.constrain(setPointAngle, FLOOR_ANGLE, 65);
+            setPointAngle = ExtendedMath.constrain(setPointAngle, FLOOR_ANGLE, 100);
             this.setPointAngle = setPointAngle;
         }
     }
