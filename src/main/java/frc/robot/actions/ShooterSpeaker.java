@@ -11,6 +11,7 @@ public class ShooterSpeaker extends ActionBase {
     private ShooterSystem shooter;
     private Intake intake;
 
+
     public ShooterSpeaker(ShooterSystem shooter, Intake intake){
         this.shooter = shooter;
         this.intake = intake;
@@ -36,5 +37,6 @@ public class ShooterSpeaker extends ActionBase {
     public void end(FinishReason reason) {
         shooter.stop();
         intake.stop();
+
     }
 }

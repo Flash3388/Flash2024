@@ -16,19 +16,19 @@ public class ShooterSystem extends Subsystem {
     private RelativeEncoder leftEncoder;
     private SparkPIDController pidRight;
     private SparkPIDController pidLeft;
-    private  double KP_RIGHT = 0.000006; // we need to find the value
+    private  double KP_RIGHT = 0.0000065; // we need to find the value
     private  double KI_RIGHT = 0.0000002;
     private  double KD_RIGHT = 0;
     private  double KF_RIGHT = 0;
 
-    private  double KP_LEFT = 1e-7; // we need to find the value
-    private  double KI_LEFT = 1e-7;
+    private  double KP_LEFT = 0.0000065; // we need to find the value
+    private  double KI_LEFT = 0.0000002;
     private  double KD_LEFT = 0;
     private  double KF_LEFT = 0;
 
 
 
-    public static final double SPEED_TARGET_SPEAKER = 3650;
+    public static final double SPEED_TARGET_SPEAKER = 4000;
     public static final double SPEED_TARGET_AMP = 2000;
 
     public ShooterSystem(CANSparkMax rightEC, CANSparkMax leftEC){
@@ -155,7 +155,7 @@ public class ShooterSystem extends Subsystem {
 
     public void setVelocity(double velocity){
         pidRight.setReference(velocity, CANSparkBase.ControlType.kVelocity);
-        //pidLeft.setReference(velocity, CANSparkBase.ControlType.kVelocity);
+        pidLeft.setReference(velocity, CANSparkBase.ControlType.kVelocity);
     }
 
     public void resetI(){
