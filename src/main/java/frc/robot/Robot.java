@@ -118,7 +118,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         double actualDis = Math.sqrt(Math.pow(distance,2) - Math.pow(limelight.getTargetHeight() - cameraHeight,2));
         SmartDashboard.putNumber("hopefully real distance",actualDis);
 
-        double setPoint = SmartDashboard.getNumber("set point A", Arm.FLOOR_ANGLE);
+        double setPoint = SmartDashboard.getNumber("set point A", Double.MIN_VALUE);
         arm.setSetPointAngle(calculateAngle(setPoint));
 
         SmartDashboard.putBoolean("see target",limelight.isThereTarget());
@@ -131,6 +131,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
       //  shooter.setVelocity(SmartDashboard.getNumber("set point velocity", 0));
     }
     public double calculateAngle(double distance){
+
         if(distance == Double.MIN_VALUE) {
             arm.setPositioningNotControlled();
             return Double.MIN_VALUE;
@@ -143,13 +144,13 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     }
 
 
-
     @Override
     public void robotPeriodic() {
        arm.print();
         limelight.updateRobotPositionByAprilTag();
         swerve.updateOdometer();
         shooter.print();
+        SmartDashboard.putBoolean("IS IN NOTE", intake.isIN());
     }
 
     @Override

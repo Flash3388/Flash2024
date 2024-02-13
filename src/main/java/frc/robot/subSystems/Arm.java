@@ -71,7 +71,7 @@ public class Arm extends Subsystem {
         SmartDashboard.putNumber("ARM Max Velocity", MAX_VELOCITY);
         SmartDashboard.putNumber("ARM Max Acceleration", MAX_ACCELERATION);
 
-        SmartDashboard.putNumber("set point A", FLOOR_ANGLE);
+        SmartDashboard.putNumber("set point A", Double.MIN_VALUE);
 
 
         pid = PidController.newNamedController("drive", KP, KI, KD, 0);
