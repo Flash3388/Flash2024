@@ -36,7 +36,7 @@ public class Arm extends Subsystem {
     private PidController pid;
 
 
-    private static final double STABLE_ERROR = 2;
+    private static final double STABLE_ERROR = 1;
     private static final double STABLE_OUTPUT = 0.1;
 
     // Other Constants
@@ -71,11 +71,13 @@ public class Arm extends Subsystem {
         SmartDashboard.putNumber("ARM Max Velocity", MAX_VELOCITY);
         SmartDashboard.putNumber("ARM Max Acceleration", MAX_ACCELERATION);
 
-        SmartDashboard.putNumber("set point A", FLOOR_ANGLE);
+        SmartDashboard.putNumber("set point A", Double.MIN_VALUE);
 
 
         pid = PidController.newNamedController("drive", KP, KI, KD, 0);
         pid.setIZone(I_ZONE);
+
+        setPointAngle = FLOOR_ANGLE;
 
         master.setSmartCurrentLimit(80);
         follower.setSmartCurrentLimit(80);
