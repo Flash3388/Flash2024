@@ -10,6 +10,8 @@ import com.flash3388.flashlib.scheduling.actions.Action;
 import com.flash3388.flashlib.scheduling.actions.ActionGroup;
 import com.flash3388.flashlib.scheduling.actions.Actions;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.actions.*;
 import frc.robot.subSystems.Intake;
@@ -38,6 +40,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     private Limelight limelight;
 
     private final XboxController xbox;
+    PowerDistribution a = new PowerDistribution(1, PowerDistribution.ModuleType.kRev);
 
 
    private Arm arm;
@@ -60,6 +63,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xbox.getButton(XboxButton.B).whenActive(new TakeIn(intake));
         swerve.setDefaultAction(new DriveWithXbox(swerve, xbox));
         arm.setDefaultAction(new ArmController(arm));
+
+        limelight.setPipline(2);
 
         ActionGroup shootSpeaker = new TakeIn(intake).andThen(new ShooterSpeaker(shooter, intake, arm));
     }
@@ -100,6 +105,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     public void testInit() {
         arm.resetPID();
         shooter.resetI();
+        limelight.init();
     }
 
     @Override
@@ -108,14 +114,16 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         SmartDashboard.putNumber("angle2T",angle2T); //check if the value is correct-it may be the wrong one, so switch
 
         double distance = limelight.getDistanceToTarget();
+        double avgDistance = limelight.getAvgDistance();
         SmartDashboard.putNumber("distance",distance); //it may not work 100% accuratly, i need to tune it when i'm in the room
+        SmartDashboard.putNumber("avg Distance",avgDistance); //it may not work 100% accuratly, i need to tune it when i'm in the room
 
 
-        double actud= Math.cos((limelight.getYAngleToTarget()+25)/distance);
+        double actud= Math.cos((limelight.getYAngleToTarget()+65)/distance);
         SmartDashboard.putNumber("actual distance",actud); //it may not work 100% accuratly, i need to tune it when i'm in the room
 
         double cameraHeight = 0.485;
-        double actualDis = Math.sqrt(Math.pow(distance,2) - Math.pow(limelight.getTargetHeight() - cameraHeight,2));
+        double actualDis = Math.sqrt(Math.pow(avgDistance,2) - Math.pow(limelight.getTargetHeight() - cameraHeight,2));
         SmartDashboard.putNumber("hopefully real distance",actualDis);
 
         double setPoint = SmartDashboard.getNumber("set point A", Double.MIN_VALUE);
@@ -146,10 +154,25 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
     @Override
     public void robotPeriodic() {
-       arm.print();
+        arm.print();
         limelight.updateRobotPositionByAprilTag();
         swerve.updateOdometer();
         shooter.print();
+
+
+
+       // module – The CAN ID of the PDP/PDH. moduleType – Module type (CTRE or REV
+/*
+        double currentMaster = a.getCurrent(18);
+        double currentFollower = a.getCurrent(19);
+
+        if (Math.abs(currentMaster - currentFollower) > 3) {
+            DriverStation.reportWarning("Current difference between arm master and follower", false);
+        }
+
+ */
+
+
         SmartDashboard.putBoolean("IS IN NOTE", intake.isIN());
     }
 

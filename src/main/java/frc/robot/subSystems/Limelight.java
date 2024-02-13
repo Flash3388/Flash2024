@@ -33,10 +33,15 @@ public class Limelight extends Subsystem {
         //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
         if (isThereTarget()) {
             cameraPoseTargetSpace = LimelightHelpers.getCameraPose_TargetSpace("limelight-banana");
-            SmartDashboard.putNumber("cameraPtoTRotation", cameraPoseTargetSpace[5]);
+            SmartDashboard.putNumber("cameraPtoTRotation 5", cameraPoseTargetSpace[5]);
+            SmartDashboard.putNumber("cameraPtoTRotation 4", cameraPoseTargetSpace[4]);
+            SmartDashboard.putNumber("cameraPtoTRotation 2", cameraPoseTargetSpace[2]);
+            SmartDashboard.putNumber("cameraPtoTRotation 1", cameraPoseTargetSpace[1]);
+            SmartDashboard.putNumber("cameraPtoTRotation 0", cameraPoseTargetSpace[0]);
+            SmartDashboard.putNumber("cameraPtoTRotation 3", cameraPoseTargetSpace[3]);
             SmartDashboard.putNumber("tx", table.getEntry("tx").getDouble(0.0));
 
-            return cameraPoseTargetSpace[5];
+            return table.getEntry("tx").getDouble(0.0);
 
             // return table.getEntry("tx").getDouble(0.0);
         }
@@ -61,13 +66,10 @@ public class Limelight extends Subsystem {
         //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
         if (isThereTarget()) {
             cameraPoseTargetSpace = LimelightHelpers.getCameraPose_TargetSpace("limelight-banana");
-
+            SmartDashboard.putNumber("cameraPtoTRotation 4", cameraPoseTargetSpace[4]);
             SmartDashboard.putNumber("ty", table.getEntry("ty").getDouble(0.0));
-            SmartDashboard.putNumber("ty 4", cameraPoseTargetSpace[4]);
 
-            return table.getEntry("ty").getDouble(0.0);
-
-            // return table.getEntry("tx").getDouble(0.0);
+            return cameraPoseTargetSpace[4];
         }
         return 0;
     }
@@ -86,6 +88,44 @@ public class Limelight extends Subsystem {
             return distance;
         }
         return 0;
+    }
+    private int Window_size =10;
+    private double[] readings = new double[Window_size];
+    public int numOfReadings=0;
+    public double sum = 0;
+
+    public void init() {
+        numOfReadings = 0;
+        sum = 0;
+    }
+    public double getAvgDistance(){
+
+        double reading=getDistanceToTarget();
+        if(reading!=0){
+            sum += reading;
+            if (numOfReadings > Window_size) {
+                sum -= readings[numOfReadings % 10];
+            }
+            readings[numOfReadings%10]=reading;
+
+            numOfReadings++;
+        }
+        int loopSize = Window_size;
+        if(numOfReadings<=Window_size){
+            loopSize = numOfReadings;
+        }
+
+        sum = 0;
+        for (int i = 0; i < loopSize ; i++) {
+            sum += readings[i];
+        }
+
+        double avg=0;
+        if(loopSize>0){
+            avg=sum/loopSize;
+        }
+
+        return avg;
     }
 
     public boolean isThereTarget(){
