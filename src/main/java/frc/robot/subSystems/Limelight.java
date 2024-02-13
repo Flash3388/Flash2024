@@ -33,10 +33,15 @@ public class Limelight extends Subsystem {
         //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
         if (isThereTarget()) {
             cameraPoseTargetSpace = LimelightHelpers.getCameraPose_TargetSpace("limelight-banana");
-            SmartDashboard.putNumber("cameraPtoTRotation", cameraPoseTargetSpace[5]);
+            SmartDashboard.putNumber("cameraPtoTRotation 5", cameraPoseTargetSpace[5]);
+            SmartDashboard.putNumber("cameraPtoTRotation 4", cameraPoseTargetSpace[4]);
+            SmartDashboard.putNumber("cameraPtoTRotation 2", cameraPoseTargetSpace[2]);
+            SmartDashboard.putNumber("cameraPtoTRotation 1", cameraPoseTargetSpace[1]);
+            SmartDashboard.putNumber("cameraPtoTRotation 0", cameraPoseTargetSpace[0]);
+            SmartDashboard.putNumber("cameraPtoTRotation 3", cameraPoseTargetSpace[3]);
             SmartDashboard.putNumber("tx", table.getEntry("tx").getDouble(0.0));
 
-            return cameraPoseTargetSpace[5];
+            return table.getEntry("tx").getDouble(0.0);
 
             // return table.getEntry("tx").getDouble(0.0);
         }
@@ -74,6 +79,7 @@ public class Limelight extends Subsystem {
     public double getDistanceToTarget() {
         //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
         if (isThereTarget()) {
+            cameraPoseTargetSpace = LimelightHelpers.getCameraPose_TargetSpace("limelight-banana");
             double distance = Math.sqrt(
                     Math.pow(cameraPoseTargetSpace[0], 2) +
                             Math.pow(cameraPoseTargetSpace[1], 2) +
