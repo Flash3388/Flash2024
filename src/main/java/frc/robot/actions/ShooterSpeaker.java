@@ -29,7 +29,7 @@ public class ShooterSpeaker extends ActionBase {
 
         this.clock = RunningRobot.getControl().getClock();
 
-        requires(shooter, intake, arm);
+        requires(shooter, intake);
 
         configure().setName("ShooterSpeaker").save();
     }
@@ -43,14 +43,15 @@ public class ShooterSpeaker extends ActionBase {
     @Override
     public void execute(ActionControl actionControl) {
         SmartDashboard.putBoolean("SpeakerBool", true);
-        if (arm.isStabilizedAtTargetedPosition())
+
+        //if (arm.isStabilizedAtTargetedPosition())
             shooter.shootSpeaker();
 
         if (shooter.gotToTarget(ShooterSystem.SPEED_TARGET_SPEAKER))
             intake.shoot();
 
 
-       /* if (!intake.isIN()) {
+        if (!intake.isIN()) {
 
             if (time.isValid()) {
                 if(time.before(clock.currentTime()))
@@ -61,10 +62,10 @@ public class ShooterSpeaker extends ActionBase {
         }
         else{
             time = Time.INVALID;
-        }*/
+        }
 
-        if (!intake.isIN())
-            actionControl.finish();
+        /*if (!intake.isIN())
+            actionControl.finish();*/
     }
 
 

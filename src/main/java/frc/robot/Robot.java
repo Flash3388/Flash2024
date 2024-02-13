@@ -54,6 +54,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xbox = getHidInterface().newXboxController(RobotMap.XBOX);
         limelight = new Limelight(swerve);
 
+        ActionGroup shootSpeaker = new TakeIn(intake).andThen((new SetPointAngleByVision(limelight, intake, arm)).alongWith(new ShooterSpeaker(shooter, intake, arm)));
+
         xbox.getButton(XboxButton.X).whenActive(new LimelightAutoAlign(limelight,swerve));
         xbox.getDpad().down().whenActive(Actions.instant(() -> arm.setPositioningNotControlled()));
         xbox.getDpad().up().whenActive(new ShooterSpeaker(shooter, intake, arm));
@@ -61,12 +63,15 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xbox.getButton(XboxButton.Y).whileActive(new ReverseShooter(shooter));
         xbox.getButton(XboxButton.Y).whileActive(new TakeOut(intake));
         xbox.getButton(XboxButton.B).whenActive(new TakeIn(intake));
+
+       // xbox.getDpad().left().whenActive(shootSpeaker);
+        xbox.getDpad().left().whileActive(new SetPointAngleByVision(limelight, intake, arm));
+
         swerve.setDefaultAction(new DriveWithXbox(swerve, xbox));
         arm.setDefaultAction(new ArmController(arm));
 
         limelight.setPipline(2);
 
-        ActionGroup shootSpeaker = new TakeIn(intake).andThen(new ShooterSpeaker(shooter, intake, arm));
     }
 
     @Override
@@ -127,7 +132,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         SmartDashboard.putNumber("hopefully real distance",actualDis);
 
         double setPoint = SmartDashboard.getNumber("set point A", Double.MIN_VALUE);
-        arm.setSetPointAngle(calculateAngle(setPoint));
+        //arm.setSetPointAngle(calculateAngle(setPoint));
 
         SmartDashboard.putBoolean("see target",limelight.isThereTarget());
 
@@ -160,7 +165,6 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         shooter.print();
 
 
-
        // module – The CAN ID of the PDP/PDH. moduleType – Module type (CTRE or REV
 /*
         double currentMaster = a.getCurrent(18);
@@ -171,7 +175,6 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         }
 
  */
-
 
         SmartDashboard.putBoolean("IS IN NOTE", intake.isIN());
     }

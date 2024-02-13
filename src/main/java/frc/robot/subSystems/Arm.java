@@ -77,6 +77,8 @@ public class Arm extends Subsystem {
         pid = PidController.newNamedController("drive", KP, KI, KD, 0);
         pid.setIZone(I_ZONE);
 
+        setPointAngle = FLOOR_ANGLE;
+
         master.setSmartCurrentLimit(80);
         follower.setSmartCurrentLimit(80);
 
