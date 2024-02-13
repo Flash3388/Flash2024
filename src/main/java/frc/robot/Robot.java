@@ -63,6 +63,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         swerve.setDefaultAction(new DriveWithXbox(swerve, xbox));
         arm.setDefaultAction(new ArmController(arm));
 
+       // xbox.getDpad().right().whileActive(Actions.instant(() -> swerve.drive(0.5,0,0)));
+
         limelight.setPipline(2);
     }
 
