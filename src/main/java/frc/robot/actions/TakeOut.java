@@ -5,15 +5,18 @@ import com.flash3388.flashlib.scheduling.FinishReason;
 import com.flash3388.flashlib.scheduling.actions.ActionBase;
 import frc.robot.subSystems.Arm;
 import frc.robot.subSystems.Intake;
+import frc.robot.subSystems.ShooterSystem;
 
 public class TakeOut extends ActionBase {
     private Intake intake;
+    private ShooterSystem shooter;
     private Arm arm;
 
-    public TakeOut(Intake intake, Arm arm){
+    public TakeOut(Intake intake, Arm arm, ShooterSystem shooter){
         this.intake = intake;
         this.arm = arm;
-        requires(intake, arm);
+        this.shooter = shooter;
+        requires(intake, arm,shooter);
     }
 
     @Override
@@ -23,10 +26,8 @@ public class TakeOut extends ActionBase {
 
     @Override
     public void execute(ActionControl control) {
-        if(intake.isIN()) {
-            this.intake.takeOut();
-        }
-        else control.finish();
+        this.shooter.reverse();
+        this.intake.takeOut();
     }
 
     @Override

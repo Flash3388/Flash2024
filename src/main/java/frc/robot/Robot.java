@@ -47,13 +47,13 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         //systems:
         arm.setDefaultAction(new ArmController(arm));
         xbox_systems.getButton(XboxButton.B).whenActive(new TakeIn(intake,arm));
-        xbox_systems.getButton(XboxButton.Y).whenActive(new TakeOut(intake,arm));
+        xbox_systems.getButton(XboxButton.Y).whileActive(new TakeOut(intake,arm,shooter));
         xbox_systems.getButton(XboxButton.A).whenActive(new SetPointAngleByVision(limelight,intake,arm));
         xbox_systems.getDpad().down().whenActive(Actions.instant(() -> arm.setSetPointAngle(Arm.DEF_ANGLE)).alongWith(Actions.instant(() -> arm.setNotAmp())));
         xbox_systems.getButton(XboxButton.X).whenActive(new ShooterSpeaker(shooter, intake, arm));
         xbox_systems.getButton(XboxButton.RB).whenActive((Actions.instant(() -> arm.setYesAmp())).andThen(Actions.instant(() -> arm.setSetPointAngle(Arm.AMP_ANGLE_FROM_SHOOTER))));
         xbox_systems.getButton(XboxButton.LB).whenActive((Actions.instant(() -> arm.setYesAmp())).andThen(Actions.instant(() -> arm.setSetPointAngle(Arm.AMP_ANGLE_FROM_INTAKE))));
-
+//add get to angle of speaker
         ActionGroup shootSpeaker = new TakeIn(intake,arm).andThen((new SetPointAngleByVision(limelight, intake, arm)).alongWith(new ShooterSpeaker(shooter, intake, arm)));
         xbox_systems.getDpad().up().whenActive(shootSpeaker);
         limelight.setPipline(2);

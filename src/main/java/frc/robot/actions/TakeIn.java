@@ -17,11 +17,12 @@ public class TakeIn extends ActionBase {
     }
     @Override
     public void initialize(ActionControl control) {
-        arm.setSetPointAngle(Arm.FLOOR_ANGLE);
+        arm.setSetPointAngle(5);
     }
 
     @Override
     public void execute(ActionControl control) {
+        if(arm.getArmPosition() <= 5) arm.setPositioningNotControlled();
         if(!this.intake.isIN())
         {
             this.intake.takeIn();
