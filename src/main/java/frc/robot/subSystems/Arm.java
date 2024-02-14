@@ -71,13 +71,14 @@ public class Arm extends Subsystem {
         SmartDashboard.putNumber("ARM Max Velocity", MAX_VELOCITY);
         SmartDashboard.putNumber("ARM Max Acceleration", MAX_ACCELERATION);
 
-        SmartDashboard.putNumber("set point A", Double.MIN_VALUE);
 
 
         pid = PidController.newNamedController("drive", KP, KI, KD, 0);
         pid.setIZone(I_ZONE);
 
-        setPointAngle = FLOOR_ANGLE;
+        setPointAngle = 30;
+        SmartDashboard.putNumber("set point A", setPointAngle);
+
 
         master.setSmartCurrentLimit(80);
         follower.setSmartCurrentLimit(80);
@@ -94,6 +95,9 @@ public class Arm extends Subsystem {
 
         double speed = pid.applyAsDouble(getArmPosition(), angle) ;
         speed = ExtendedMath.constrain(speed, -0.5, 0.5);
+
+        if((getArmPosition() - angle) > 30)
+            speed = speed / 3;
 
         master.set(speed);
     }

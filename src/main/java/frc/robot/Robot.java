@@ -131,7 +131,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         double actualDis = Math.sqrt(Math.pow(avgDistance,2) - Math.pow(limelight.getTargetHeight() - cameraHeight,2));
         SmartDashboard.putNumber("hopefully real distance",actualDis);
 
-        double setPoint = SmartDashboard.getNumber("set point A", Double.MIN_VALUE);
+        double setPoint = SmartDashboard.getNumber("set point A", arm.getSetPointAngle());
         //arm.setSetPointAngle(calculateAngle(setPoint));
 
         SmartDashboard.putBoolean("see target",limelight.isThereTarget());
