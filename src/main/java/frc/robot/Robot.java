@@ -54,7 +54,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xbox = getHidInterface().newXboxController(RobotMap.XBOX);
         limelight = new Limelight(swerve);
 
-        ActionGroup shootSpeaker = new TakeIn(intake).andThen((new SetPointAngleByVision(limelight, intake, arm)).alongWith(new ShooterSpeaker(shooter, intake, arm)));
+        ActionGroup shootSpeaker = new TakeIn(intake,arm).andThen((new SetPointAngleByVision(limelight, intake, arm)).alongWith(new ShooterSpeaker(shooter, intake, arm)));
 
         xbox.getButton(XboxButton.X).whenActive(new LimelightAutoAlign(limelight,swerve));
         xbox.getDpad().down().whenActive(Actions.instant(() -> arm.setPositioningNotControlled()));
@@ -62,7 +62,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xbox.getButton(XboxButton.A).whileActive(new ShooterAMP(shooter, intake));
         xbox.getButton(XboxButton.Y).whileActive(new ReverseShooter(shooter));
         xbox.getButton(XboxButton.Y).whileActive(new TakeOut(intake));
-        xbox.getButton(XboxButton.B).whenActive(new TakeIn(intake));
+        xbox.getButton(XboxButton.B).whenActive(new TakeIn(intake,arm));
 
        // xbox.getDpad().left().whenActive(shootSpeaker);
         xbox.getDpad().left().whileActive(new SetPointAngleByVision(limelight, intake, arm));
