@@ -91,12 +91,13 @@ public class Limelight extends Subsystem {
     }
     private int Window_size =10;
     private double[] readings = new double[Window_size];
-    public int numOfReadings=0;
+    public int numOfReadings = 0;
     public double sum = 0;
+    public int numOfNoTargetDetection = 0;
 
     public void init() {
         numOfReadings = 0;
-        sum = 0;
+        numOfNoTargetDetection = 0;
     }
 
     public double getDisHorizontalToTarget(){
@@ -106,7 +107,36 @@ public class Limelight extends Subsystem {
         return actualDis;
     }
     public double getAvgDistance(){
+        double reading=getDistanceToTarget();
+        if(reading!=0){
+            readings[numOfReadings%10]=reading;
+            numOfReadings++;
+        }
+        else numOfNoTargetDetection++;
 
+        if(numOfNoTargetDetection == 50){ //if we are not seeing the target for a while -> the measurements are wrong by now
+            readings = new double[Window_size]; //initialize the array
+            numOfNoTargetDetection = 0;
+        }
+
+        int loopSize = Window_size;
+        if(numOfReadings<Window_size){
+            loopSize = numOfReadings;
+        }
+        sum = 0;
+        for (int i = 0; i < loopSize ; i++) {
+            sum += readings[i];
+        }
+
+        double avg=0;
+        if(loopSize>0){
+            avg=sum/loopSize;
+        }
+        return avg;
+
+
+      /*
+      Yaron's way. didn't quite work.
         double reading=getDistanceToTarget();
         if(reading!=0){
             sum += reading;
@@ -133,6 +163,8 @@ public class Limelight extends Subsystem {
         }
 
         return avg;
+
+       */
     }
 
     public boolean isThereTarget(){
