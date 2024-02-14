@@ -74,8 +74,9 @@ public class ShooterSpeaker extends ActionBase {
     }
 
     private void shootForwardToAMP(){
-        intake.takeIn();
         shooter.shootAmp();
+        if (shooter.gotToTarget(ShooterSystem.SPEED_TARGET_AMP))
+            intake.takeIn();
     }
     private void shootBackwardToAMP(){
         intake.takeOut();
