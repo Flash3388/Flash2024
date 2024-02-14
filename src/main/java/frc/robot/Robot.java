@@ -3,14 +3,10 @@ package frc.robot;
 import com.flash3388.flashlib.frc.robot.FrcRobotControl;
 import com.flash3388.flashlib.frc.robot.base.iterative.DelegatingFrcRobotControl;
 import com.flash3388.flashlib.frc.robot.base.iterative.IterativeFrcRobot;
-import com.flash3388.flashlib.hid.XboxAxis;
 import com.flash3388.flashlib.hid.XboxButton;
 import com.flash3388.flashlib.hid.XboxController;
-import com.flash3388.flashlib.scheduling.actions.Action;
 import com.flash3388.flashlib.scheduling.actions.ActionGroup;
 import com.flash3388.flashlib.scheduling.actions.Actions;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.actions.*;
@@ -18,20 +14,8 @@ import frc.robot.subSystems.Intake;
 import frc.robot.subSystems.Limelight;
 import frc.robot.subSystems.ShooterSystem;
 import frc.robot.subSystems.Swerve;
-import com.flash3388.flashlib.robot.control.PidController;
-import com.jmath.ExtendedMath;
-import com.revrobotics.*;
-import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.actions.ArmController;
 import frc.robot.subSystems.Arm;
-
-import javax.swing.*;
 
 public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobot {
     private Swerve swerve;
@@ -39,7 +23,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     private ShooterSystem shooter;
     private Limelight limelight;
 
-    private final XboxController xbox;
+    private final XboxController xbox_systems;
     PowerDistribution a = new PowerDistribution(1, PowerDistribution.ModuleType.kRev);
 
 
@@ -51,23 +35,17 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         swerve = SystemFactory.createSwerveSystem();
         intake = SystemFactory.createIntake();
         shooter = SystemFactory.createShooter();
-        xbox = getHidInterface().newXboxController(RobotMap.XBOX);
+        xbox_systems = getHidInterface().newXboxController(RobotMap.XBOX);
         limelight = new Limelight(swerve);
 
         ActionGroup shootSpeaker = new TakeIn(intake).andThen((new SetPointAngleByVision(limelight, intake, arm)).alongWith(new ShooterSpeaker(shooter, intake, arm)));
 
-        xbox.getButton(XboxButton.X).whenActive(new LimelightAutoAlign(limelight,swerve));
-        xbox.getDpad().down().whenActive(Actions.instant(() -> arm.setPositioningNotControlled()));
-        xbox.getDpad().up().whenActive(new ShooterSpeaker(shooter, intake, arm));
-        xbox.getButton(XboxButton.A).whileActive(new ShooterAMP(shooter, intake));
-        xbox.getButton(XboxButton.Y).whileActive(new ReverseShooter(shooter));
-        xbox.getButton(XboxButton.Y).whileActive(new TakeOut(intake));
-        xbox.getButton(XboxButton.B).whenActive(new TakeIn(intake));
+        xbox_systems.getButton(XboxButton.X).whenActive(new ShooterSpeaker(shooter, intake, arm));
+        xbox_systems.getButton(XboxButton.RB).whenActive((Actions.instant(() -> arm.setYesAmp())).andThen(Actions.instant(() -> arm.setSetPointAngle(Arm.AMP_ANGLE_FROM_SHOOTER))));
+        xbox_systems.getButton(XboxButton.LB).whenActive((Actions.instant(() -> arm.setYesAmp())).andThen(Actions.instant(() -> arm.setSetPointAngle(Arm.AMP_ANGLE_FROM_INTAKE))));
 
-       // xbox.getDpad().left().whenActive(shootSpeaker);
-        xbox.getDpad().left().whileActive(new SetPointAngleByVision(limelight, intake, arm));
 
-        swerve.setDefaultAction(new DriveWithXbox(swerve, xbox));
+        swerve.setDefaultAction(new DriveWithXbox(swerve, xbox_systems));
         arm.setDefaultAction(new ArmController(arm));
 
         limelight.setPipline(2);
@@ -131,7 +109,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         double actualDis = Math.sqrt(Math.pow(avgDistance,2) - Math.pow(limelight.getTargetHeight() - cameraHeight,2));
         SmartDashboard.putNumber("hopefully real distance",actualDis);
 
-        double setPoint = SmartDashboard.getNumber("set point A", Arm.DEF_ANGLE);
+        //double setPoint = SmartDashboard.getNumber("set point A", Arm.DEF_ANGLE);
+        SmartDashboard.putNumber("set point A", arm.getSetPointAngle());
        // arm.setSetPointAngle(setPoint);
 
         SmartDashboard.putBoolean("see target",limelight.isThereTarget());

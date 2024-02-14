@@ -45,6 +45,8 @@ public class Arm extends Subsystem {
 
     private static final double GEAR_RATIO = 1/70.0;
 
+    public static boolean isAMP = false;
+
     private double setPointAngle;
 
     public Arm(CANSparkMax master, CANSparkMax follower, DutyCycleEncoder encoder){
@@ -92,6 +94,9 @@ public class Arm extends Subsystem {
 
         if((getArmPosition() - angle) > 30)
             speed = speed / 3;
+
+        if(getArmPosition() > 80 && speed > 0)
+            speed = speed / 2;
 
         master.set(speed);
     }
@@ -182,5 +187,16 @@ public class Arm extends Subsystem {
 
     public void moveDown(){
         master.set(SLOW_SPEED_DOWN);
+    }
+
+    public void setNotAmp(){
+        isAMP = false;
+    }
+
+    public void setYesAmp(){
+        isAMP = true;
+    }
+    public boolean isAMP(){
+        return isAMP;
     }
 }
