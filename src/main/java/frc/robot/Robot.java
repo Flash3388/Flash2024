@@ -24,6 +24,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     private Limelight limelight;
 
     private final XboxController xbox_systems;
+    private final XboxController xbox_driver; //driver
     PowerDistribution a = new PowerDistribution(1, PowerDistribution.ModuleType.kRev);
 
 
@@ -35,19 +36,26 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         swerve = SystemFactory.createSwerveSystem();
         intake = SystemFactory.createIntake();
         shooter = SystemFactory.createShooter();
-        xbox_systems = getHidInterface().newXboxController(RobotMap.XBOX);
+        xbox_driver = getHidInterface().newXboxController(RobotMap.XBOX_DRIVER);
+        xbox_systems = getHidInterface().newXboxController(RobotMap.XBOX_SYSTEMS);
         limelight = new Limelight(swerve);
 
-        ActionGroup shootSpeaker = new TakeIn(intake).andThen((new SetPointAngleByVision(limelight, intake, arm)).alongWith(new ShooterSpeaker(shooter, intake, arm)));
+        //driver:
+        swerve.setDefaultAction(new DriveWithXbox(swerve, xbox_driver));
+        xbox_driver.getButton(XboxButton.X).whenActive(new LimelightAutoAlign(limelight,swerve));
 
+        //systems:
+        xbox_systems.getButton(XboxButton.B).whenActive(new TakeIn(intake,arm));
+        xbox_systems.getButton(XboxButton.Y).whenActive(new TakeOut(intake,arm));
+        xbox_systems.getButton(XboxButton.A).whenActive(new SetPointAngleByVision(limelight,intake,arm));
+        xbox_systems.getDpad().up().whenActive(Actions.instant(() -> arm.setSetPointAngle(Arm.DEF_ANGLE)));
         xbox_systems.getButton(XboxButton.X).whenActive(new ShooterSpeaker(shooter, intake, arm));
         xbox_systems.getButton(XboxButton.RB).whenActive((Actions.instant(() -> arm.setYesAmp())).andThen(Actions.instant(() -> arm.setSetPointAngle(Arm.AMP_ANGLE_FROM_SHOOTER))));
         xbox_systems.getButton(XboxButton.LB).whenActive((Actions.instant(() -> arm.setYesAmp())).andThen(Actions.instant(() -> arm.setSetPointAngle(Arm.AMP_ANGLE_FROM_INTAKE))));
 
+        ActionGroup shootSpeaker = new TakeIn(intake,arm).andThen((new SetPointAngleByVision(limelight, intake, arm)).alongWith(new ShooterSpeaker(shooter, intake, arm)));
 
-        swerve.setDefaultAction(new DriveWithXbox(swerve, xbox_systems));
         arm.setDefaultAction(new ArmController(arm));
-
         limelight.setPipline(2);
 
     }

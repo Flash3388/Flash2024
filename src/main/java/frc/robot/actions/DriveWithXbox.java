@@ -10,11 +10,11 @@ import frc.robot.subSystems.Swerve;
 
 public class DriveWithXbox extends ActionBase {
     private Swerve swerve;
-    private XboxController xbox;
+    private XboxController xbox_driver;
 
-    public DriveWithXbox(Swerve swerve, XboxController xbox){
+    public DriveWithXbox(Swerve swerve, XboxController xbox_driver){
         this.swerve = swerve;
-        this.xbox = xbox;
+        this.xbox_driver = xbox_driver;
         requires(swerve);
     }
 
@@ -25,16 +25,16 @@ public class DriveWithXbox extends ActionBase {
 
     @Override
     public void execute(ActionControl control) {
-        double driveY = -xbox.getAxis(XboxAxis.LeftStickY).getAsDouble() ;
-        double driveX = -xbox.getAxis(XboxAxis.LeftStickX).getAsDouble() ;
-        double rotation = -xbox.getAxis(XboxAxis.RightStickX).getAsDouble();
+        double driveY = -xbox_driver.getAxis(XboxAxis.LeftStickY).getAsDouble() ;
+        double driveX = -xbox_driver.getAxis(XboxAxis.LeftStickX).getAsDouble() ;
+        double rotation = -xbox_driver.getAxis(XboxAxis.RightStickX).getAsDouble();
 
         driveY = Math.abs(driveY) > 0.2 ? driveY * Swerve.MAX_SPEED    : 0;
         driveX = Math.abs(driveX) > 0.2 ? driveX  * Swerve.MAX_SPEED : 0;
         rotation = Math.abs(rotation) > 0.2 ? rotation * Swerve.MAX_SPEED : 0;
 
         boolean isFiledRelative = SmartDashboard.getBoolean("Is Field Relative?", true);
-        this.swerve.drive(driveY /3 ,driveX/3 ,rotation/3 );
+        this.swerve.drive(driveY /3 ,driveX / 3 ,rotation/3 );
     }
 
     @Override
