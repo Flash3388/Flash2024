@@ -42,13 +42,26 @@ public class ShooterSpeaker extends ActionBase {
 
     @Override
     public void execute(ActionControl actionControl) {
-        SmartDashboard.putBoolean("SpeakerBool", true);
+        if(arm.isAMP()){
 
-        //if (arm.isStabilizedAtTargetedPosition())
-            shooter.shootSpeaker();
+            if(arm.getSetPointAngle() == Arm.AMP_ANGLE_FROM_INTAKE){
+                intake.takeOut();
+                shooter.reverse();
+            }
+            else if(arm.getSetPointAngle() == Arm.AMP_ANGLE_FROM_SHOOTER)
+            {
+                intake.takeIn();
+                shooter.shootAmp();
+            }
+        }
 
-        if (shooter.gotToTarget(ShooterSystem.SPEED_TARGET_SPEAKER))
-            intake.shoot();
+        else {
+            if (arm.isStabilizedAtTargetedPosition())
+                shooter.shootSpeaker();
+
+            if (shooter.gotToTarget(ShooterSystem.SPEED_TARGET_SPEAKER))
+                intake.shoot();
+        }
 
 
         if (!intake.isIN()) {
@@ -64,8 +77,7 @@ public class ShooterSpeaker extends ActionBase {
             time = Time.INVALID;
         }
 
-        /*if (!intake.isIN())
-            actionControl.finish();*/
+
     }
 
 
@@ -73,6 +85,7 @@ public class ShooterSpeaker extends ActionBase {
     public void end(FinishReason reason) {
         shooter.stop();
         intake.stop();
-        arm.setPositioningNotControlled();
+        arm.setNotAmp();
+        arm.setSetPointAngle(Arm.DEF_ANGLE);
     }
 }
