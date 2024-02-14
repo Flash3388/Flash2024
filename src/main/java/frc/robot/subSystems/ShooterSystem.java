@@ -121,7 +121,8 @@ public class ShooterSystem extends Subsystem {
     }
 
     public boolean gotToTarget(double rpmVal){
-        return ExtendedMath.constrained(getSpeed(),rpmVal - 100, rpmVal +100);
+        final double SPEED_ERROR = 100;
+        return ExtendedMath.constrained(getSpeed(),rpmVal - SPEED_ERROR, rpmVal + SPEED_ERROR);
     }
 
     public void print(){

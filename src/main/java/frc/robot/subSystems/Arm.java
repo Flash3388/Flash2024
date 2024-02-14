@@ -45,7 +45,7 @@ public class Arm extends Subsystem {
 
     private static final double GEAR_RATIO = 1/70.0;
 
-    public static boolean isAMP = false;
+    public static boolean isSetToAMP = false;
 
     private double setPointAngle;
 
@@ -168,11 +168,11 @@ public class Arm extends Subsystem {
 
     public boolean isStabilizedAtTargetedPosition() {
         if (!isPositioningControlled()) {
-            return true;
+            return false;
         }
 
-        return ExtendedMath.constrained(getArmPosition(), setPointAngle - STABLE_ERROR, setPointAngle + STABLE_ERROR) &&
-                Math.abs(master.getAppliedOutput()) < STABLE_OUTPUT;
+        return ExtendedMath.constrained(getArmPosition(), setPointAngle - STABLE_ERROR, setPointAngle + STABLE_ERROR) ;
+             //   && Math.abs(master.getAppliedOutput()) < STABLE_OUTPUT;
     }
 
     public boolean isAtBottom() {
@@ -190,13 +190,13 @@ public class Arm extends Subsystem {
     }
 
     public void setNotAmp(){
-        isAMP = false;
+        isSetToAMP = false;
     }
 
     public void setYesAmp(){
-        isAMP = true;
+        isSetToAMP = true;
     }
-    public boolean isAMP(){
-        return isAMP;
+    public boolean isSetToAMP(){
+        return isSetToAMP;
     }
 }
