@@ -17,7 +17,7 @@ public class TakeIn extends ActionBase {
     }
     @Override
     public void initialize(ActionControl control) {
-
+        arm.setSetPointAngle(Arm.FLOOR_ANGLE);
     }
 
     @Override

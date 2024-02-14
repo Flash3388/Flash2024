@@ -28,7 +28,8 @@ public class RobotMap {
     public static final double SWERVE_ABSOLUTE_ENCODER_RL_ZERO_ANGLE = 216.47; // 216.47
     public static final double SWERVE_ABSOLUTE_ENCODER_RR_ZERO_ANGLE = 190.458;
     public static final int INTAKE = 13;
-    public static final HidChannel XBOX = RoboRio.newHidChannel(0);
+    public static final HidChannel XBOX_SYSTEMS = RoboRio.newHidChannel(0);
+    public static final HidChannel XBOX_DRIVER = RoboRio.newHidChannel(1);
     public static final int SHOOTER_MASTER = 12;
     public static final int SHOOTER_FOLLOWER = 14;
 }
