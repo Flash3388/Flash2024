@@ -1,20 +1,11 @@
 package frc.robot.subSystems;
 
 import com.flash3388.flashlib.scheduling.Subsystem;
-import com.flash3388.flashlib.time.Time;
 import com.jmath.ExtendedMath;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
 import com.flash3388.flashlib.robot.control.PidController;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
-import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.units.Power;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Arm extends Subsystem {
@@ -40,9 +31,12 @@ public class Arm extends Subsystem {
     private static final double STABLE_OUTPUT = 0.1;
 
     // Other Constants
-    public static final double SPEAKER_ANGLE = 40; // todo: find the right angle
-    public static final double AMP_ANGLE = 20; // todo: find the right angle
+    public static final double SPEAKER_ANGLE = 30;
+    public static final double AMP_ANGLE_FROM_SHOOTER = 100;
+    public static final double AMP_ANGLE_FROM_INTAKE = 53;
     public static final double FLOOR_ANGLE = -6.5; // the floor angle
+    public static final double DEF_ANGLE = 20.0;
+
 
     private static final double SLOW_SPEED_DOWN = -0.1;
     private static final double SLOW_SPEED_UP = 0.2;
@@ -76,8 +70,8 @@ public class Arm extends Subsystem {
         pid = PidController.newNamedController("drive", KP, KI, KD, 0);
         pid.setIZone(I_ZONE);
 
-        setPointAngle = 30;
-        SmartDashboard.putNumber("set point A", setPointAngle);
+        setPointAngle = DEF_ANGLE;
+        SmartDashboard.putNumber("set point A", DEF_ANGLE);
 
 
         master.setSmartCurrentLimit(80);
@@ -110,7 +104,7 @@ public class Arm extends Subsystem {
     }
 
 
-    private double getArmPosition(){
+    public double getArmPosition(){
         return (absEncoder.getAbsolutePosition() - absEncoder.getPositionOffset()) * 360;
     }
 

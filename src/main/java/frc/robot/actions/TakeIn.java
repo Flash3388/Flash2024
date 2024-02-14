@@ -12,7 +12,6 @@ public class TakeIn extends ActionBase {
 
         this.intake = intake;
         requires(intake);
-       
     }
     @Override
     public void initialize(ActionControl control) {
