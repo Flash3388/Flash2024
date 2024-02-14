@@ -6,7 +6,6 @@ import com.flash3388.flashlib.scheduling.FinishReason;
 import com.flash3388.flashlib.scheduling.actions.ActionBase;
 import com.flash3388.flashlib.time.Clock;
 import com.flash3388.flashlib.time.Time;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subSystems.Arm;
 import frc.robot.subSystems.Intake;
 import frc.robot.subSystems.ShooterSystem;
@@ -16,7 +15,7 @@ public class ShooterSpeaker extends ActionBase {
     private Intake intake;
     private Arm arm;
 
-    private static final double TIME = 2;
+    private static final double DELAY_BEFORE_FINISH_IN_SECONDS = 2;
     private Clock clock;
     private Time time;
 
@@ -42,16 +41,14 @@ public class ShooterSpeaker extends ActionBase {
 
     @Override
     public void execute(ActionControl actionControl) {
-        if(arm.isAMP()){
+        if(arm.isSetToAMP()){
 
             if(arm.getSetPointAngle() == Arm.AMP_ANGLE_FROM_INTAKE){
-                intake.takeOut();
-                shooter.reverse();
+                shootBackwardToAMP();
             }
             else if(arm.getSetPointAngle() == Arm.AMP_ANGLE_FROM_SHOOTER)
             {
-                intake.takeIn();
-                shooter.shootAmp();
+                shootForwardToAMP();
             }
         }
 
@@ -63,23 +60,27 @@ public class ShooterSpeaker extends ActionBase {
                 intake.shoot();
         }
 
-
         if (!intake.isIN()) {
-
             if (time.isValid()) {
                 if(time.before(clock.currentTime()))
                     actionControl.finish();
             } else {
-                time = clock.currentTime().add(Time.seconds(TIME));
+                time = clock.currentTime().add(Time.seconds(DELAY_BEFORE_FINISH_IN_SECONDS));
             }
         }
         else{
             time = Time.INVALID;
         }
-
-
     }
 
+    private void shootForwardToAMP(){
+        intake.takeIn();
+        shooter.shootAmp();
+    }
+    private void shootBackwardToAMP(){
+        intake.takeOut();
+        shooter.reverse();
+    }
 
     @Override
     public void end(FinishReason reason) {
