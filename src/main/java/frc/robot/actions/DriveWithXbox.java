@@ -34,7 +34,7 @@ public class DriveWithXbox extends ActionBase {
         rotation = Math.abs(rotation) > 0.2 ? rotation * Swerve.MAX_SPEED : 0;
 
         boolean isFiledRelative = SmartDashboard.getBoolean("Is Field Relative?", true);
-        this.swerve.drive(driveY /3 ,0 ,rotation/3 );
+        this.swerve.drive(driveY /3 ,driveX / 3 ,rotation/3 );
     }
 
     @Override
