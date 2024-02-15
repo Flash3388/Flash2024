@@ -48,31 +48,19 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         arm.setDefaultAction(new ArmController(arm));
         xbox_systems.getButton(XboxButton.B).whenActive(new TakeIn(intake,arm));
         xbox_systems.getButton(XboxButton.Y).whileActive(new TakeOut(intake,arm,shooter));
-        xbox_systems.getButton(XboxButton.A).whenActive(new SetPointAngleByVision(limelight,intake,arm));
-     //   xbox_systems.getDpad().down().whenActive(Actions.instant(() -> arm.setSetPointAngle(Arm.DEF_ANGLE)).alongWith(Actions.instant(() -> arm.setNotAmp())));
-        //xbox_systems.getDpad().down().whileActive(new SetDefault(arm,shooter,intake));
+        xbox_systems.getButton(XboxButton.A).whenActive(new SetPointAngleByVision(limelight,intake,arm, xbox_systems));
+
+        xbox_systems.getDpad().down().whenActive(Actions.instant(() -> arm.setSetPointAngle(Arm.DEF_ANGLE)).alongWith(Actions.instant(() -> arm.setNotAmp())));
+        //xbox_systems.getDpad().down().whileActive(new SetDefault(arm, shooter, intake));
         xbox_systems.getButton(XboxButton.X).whenActive(new ShooterSpeaker(shooter, intake, arm));
         xbox_systems.getButton(XboxButton.RB).whenActive((Actions.instant(() -> arm.setYesAmp())).andThen(Actions.instant(() -> arm.setSetPointAngle(Arm.AMP_ANGLE_FROM_SHOOTER))));
         xbox_systems.getButton(XboxButton.LB).whenActive((Actions.instant(() -> arm.setYesAmp())).andThen(Actions.instant(() -> arm.setSetPointAngle(Arm.AMP_ANGLE_FROM_INTAKE))));
 //add get to angle of speaker
-        ActionGroup shootSpeaker = new TakeIn(intake,arm).andThen((new SetPointAngleByVision(limelight, intake, arm)).alongWith(new ShooterSpeaker(shooter, intake, arm)));
+        ActionGroup shootSpeaker = new TakeIn(intake,arm).andThen((new SetPointAngleByVision(limelight, intake, arm, xbox_systems)).alongWith(new ShooterSpeaker(shooter, intake, arm)));
         xbox_systems.getDpad().up().whenActive(shootSpeaker);
         limelight.setPipline(2);
 
-
-        /*
-        stuff to fix
-        -setPointAngle- sets the angle, but won't move it A
-        -X
-
-
-
-
-
-         */
-
-
-
+        xbox_systems.getDpad().right().whenActive(Actions.instant(() -> arm.setSetPointAngle(calculateAngle(limelight.getDisHorizontalToTarget()))));
 
     }
 
@@ -180,6 +168,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
  */
 
         SmartDashboard.putBoolean("IS IN NOTE", intake.isIN());
+        SmartDashboard.putBoolean("IS AGAM", intake.isInAgam());
     }
 
     @Override

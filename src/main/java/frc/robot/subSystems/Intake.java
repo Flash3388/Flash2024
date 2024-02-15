@@ -6,13 +6,15 @@ import edu.wpi.first.wpilibj.DigitalInput;
 
 public class Intake extends Subsystem {
     private CANSparkMax motor;
-    private final static double INTAKE_SPEED = 0.7;
+    private final static double INTAKE_SPEED = 0.65;
     private static final double SHOOT_SPEED = 0.9;
     private DigitalInput in;
+    private DigitalInput agam;
 
-    public Intake(CANSparkMax motor,  DigitalInput digitalInput){
+    public Intake(CANSparkMax motor,  DigitalInput digitalInput, DigitalInput agam){
         this.motor = motor;
         this.in = digitalInput;
+        this.agam = agam;
     }
 
     public void stop(){
@@ -30,5 +32,9 @@ public class Intake extends Subsystem {
         this.motor.set(SHOOT_SPEED);
     }
     public boolean isIN(){ return !this.in.get();
+    }
+
+    public boolean isInAgam(){
+        return this.agam.get();
     }
 }

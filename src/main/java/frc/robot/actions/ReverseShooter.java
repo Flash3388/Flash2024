@@ -12,7 +12,7 @@ public class ReverseShooter extends ActionBase {
         this.shooter = shooter;
         requires(shooter);
 
-        configure().setName("ReverseShooter").save();
+       // configure().setName("ReverseShooter").save();
     }
 
     @Override

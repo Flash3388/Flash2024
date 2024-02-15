@@ -45,7 +45,7 @@ public class LimelightAutoAlign  extends ActionBase {
         pidController.setTolerance(PID_ERROR, Time.milliseconds(500));
         pidController.setOutputLimit(PID_LIMIT);
 
-        configure().setName("LimelightAutoAlign").save();
+        //configure().setName("LimelightAutoAlign").save();
 
         requires(swerve, limelight);
     }

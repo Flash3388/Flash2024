@@ -7,33 +7,33 @@ import frc.robot.subSystems.Arm;
 import frc.robot.subSystems.Intake;
 import frc.robot.subSystems.ShooterSystem;
 
-public class TakeOut extends ActionBase {
-    private Intake intake;
-    private ShooterSystem shooter;
+import javax.swing.plaf.basic.BasicSliderUI;
+
+public class SetDefault extends ActionBase {
     private Arm arm;
+    private ShooterSystem shooter;
+    private Intake intake;
 
-    public TakeOut(Intake intake, Arm arm, ShooterSystem shooter){
-        this.intake = intake;
+    public SetDefault(Arm arm, ShooterSystem shooter, Intake intake){
         this.arm = arm;
+        this.intake = intake;
         this.shooter = shooter;
-        requires(intake, arm,shooter);
+        requires(intake,shooter);
     }
-
     @Override
-    public void initialize(ActionControl control) {//check if up
-        if(arm.getArmPosition() < 10)
-            arm.setSetPointAngle(10);
+    public void initialize(ActionControl control) {
+        arm.setSetPointAngle(Arm.DEF_ANGLE);
+        arm.setNotAmp();
+
     }
 
     @Override
     public void execute(ActionControl control) {
-        this.shooter.reverse();
-        this.intake.takeOut();
+
     }
 
     @Override
     public void end(FinishReason reason) {
-    this.intake.stop();
-    shooter.stop();
+
     }
 }
