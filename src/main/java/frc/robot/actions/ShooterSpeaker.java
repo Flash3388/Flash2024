@@ -30,7 +30,7 @@ public class ShooterSpeaker extends ActionBase {
 
         requires(shooter, intake);
 
-        configure().setName("ShooterSpeaker").save();
+        //configure().setName("ShooterSpeaker").save();
     }
 
     @Override
@@ -53,7 +53,7 @@ public class ShooterSpeaker extends ActionBase {
         }
 
         else {
-            if (arm.isStabilizedAtTargetedPosition())
+          //  if (arm.isStabilizedAtTargetedPosition())
                 shooter.shootSpeaker();
 
             if (shooter.gotToTarget(ShooterSystem.SPEED_TARGET_SPEAKER))
@@ -68,6 +68,7 @@ public class ShooterSpeaker extends ActionBase {
                 time = clock.currentTime().add(Time.seconds(DELAY_BEFORE_FINISH_IN_SECONDS));
             }
         }
+
         else{
             time = Time.INVALID;
         }

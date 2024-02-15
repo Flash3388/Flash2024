@@ -17,7 +17,7 @@ public class ShooterAMP extends ActionBase {
         this.intake = intake;
         requires(shooter, intake);
 
-        configure().setName("ShooterAMP").save();
+       // configure().setName("ShooterAMP").save();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package frc.robot.actions;
 
+import com.flash3388.flashlib.hid.XboxController;
 import com.flash3388.flashlib.robot.RunningRobot;
 import com.flash3388.flashlib.scheduling.ActionControl;
 import com.flash3388.flashlib.scheduling.FinishReason;
@@ -16,14 +17,16 @@ public class SetPointAngleByVision extends ActionBase {
     private Limelight limelight;
     private Intake intake;
     private Arm arm;
+    private XboxController xbox;
 
 
-    public SetPointAngleByVision(Limelight limelight, Intake intake, Arm arm){
+    public SetPointAngleByVision(Limelight limelight, Intake intake, Arm arm, XboxController xbox){
         this.intake = intake;
         this.limelight = limelight;
         this.arm = arm;
+        this.xbox = xbox;
 
-
+        //configure().setName("SetPointAngleByVision").save();
 
         requires(limelight);
     }
@@ -40,6 +43,7 @@ public class SetPointAngleByVision extends ActionBase {
             double angle = -1.05 * Math.pow(distance, 2) + 11.2 * distance + 18.4;
             arm.setSetPointAngle(angle);
         }
+        else control.finish();
 
     }
 

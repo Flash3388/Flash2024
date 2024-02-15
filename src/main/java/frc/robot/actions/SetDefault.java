@@ -7,6 +7,8 @@ import frc.robot.subSystems.Arm;
 import frc.robot.subSystems.Intake;
 import frc.robot.subSystems.ShooterSystem;
 
+import javax.swing.plaf.basic.BasicSliderUI;
+
 public class SetDefault extends ActionBase {
     private Arm arm;
     private ShooterSystem shooter;
@@ -16,17 +18,18 @@ public class SetDefault extends ActionBase {
         this.arm = arm;
         this.intake = intake;
         this.shooter = shooter;
-        requires(arm,intake,shooter);
+        requires(intake,shooter);
     }
     @Override
     public void initialize(ActionControl control) {
+        arm.setSetPointAngle(Arm.DEF_ANGLE);
+        arm.setNotAmp();
 
     }
 
     @Override
     public void execute(ActionControl control) {
-        arm.setSetPointAngle(Arm.DEF_ANGLE);
-        arm.setNotAmp();
+
     }
 
     @Override

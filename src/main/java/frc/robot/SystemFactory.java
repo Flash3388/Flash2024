@@ -53,7 +53,7 @@ public class SystemFactory {
 
     public static Intake createIntake() {
             CANSparkMax canSparkMax = new CANSparkMax(RobotMap.INTAKE, CANSparkLowLevel.MotorType.kBrushless);
-            Intake intake = new Intake(canSparkMax, new DigitalInput(6));
+            Intake intake = new Intake(canSparkMax, new DigitalInput(6), new DigitalInput(1));
             return intake;
         }
 

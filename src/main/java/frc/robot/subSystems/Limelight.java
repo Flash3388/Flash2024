@@ -114,11 +114,11 @@ public class Limelight extends Subsystem {
         }
         else numOfNoTargetDetection++;
 
-        if(numOfNoTargetDetection == 50){ //if we are not seeing the target for a while -> the measurements are wrong by now
+      /*  if(numOfNoTargetDetection == 50){ //if we are not seeing the target for a while -> the measurements are wrong by now
             readings = new double[Window_size]; //initialize the array
             numOfNoTargetDetection = 0;
         }
-
+*/
         int loopSize = Window_size;
         if(numOfReadings<Window_size){
             loopSize = numOfReadings;
