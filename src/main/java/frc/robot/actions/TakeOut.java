@@ -21,7 +21,8 @@ public class TakeOut extends ActionBase {
 
     @Override
     public void initialize(ActionControl control) {//check if up
-        arm.setSetPointAngle(5);
+        if(arm.getArmPosition() < 10)
+            arm.setSetPointAngle(10);
     }
 
     @Override
@@ -33,5 +34,6 @@ public class TakeOut extends ActionBase {
     @Override
     public void end(FinishReason reason) {
     this.intake.stop();
+    this.shooter.stop();
     }
 }
