@@ -109,35 +109,47 @@ public class Swerve extends Subsystem {
 
     public void drive(double speedY, double speedX, double rotation, boolean fieldRelative) {
         SwerveModuleState[] swerveModuleStates;
-        if (fieldRelative) {
-            if (rotation == 0) {
-                if (!ExtendedMath.constrained(getHeadingDegrees(), currentAngle - 2, currentAngle + 2)) {
-                    rotation = -ExtendedMath.constrain(pid.applyAsDouble(getHeadingDegrees(), currentAngle), -0.1, 0.1);
-                }
-            } else {
-                currentAngle = getHeadingDegrees();
+
+        if (rotation == 0) {
+            if (!ExtendedMath.constrained(getHeadingDegrees(), currentAngle - 1, currentAngle + 1)) {
+                rotation = -ExtendedMath.constrain(pid.applyAsDouble(getHeadingDegrees(), currentAngle), -0.1, 0.1);
             }
+        } else {
+            currentAngle = getHeadingDegrees();
+        }
 
-
+        if (fieldRelative){
             swerveModuleStates = swerveDriveKinematics.toSwerveModuleStates(
                     ChassisSpeeds.fromFieldRelativeSpeeds(speedY, speedX, rotation, Rotation2d.fromDegrees(-getHeadingDegrees())));
-
         } else {
             swerveModuleStates = swerveDriveKinematics.toSwerveModuleStates(new ChassisSpeeds(speedY, speedX, rotation));
         }
+
+
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_SPEED);
         setDesiredStates(swerveModuleStates);
         field2d.setRobotPose(odometer.getPoseMeters());
+
+
+
     }
 
 
     public void drive(double speedY, double speedX, double rotation) {
         SwerveModuleState[] swerveModuleStates;
-        swerveModuleStates = swerveDriveKinematics.toSwerveModuleStates(new ChassisSpeeds(speedY, speedX, rotation));
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_SPEED);
-        currentAngle = getHeadingDegrees();
 
+        if (rotation == 0) {
+            if (!ExtendedMath.constrained(getHeadingDegrees(), currentAngle - 1, currentAngle + 1)) {
+                rotation = -ExtendedMath.constrain(pid.applyAsDouble(getHeadingDegrees(), currentAngle), -0.1, 0.1);
+            }
+        } else {
+            currentAngle = getHeadingDegrees();
+        }
+
+        swerveModuleStates = swerveDriveKinematics.toSwerveModuleStates(new ChassisSpeeds(speedY, speedX, rotation));
+
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_SPEED);
         setDesiredStates(swerveModuleStates);
-        //    SmartDashboard.putNumberArray("x,y,rotation",odometer.getPoseMeters().getX(),odometer.getPoseMeters().getY(),odometer.getPoseMeters().getRotation())
         field2d.setRobotPose(odometer.getPoseMeters());
     }
 
