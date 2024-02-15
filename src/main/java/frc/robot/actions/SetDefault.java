@@ -3,6 +3,7 @@ package frc.robot.actions;
 import com.flash3388.flashlib.scheduling.ActionControl;
 import com.flash3388.flashlib.scheduling.FinishReason;
 import com.flash3388.flashlib.scheduling.actions.ActionBase;
+import com.flash3388.flashlib.scheduling.actions.Actions;
 import frc.robot.subSystems.Arm;
 import frc.robot.subSystems.Intake;
 import frc.robot.subSystems.ShooterSystem;
@@ -22,9 +23,10 @@ public class SetDefault extends ActionBase {
     }
     @Override
     public void initialize(ActionControl control) {
+        arm.doNotBaseOnLimelightDetection();
+        Actions.canceling(new ShooterSpeaker(shooter,intake,arm));
         arm.setSetPointAngle(Arm.DEF_ANGLE);
         arm.setNotAmp();
-
     }
 
     @Override
