@@ -55,7 +55,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xbox_systems.getDpad().down().whenActive(Actions.instant(() -> arm.setSetPointAngle(Arm.DEF_ANGLE)).alongWith(Actions.instant(() -> arm.setNotAmp())));
 
        // xbox_systems.getAxis(XboxAxis.LT)(new SetDefault(arm, shooter, intake));
-        xbox_systems.getAxis(XboxAxis.RT).asButton(0.5 ,true).whenActive(new SetDefault(arm,shooter,intake));
+        xbox_systems.getAxis(XboxAxis.RT).asButton(0.8 ,true).whenActive(new SetDefault(arm,shooter,intake));
 
         xbox_systems.getButton(XboxButton.X).whenActive(new ShooterSpeaker(shooter, intake, arm));
         xbox_systems.getButton(XboxButton.RB).whenActive((Actions.instant(() -> arm.setYesAmp())).andThen(Actions.instant(() -> arm.setSetPointAngle(Arm.AMP_ANGLE_FROM_SHOOTER))));
@@ -65,7 +65,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xbox_systems.getDpad().up().whenActive(shootSpeaker);
         limelight.setPipline(2);
 
-        xbox_systems.getAxis(XboxAxis.LT).asButton(0.5 ,true).whenActive(Actions.instant(() -> arm.setSetPointAngle(calculateAngle(limelight.getDisHorizontalToTarget()))));
+        xbox_systems.getAxis(XboxAxis.LT).asButton(0.8 ,true).whenActive(Actions.instant(() -> arm.setSetPointAngle(calculateAngle(limelight.getDisHorizontalToTarget()))));
     }
 
     @Override
