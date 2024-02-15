@@ -138,14 +138,14 @@ public class Swerve extends Subsystem {
     public void drive(double speedY, double speedX, double rotation) {
         SwerveModuleState[] swerveModuleStates;
 
-        if (rotation == 0) {
+     /*   if (rotation == 0) {
             if (!ExtendedMath.constrained(getHeadingDegrees(), currentAngle - 1, currentAngle + 1)) {
                 rotation = -ExtendedMath.constrain(pid.applyAsDouble(getHeadingDegrees(), currentAngle), -0.1, 0.1);
             }
         } else {
             currentAngle = getHeadingDegrees();
         }
-
+*/
         swerveModuleStates = swerveDriveKinematics.toSwerveModuleStates(new ChassisSpeeds(speedY, speedX, rotation));
 
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_SPEED);

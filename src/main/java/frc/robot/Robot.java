@@ -51,6 +51,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xbox_systems.getButton(XboxButton.Y).whileActive(new TakeOut(intake,arm,shooter));
         xbox_systems.getButton(XboxButton.A).whenActive(new SetPointAngleByVision(limelight,intake,arm, xbox_systems));
 
+
         //ask maayan about it
         xbox_systems.getDpad().down().whenActive(Actions.instant(() -> arm.setSetPointAngle(Arm.DEF_ANGLE)).alongWith(Actions.instant(() -> arm.setNotAmp())));
 
@@ -105,6 +106,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         arm.resetPID();
         shooter.resetI();
         limelight.init();
+       // swerve.resetWheels();
     }
 
     @Override

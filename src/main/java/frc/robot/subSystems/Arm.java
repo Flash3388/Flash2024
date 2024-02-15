@@ -86,15 +86,21 @@ public class Arm extends Subsystem {
     }
 
     public void moveToAngle(double angle){
+        if(angle - getArmPosition() > 60)
+            angle = (angle+getArmPosition())/2;
+
         if(getArmPosition() <= 0){
             angle = 10;
         }
 
+
         double speed = pid.applyAsDouble(getArmPosition(), angle) ;
         speed = ExtendedMath.constrain(speed, -0.5, 0.5);
 
-        if((getArmPosition() - angle) > 30)
+        if(( getArmPosition() - angle) > 30)
             speed = speed / 3;
+
+
 
         if(getArmPosition() > 80 && speed > 0)
             speed = speed / 2;
