@@ -48,6 +48,7 @@ public class Arm extends Subsystem {
     public static boolean isSetToAMP = false;
 
     private double setPointAngle;
+    public static boolean BASED_ON_LIMELIGHT_DETECTION = false;
 
     public Arm(CANSparkMax master, CANSparkMax follower, DutyCycleEncoder encoder){
         this.master = master;
@@ -199,4 +200,15 @@ public class Arm extends Subsystem {
     public boolean isSetToAMP(){
         return isSetToAMP;
     }
+    public void baseOnLimelightDetection(){
+        BASED_ON_LIMELIGHT_DETECTION=true;
+    }
+    public void doNotBaseOnLimelightDetection(){
+        BASED_ON_LIMELIGHT_DETECTION=false;
+    }
+    public boolean isBasedOnLimelightDetection(){
+        return BASED_ON_LIMELIGHT_DETECTION;
+    }
+
+
 }

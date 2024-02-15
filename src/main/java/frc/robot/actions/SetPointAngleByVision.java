@@ -32,12 +32,12 @@ public class SetPointAngleByVision extends ActionBase {
     }
     @Override
     public void initialize(ActionControl control) {
-
+        arm.baseOnLimelightDetection();
     }
 
     @Override
     public void execute(ActionControl control) {
-        if(intake.isIN()) {
+        if(intake.isIN() && arm.isBasedOnLimelightDetection()) {
             double distance = limelight.getDisHorizontalToTarget();
 
             double angle = -1.05 * Math.pow(distance, 2) + 11.2 * distance + 18.4;
@@ -49,6 +49,6 @@ public class SetPointAngleByVision extends ActionBase {
 
     @Override
     public void end(FinishReason reason) {
-
+        arm.doNotBaseOnLimelightDetection(); //to be sure
     }
 }

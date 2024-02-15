@@ -13,7 +13,6 @@ public class ArmController extends ActionBase {
 
     private double lastSetPoint;
     private final Timer timer;
-    public static boolean BASED_ON_LIMELIGHT_DETECTION = false;
 
     public ArmController(Arm arm) {
         this.arm = arm;
