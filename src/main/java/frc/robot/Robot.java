@@ -169,6 +169,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
         SmartDashboard.putBoolean("IS IN NOTE", intake.isIN());
         SmartDashboard.putBoolean("IS AGAM", intake.isInAgam());
+
+        swerve.print();
     }
 
     @Override
