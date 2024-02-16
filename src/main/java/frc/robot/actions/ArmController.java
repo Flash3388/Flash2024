@@ -23,7 +23,7 @@ public class ArmController extends ActionBase {
 
     @Override
     public void initialize(ActionControl control) {
-        lastSetPoint = arm.getSetPointAngle() - 1; // what if I stop this action with setPositioningNotControlled and then returns to it?
+        lastSetPoint = arm.getSetPointAngle() - 2; // what if I stop this action with setPositioningNotControlled and then returns to it?
         // is it going to throw an error due to the minValue - 1?
     }
 
