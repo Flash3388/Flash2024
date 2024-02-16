@@ -111,7 +111,7 @@ public class Swerve extends Subsystem {
         SwerveModuleState[] swerveModuleStates;
 
         if (rotation == 0) {
-            if (!ExtendedMath.constrained(getHeadingDegrees(), currentAngle - 1, currentAngle + 1)) {
+            if (!ExtendedMath.constrained(getHeadingDegrees(), currentAngle - 2, currentAngle + 2)) {
                 rotation = -ExtendedMath.constrain(pid.applyAsDouble(getHeadingDegrees(), currentAngle), -0.1, 0.1);
             }
         } else {
@@ -138,14 +138,14 @@ public class Swerve extends Subsystem {
     public void drive(double speedY, double speedX, double rotation) {
         SwerveModuleState[] swerveModuleStates;
 
-     /*   if (rotation == 0) {
-            if (!ExtendedMath.constrained(getHeadingDegrees(), currentAngle - 1, currentAngle + 1)) {
-                rotation = -ExtendedMath.constrain(pid.applyAsDouble(getHeadingDegrees(), currentAngle), -0.1, 0.1);
+        if (rotation == 0) {
+            if (!ExtendedMath.constrained(getHeadingDegrees(), currentAngle - 1.5, currentAngle + 1.5)) {
+                rotation = -ExtendedMath.constrain(pid.applyAsDouble(getHeadingDegrees(), currentAngle), -0.2, 0.2) * MAX_SPEED;
             }
         } else {
             currentAngle = getHeadingDegrees();
         }
-*/
+
         swerveModuleStates = swerveDriveKinematics.toSwerveModuleStates(new ChassisSpeeds(speedY, speedX, rotation));
 
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_SPEED);
@@ -222,12 +222,6 @@ public class Swerve extends Subsystem {
         SmartDashboard.putNumber("Gyro", getHeadingDegrees());
         SmartDashboard.putNumber("currentAng", currentAngle);
     }
-
-
-
-
-
-
 
 }
 

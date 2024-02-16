@@ -8,6 +8,8 @@ public class Intake extends Subsystem {
     private CANSparkMax motor;
     private final static double INTAKE_SPEED = 0.65;
     private static final double SHOOT_SPEED = 0.9;
+
+    private static final double PULL_SPEED = 0.5;
     private DigitalInput in;
     private DigitalInput agam;
 
@@ -36,5 +38,9 @@ public class Intake extends Subsystem {
 
     public boolean isInAgam(){
         return this.agam.get();
+    }
+
+    public void pullIn() {
+        this.motor.set(PULL_SPEED);
     }
 }

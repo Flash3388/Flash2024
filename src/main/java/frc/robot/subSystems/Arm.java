@@ -93,7 +93,6 @@ public class Arm extends Subsystem {
             angle = 10;
         }
 
-
         double speed = pid.applyAsDouble(getArmPosition(), angle) ;
         speed = ExtendedMath.constrain(speed, -0.5, 0.5);
 

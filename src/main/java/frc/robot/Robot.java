@@ -23,13 +23,14 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     private Intake intake;
     private ShooterSystem shooter;
     private Limelight limelight;
+    private Arm arm;
+
 
     private final XboxController xbox_systems;
     private final XboxController xbox_driver; //driver
     PowerDistribution a = new PowerDistribution(1, PowerDistribution.ModuleType.kRev);
 
 
-   private Arm arm;
 
     public Robot(FrcRobotControl robotControl) {
         super(robotControl);
@@ -51,11 +52,17 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xbox_systems.getButton(XboxButton.Y).whileActive(new TakeOut(intake,arm,shooter));
         xbox_systems.getButton(XboxButton.A).whenActive(new SetPointAngleByVision(limelight,intake,arm, xbox_systems));
         xbox_systems.getButton(XboxButton.X).whenActive(new ShooterSpeaker(shooter, intake, arm));
-        xbox_systems.getButton(XboxButton.RB).whenActive((Actions.instant(() -> arm.setYesAmp())).andThen(Actions.instant(() -> arm.setSetPointAngle(Arm.AMP_ANGLE_FROM_SHOOTER))));
-        xbox_systems.getButton(XboxButton.LB).whenActive((Actions.instant(() -> arm.setNotAmp())).andThen(Actions.instant(() -> arm.setSetPointAngle(Arm.SPEAKER_ANGLE))));
-        xbox_systems.getAxis(XboxAxis.RT).asButton(0.8 ,true).whenActive(new SetDefault(arm,shooter,intake));
-        xbox_systems.getAxis(XboxAxis.LT).asButton(0.8 ,true).whenActive(Actions.instant(() -> arm.setSetPointAngle(calculateAngle(limelight.getDisHorizontalToTarget()))));
 
+        xbox_systems.getButton(XboxButton.RB).whenActive((Actions.instant(() -> arm.setYesAmp()))
+                .andThen(Actions.instant(() -> arm.setSetPointAngle(Arm.AMP_ANGLE_FROM_SHOOTER))));
+        xbox_systems.getButton(XboxButton.LB).whenActive((Actions.instant(() -> arm.setNotAmp()))
+                .andThen(Actions.instant(() -> arm.setSetPointAngle(Arm.SPEAKER_ANGLE))));
+
+        xbox_systems.getAxis(XboxAxis.RT).asButton(0.8 ,true).whenActive(new SetDefault(arm,shooter,intake));
+        xbox_systems.getAxis(XboxAxis.LT).asButton(0.8 ,true).whenActive
+                (Actions.instant(() -> arm.setSetPointAngle(calculateAngle(limelight.getDisHorizontalToTarget()))));
+
+        xbox_systems.getDpad().right().whenActive(new Pull_In(intake));
 
         ActionGroup shootSpeaker = new TakeIn(intake,arm).andThen((new SetPointAngleByVision(limelight, intake, arm, xbox_systems)).alongWith(new ShooterSpeaker(shooter, intake, arm)));
         xbox_systems.getDpad().up().whenActive(shootSpeaker);
