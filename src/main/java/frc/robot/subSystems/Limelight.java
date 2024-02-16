@@ -117,13 +117,13 @@ public class Limelight extends Subsystem {
     }
     public double getAvgDistance(){
         double reading=getDistanceToTarget();
-        if(reading!=0){
+        if(reading!=0){ //see
             readings[numOfReadings%10]=reading;
             numOfReadings++;
             timer.reset();
             timer.start();
         }
-        else{
+        else{ //can't see
             if (timer.hasElapsed(15)) {
                 readings = new double[Window_size];}
         }
