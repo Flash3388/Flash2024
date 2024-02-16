@@ -61,7 +61,7 @@ public class SwerveModule {
         pidSteer.setPositionPIDWrappingMinInput(0);
         pidSteer.setPositionPIDWrappingMaxInput(360);
 
-        steerEncoder.setPosition(Mathf.translateAngle((positionAbsEncoder - zeroAngle)/360/ GEAR_RATIO_STEER));
+        steerEncoder.setPosition(Mathf.translateAngle(positionAbsEncoder - zeroAngle)/360/ GEAR_RATIO_STEER);
 
         pidSteer.setP(STEER_P);
         pidSteer.setI(STEER_I);
