@@ -1,6 +1,7 @@
 package frc.robot;
 
 import com.ctre.phoenix.sensors.CANCoder;
+import com.flash3388.flashlib.math.Mathf;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
@@ -56,12 +57,15 @@ public class SwerveModule {
         this.absoluteEncoder = absoluteEncoder;
         double positionAbsEncoder = this.absoluteEncoder.getAbsolutePosition(); //divide angles in the creation of the absolute encoder
 
-        steerEncoder.setPosition((positionAbsEncoder - zeroAngle)/360/ GEAR_RATIO_STEER);
+        steerEncoder.setPosition(Mathf.translateAngle(positionAbsEncoder - zeroAngle)/360/ GEAR_RATIO_STEER);
 
         pidSteer.setP(STEER_P);
         pidSteer.setI(STEER_I);
         pidSteer.setD(STEER_D);
         pidSteer.setFF(STEER_F);
+        pidSteer.setPositionPIDWrappingEnabled(true);
+        pidSteer.setPositionPIDWrappingMaxInput(360);
+        pidSteer.setPositionPIDWrappingMinInput(0);
 
         pidDrive.setP(DRIVE_P);
         pidDrive.setI(DRIVE_I);

@@ -53,7 +53,7 @@ public class ShooterSpeaker extends ActionBase {
         }
 
         else {
-          //  if (arm.isStabilizedAtTargetedPosition())
+            if (arm.isStabilizedAtTargetedPosition())
                 shooter.shootSpeaker();
 
             if (shooter.gotToTarget(ShooterSystem.SPEED_TARGET_SPEAKER))

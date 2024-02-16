@@ -49,25 +49,39 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         arm.setDefaultAction(new ArmController(arm));
         xbox_systems.getButton(XboxButton.B).whenActive(new TakeIn(intake,arm));
         xbox_systems.getButton(XboxButton.Y).whileActive(new TakeOut(intake,arm,shooter));
-        xbox_systems.getButton(XboxButton.A).whenActive(new SetPointAngleByVision(limelight,intake,arm, xbox_systems));
+        xbox_systems.getButton(XboxButton.A).whenActive(new
+                SetPointAngleByVision(limelight,intake,arm, xbox_systems));
 
 
         //ask maayan about it
-        xbox_systems.getDpad().down().whenActive(Actions.instant(() -> arm.setSetPointAngle(Arm.DEF_ANGLE)).alongWith(Actions.instant(() -> arm.setNotAmp())));
+     //   xbox_systems.getDpad().down().whenActive(Actions.instant(() -> arm.setSetPointAngle(Arm.DEF_ANGLE)).alongWith(Actions.instant(() -> arm.setNotAmp())));
 
        // xbox_systems.getAxis(XboxAxis.LT)(new SetDefault(arm, shooter, intake));
         xbox_systems.getAxis(XboxAxis.RT).asButton(0.8 ,true).whenActive(new SetDefault(arm,shooter,intake));
 
         xbox_systems.getButton(XboxButton.X).whenActive(new ShooterSpeaker(shooter, intake, arm));
         xbox_systems.getButton(XboxButton.RB).whenActive((Actions.instant(() -> arm.setYesAmp())).andThen(Actions.instant(() -> arm.setSetPointAngle(Arm.AMP_ANGLE_FROM_SHOOTER))));
-        xbox_systems.getButton(XboxButton.LB).whenActive((Actions.instant(() -> arm.setYesAmp())).andThen(Actions.instant(() -> arm.setSetPointAngle(Arm.AMP_ANGLE_FROM_INTAKE))));
+        xbox_systems.getButton(XboxButton.LB).whenActive((Actions.instant(() -> arm.setNotAmp())).andThen(Actions.instant(() -> arm.setSetPointAngle(Arm.SPEAKER_ANGLE))));
 //add get to angle of speaker
         ActionGroup shootSpeaker = new TakeIn(intake,arm).andThen((new SetPointAngleByVision(limelight, intake, arm, xbox_systems)).alongWith(new ShooterSpeaker(shooter, intake, arm)));
         xbox_systems.getDpad().up().whenActive(shootSpeaker);
         limelight.setPipline(2);
 
+
         xbox_systems.getAxis(XboxAxis.LT).asButton(0.8 ,true).whenActive(Actions.instant(() -> arm.setSetPointAngle(calculateAngle(limelight.getDisHorizontalToTarget()))));
+   /*
+   write code to detect on which april tag id i'm looking at-so it'll calculate only based on the middle one
+   -add time to when i can't see apriltags-10 seconds
+
+    */
+
+
+
+
+
     }
+
+
 
     @Override
     public void disabledInit() {

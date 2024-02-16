@@ -29,6 +29,7 @@ public class ArmController extends ActionBase {
     @Override
     public void execute(ActionControl control) {
 
+        SmartDashboard.putNumber("last set point",lastSetPoint);
         if(arm.getSetPointAngle() != lastSetPoint){
             lastSetPoint = arm.getSetPointAngle();
 

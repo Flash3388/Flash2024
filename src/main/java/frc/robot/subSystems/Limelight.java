@@ -102,8 +102,11 @@ public class Limelight extends Subsystem {
 
     public double getDisHorizontalToTarget(){
         double cameraHeight = 0.485;
-        double actualDis = Math.sqrt(Math.pow(getAvgDistance(),2) - Math.pow(getTargetHeight() - cameraHeight,2));
-        SmartDashboard.putNumber("hopefully real distance",actualDis);
+        double actualDis = 0;
+        if(getAvgDistance()!=0) {
+            actualDis = Math.sqrt(Math.pow(getAvgDistance(), 2) - Math.pow(getTargetHeight() - cameraHeight, 2));
+        }
+         SmartDashboard.putNumber("hopefully real distance",actualDis);
         return actualDis;
     }
     public double getAvgDistance(){
