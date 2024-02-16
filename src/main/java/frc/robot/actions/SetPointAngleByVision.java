@@ -33,6 +33,7 @@ public class SetPointAngleByVision extends ActionBase {
     @Override
     public void initialize(ActionControl control) {
         arm.baseOnLimelightDetection();
+        limelight.startTimer();
     }
 
     @Override
@@ -51,5 +52,6 @@ public class SetPointAngleByVision extends ActionBase {
     @Override
     public void end(FinishReason reason) {
         arm.doNotBaseOnLimelightDetection(); //to be sure
+        limelight.stopTimer();
     }
 }

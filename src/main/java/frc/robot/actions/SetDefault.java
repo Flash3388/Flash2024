@@ -24,9 +24,8 @@ public class SetDefault extends ActionBase {
     @Override
     public void initialize(ActionControl control) {
         arm.doNotBaseOnLimelightDetection();
-       // Actions.canceling(new ShooterSpeaker(shooter,intake,arm));
-        arm.setSetPointAngle(Arm.DEF_ANGLE);
         arm.setNotAmp();
+        arm.setSetPointAngle(Arm.DEF_ANGLE);
     }
 
     @Override

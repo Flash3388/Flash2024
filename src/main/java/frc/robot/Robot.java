@@ -62,12 +62,22 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xbox_systems.getAxis(XboxAxis.LT).asButton(0.8 ,true).whenActive
                 (Actions.instant(() -> arm.setSetPointAngle(calculateAngle(limelight.getDisHorizontalToTarget()))));
 
-        xbox_systems.getDpad().right().whenActive(new Pull_In(intake));
 
         ActionGroup shootSpeaker = new TakeIn(intake,arm).andThen((new SetPointAngleByVision(limelight, intake, arm, xbox_systems)).alongWith(new ShooterSpeaker(shooter, intake, arm)));
+
+        xbox_systems.getDpad().right().whenActive(new Pull_In(intake));
         xbox_systems.getDpad().up().whenActive(shootSpeaker);
 
         limelight.setPipline(2);
+
+
+
+   /*
+   write code to detect on which april tag id i'm looking at-so it'll calculate only based on the middle one
+   -add time to when i can't see apriltags-10 seconds
+
+    */
+
     }
 
     @Override
