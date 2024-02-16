@@ -3,6 +3,7 @@ package frc.robot.actions;
 import com.flash3388.flashlib.scheduling.ActionControl;
 import com.flash3388.flashlib.scheduling.FinishReason;
 import com.flash3388.flashlib.scheduling.actions.ActionBase;
+import com.jmath.ExtendedMath;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subSystems.Arm;
@@ -30,7 +31,7 @@ public class ArmController extends ActionBase {
     public void execute(ActionControl control) {
 
         SmartDashboard.putNumber("last set point",lastSetPoint);
-        if(arm.getSetPointAngle() != lastSetPoint){
+        if(!ExtendedMath.constrained(arm.getSetPointAngle() - lastSetPoint, -1, 1)){
             lastSetPoint = arm.getSetPointAngle();
 
             if (lastSetPoint != Double.MIN_VALUE) {

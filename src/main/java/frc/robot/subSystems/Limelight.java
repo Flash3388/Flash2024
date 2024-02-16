@@ -2,6 +2,8 @@ package frc.robot.subSystems;
 
 import com.flash3388.flashlib.robot.RunningRobot;
 import com.flash3388.flashlib.scheduling.Subsystem;
+import com.flash3388.flashlib.time.Clock;
+import com.flash3388.flashlib.time.Time;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.*;
@@ -9,6 +11,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.LimelightHelpers.LimelightHelpers;
+import edu.wpi.first.wpilibj.Timer;
 
 import java.util.Optional;
 
@@ -19,11 +22,14 @@ public class Limelight extends Subsystem {
 
     private AprilTagFieldLayout layout;
     private Swerve swerve;
+    private static final double DELAY_BEFORE_FINISH_IN_SECONDS = 2;
+    private Timer timer;
+
 
     public Limelight(Swerve swerve){
         layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
         layout.setOrigin(AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide); //if we're on the blue side
-
+        timer = new Timer();
         this.swerve = swerve;
     }
     public void setPipline(int n){
@@ -114,8 +120,17 @@ public class Limelight extends Subsystem {
         if(reading!=0){
             readings[numOfReadings%10]=reading;
             numOfReadings++;
+            timer.reset();
+            timer.start();
         }
-        else numOfNoTargetDetection++;
+        else{
+            if (timer.hasElapsed(15)) {
+                readings = new double[Window_size];}
+        }
+
+        SmartDashboard.putNumber(" no target Time counted", timer.get());
+
+
 
       /*  if(numOfNoTargetDetection == 50){ //if we are not seeing the target for a while -> the measurements are wrong by now
             readings = new double[Window_size]; //initialize the array
@@ -168,6 +183,12 @@ public class Limelight extends Subsystem {
         return avg;
 
        */
+    }
+    public void stopTimer(){
+        timer.stop();
+    }
+    public void startTimer(){
+        timer.start();
     }
 
     public boolean isThereTarget(){
