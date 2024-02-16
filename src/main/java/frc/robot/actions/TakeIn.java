@@ -29,12 +29,13 @@ public class TakeIn extends ActionBase {
         }
         else{
             control.finish();
-            arm.setSetPointAngle(20);
         }
     }
 
     @Override
     public void end(FinishReason reason) {
     this.intake.stop();
+    arm.setSetPointAngle(Arm.DEF_ANGLE);
+
     }
 }
