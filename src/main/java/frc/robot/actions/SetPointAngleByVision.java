@@ -37,6 +37,7 @@ public class SetPointAngleByVision extends ActionBase {
 
     @Override
     public void execute(ActionControl control) {
+
         if(intake.isIN() && arm.isBasedOnLimelightDetection()) {
             double distance = limelight.getDisHorizontalToTarget();
 

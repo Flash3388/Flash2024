@@ -210,7 +210,7 @@ public class Arm extends Subsystem {
         BASED_ON_LIMELIGHT_DETECTION=true;
     }
     public void doNotBaseOnLimelightDetection(){
-        BASED_ON_LIMELIGHT_DETECTION=false;
+        BASED_ON_LIMELIGHT_DETECTION = false;
     }
     public boolean isBasedOnLimelightDetection(){
         return BASED_ON_LIMELIGHT_DETECTION;
