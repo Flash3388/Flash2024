@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.LimelightHelpers.LimelightHelpers;
 import edu.wpi.first.wpilibj.Timer;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 public class Limelight extends Subsystem {
@@ -23,15 +24,17 @@ public class Limelight extends Subsystem {
 
     private AprilTagFieldLayout layout;
     private Swerve swerve;
+    private Arm arm;
     private static final double DELAY_BEFORE_FINISH_IN_SECONDS = 2;
     private Timer timer;
 
 
-    public Limelight(Swerve swerve){
+    public Limelight(Swerve swerve, Arm arm){
         layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
         layout.setOrigin(AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide); //if we're on the blue side
         timer = new Timer();
         this.swerve = swerve;
+        this.arm = arm;
     }
     public void setPipline(int n){
         table.getEntry("pipeline").setValue(n);
@@ -53,7 +56,10 @@ public class Limelight extends Subsystem {
 
             // return table.getEntry("tx").getDouble(0.0);
         }
-        double aprilTagId = 10; // id of speaker -optinal to see on which state i wanna be in-speaker or amp
+        double aprilTagId = 10;
+        if(arm.isSetToAMP())
+            aprilTagId = 10;
+        else aprilTagId = 3;// id of amp-middle
         Optional<Pose3d> apriltagPose = layout.getTagPose((int)(aprilTagId)); //position of apriltag
 
         Pose2d differenceBetweenRobotToTarget = swerve.getOdometer().getPoseMeters().relativeTo(apriltagPose.get().toPose2d());
@@ -141,7 +147,7 @@ public class Limelight extends Subsystem {
             timer.start();
         }
         else{ //can't see
-            if (timer.hasElapsed(15)) {
+            if (timer.hasElapsed(5)) {
                 readings = new double[Window_size];}
         }
 
