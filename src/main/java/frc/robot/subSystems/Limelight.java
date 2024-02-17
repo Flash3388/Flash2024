@@ -40,9 +40,15 @@ public class Limelight extends Subsystem {
         table.getEntry("pipeline").setValue(n);
     }
 
-    public double getXAngleToTarget() {////
+    public double getXAngleToTarget_Speaker() {// for speaker
         //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
+        double aprilTagId = 7; //default is blue alliance
+        if(layout.getOrigin().equals(AprilTagFieldLayout.OriginPosition.kRedAllianceWallRightSide)) //if are we red alliance
+            aprilTagId =4;
+        Pose2d differenceBetweenRobotToTarget;
+        Optional<Pose3d> apriltagPose = layout.getTagPose((int)(aprilTagId)); //position of apriltag
         if (isThereTarget()) {
+
             robotPoseTargetSpace = LimelightHelpers.getTargetPose_RobotSpace("limelight-banana");
             SmartDashboard.putNumber("cameraPtoTRotation 5", robotPoseTargetSpace[5]);
             SmartDashboard.putNumber("cameraPtoTRotation 4", robotPoseTargetSpace[4]);
@@ -52,19 +58,78 @@ public class Limelight extends Subsystem {
             SmartDashboard.putNumber("cameraPtoTRotation 3", robotPoseTargetSpace[3]);
             SmartDashboard.putNumber("tx", table.getEntry("tx").getDouble(0.0));
 
-            return table.getEntry("tx").getDouble(0.0);
+            //check if it works
+            return robotPoseTargetSpace[5];
 
-            // return table.getEntry("tx").getDouble(0.0);
+
+         //   return table.getEntry("tx").getDouble(0.0);
         }
-        double aprilTagId = 10;
-        if(arm.isSetToAMP())
-            aprilTagId = 10;
-        else aprilTagId = 3;// id of amp-middle
-        Optional<Pose3d> apriltagPose = layout.getTagPose((int)(aprilTagId)); //position of apriltag
+        //if i can't see target-use odometer
 
-        Pose2d differenceBetweenRobotToTarget = swerve.getOdometer().getPoseMeters().relativeTo(apriltagPose.get().toPose2d());
+
+        differenceBetweenRobotToTarget = apriltagPose.get().toPose2d().relativeTo(swerve.getOdometer().getPoseMeters());
         return differenceBetweenRobotToTarget.getRotation().getDegrees();
     }
+    public double getXAngleToTarget_Amp() {// for amp degrees
+        //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
+        double aprilTagId = 6; //default is blue alliance
+        if(layout.getOrigin().equals(AprilTagFieldLayout.OriginPosition.kRedAllianceWallRightSide)) //if are we red alliance
+            aprilTagId =5;
+
+        Optional<Pose3d> apriltagPose = layout.getTagPose((int)(aprilTagId)); //position of apriltag
+        if (isThereTarget()) {
+
+            robotPoseTargetSpace = LimelightHelpers.getTargetPose_RobotSpace("limelight-banana");
+            SmartDashboard.putNumber("cameraPtoTRotation 5", robotPoseTargetSpace[5]);
+            SmartDashboard.putNumber("cameraPtoTRotation 4", robotPoseTargetSpace[4]);
+            SmartDashboard.putNumber("cameraPtoTRotation 2", robotPoseTargetSpace[2]);
+            SmartDashboard.putNumber("cameraPtoTRotation 1", robotPoseTargetSpace[1]);
+            SmartDashboard.putNumber("cameraPtoTRotation 0", robotPoseTargetSpace[0]);
+            SmartDashboard.putNumber("cameraPtoTRotation 3", robotPoseTargetSpace[3]);
+            SmartDashboard.putNumber("tx", table.getEntry("tx").getDouble(0.0));
+
+            //check if it works
+            return robotPoseTargetSpace[5];
+
+
+            //   return table.getEntry("tx").getDouble(0.0);
+        }
+        //if i can't see target-use odometer
+
+
+        Pose2d differenceBetweenRobotToTarget = apriltagPose.get().toPose2d().relativeTo(swerve.getOdometer().getPoseMeters());
+        return differenceBetweenRobotToTarget.getRotation().getDegrees();
+    }
+    public double getXDistanceToTarget_Amp() {// for amp distance
+        //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
+        double aprilTagId = 6; //default is blue alliance
+        if(layout.getOrigin().equals(AprilTagFieldLayout.OriginPosition.kRedAllianceWallRightSide)) //if are we red alliance
+            aprilTagId =5;
+
+        //the movement is in the x axis
+        Optional<Pose3d> apriltagPose = layout.getTagPose((int)(aprilTagId)); //position of apriltag
+        if (isThereTarget()) {
+
+            robotPoseTargetSpace = LimelightHelpers.getTargetPose_RobotSpace("limelight-banana");
+            SmartDashboard.putNumber("cameraPtoTRotation 5", robotPoseTargetSpace[5]);
+            SmartDashboard.putNumber("cameraPtoTRotation 4", robotPoseTargetSpace[4]);
+            SmartDashboard.putNumber("cameraPtoTRotation 2", robotPoseTargetSpace[2]);
+            SmartDashboard.putNumber("cameraPtoTRotation 1", robotPoseTargetSpace[1]);
+            SmartDashboard.putNumber("cameraPtoTRotation 0", robotPoseTargetSpace[0]);
+            SmartDashboard.putNumber("cameraPtoTRotation 3", robotPoseTargetSpace[3]);
+            SmartDashboard.putNumber("tx", table.getEntry("tx").getDouble(0.0));
+
+            //check if it works
+            return robotPoseTargetSpace[0];
+        }
+        //if i can't see target-use odometer
+
+        Pose2d differenceBetweenRobotToTarget = apriltagPose.get().toPose2d().relativeTo(swerve.getOdometer().getPoseMeters());
+        return differenceBetweenRobotToTarget.getX(); //hoping it'll work-for both the positive and negative side
+    }
+
+
+
     public double getTargetHeight() {
         //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
         if (isThereTarget()) {

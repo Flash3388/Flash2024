@@ -55,6 +55,7 @@ public class LimelightAutoAlign  extends ActionBase {
         startingAngle = swerve.getHeadingDegrees();
         SmartDashboard.putNumber("startingAngle",startingAngle);
         SmartDashboard.putNumber("X angle to target",limelight.getXAngleToTarget());
+        //how do i know to which state i wanna be in
 
         this.angle2Target = limelight.getXAngleToTarget() + startingAngle ;
         SmartDashboard.putNumber("angle2T",angle2Target);
