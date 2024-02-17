@@ -73,7 +73,7 @@ public class Arm extends Subsystem {
         pid = PidController.newNamedController("drive", KP, KI, KD, 0);
         pid.setIZone(I_ZONE);
 
-        setPointAngle = DEF_ANGLE;
+        setSetPointAngle(DEF_ANGLE);
         SmartDashboard.putNumber("set point A", DEF_ANGLE);
 
 
@@ -83,6 +83,16 @@ public class Arm extends Subsystem {
 
         master.setIdleMode(CANSparkBase.IdleMode.kBrake);
         follower.setIdleMode(CANSparkBase.IdleMode.kBrake);
+
+        master.getPIDController().setP(0);
+        master.getPIDController().setI(0);
+        master.getPIDController().setD(0);
+        master.getPIDController().setFF(0);
+
+        follower.getPIDController().setP(0);
+        follower.getPIDController().setI(0);
+        follower.getPIDController().setD(0);
+        follower.getPIDController().setFF(0);
     }
 
     public void moveToAngle(double angle){
@@ -98,8 +108,6 @@ public class Arm extends Subsystem {
 
         if(( getArmPosition() - angle) > 30)
             speed = speed / 3;
-
-
 
         if(getArmPosition() > 80 && speed > 0)
             speed = speed / 2;
