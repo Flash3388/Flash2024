@@ -188,6 +188,9 @@ public class Swerve extends Subsystem {
         odometer.resetPosition(gyro.getRotation2d(), getModulePositions(), pose2d);
         updateField();
     }
+    public SwerveDriveOdometry getOdometer(){
+        return odometer;
+    }
     public void resetOdometer() {
         odometer.resetPosition(Rotation2d.fromDegrees(0), getModulePositions(),
                 new Pose2d(new Translation2d(0, 0), new Rotation2d(0)));

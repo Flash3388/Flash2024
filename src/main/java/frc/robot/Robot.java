@@ -73,8 +73,10 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
 
    /*
+    // X button- if we're in speaker mode-it'll just use auto align. otherwise(amp mode), it'll move to the sides untill
+    // it's parallel and then it'll autoAlign.
+
    write code to detect on which april tag id i'm looking at-so it'll calculate only based on the middle one
-   -add time to when i can't see apriltags-10 seconds
 
     */
 

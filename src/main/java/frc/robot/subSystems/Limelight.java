@@ -4,6 +4,7 @@ import com.flash3388.flashlib.robot.RunningRobot;
 import com.flash3388.flashlib.scheduling.Subsystem;
 import com.flash3388.flashlib.time.Clock;
 import com.flash3388.flashlib.time.Time;
+import com.jmath.ExtendedMath;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.*;
@@ -17,7 +18,7 @@ import java.util.Optional;
 
 public class Limelight extends Subsystem {
     private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-banana");
-    private double[] cameraPoseTargetSpace = LimelightHelpers.getCameraPose_TargetSpace("limelight-banana");
+    private double[] robotPoseTargetSpace = LimelightHelpers.getTargetPose_RobotSpace("limelight-banana");
     //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
 
     private AprilTagFieldLayout layout;
@@ -35,22 +36,26 @@ public class Limelight extends Subsystem {
     public void setPipline(int n){
         table.getEntry("pipeline").setValue(n);
     }
+
     public double getXAngleToTarget() {////
         //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
         if (isThereTarget()) {
-            cameraPoseTargetSpace = LimelightHelpers.getCameraPose_TargetSpace("limelight-banana");
-            SmartDashboard.putNumber("cameraPtoTRotation 5", cameraPoseTargetSpace[5]);
-            SmartDashboard.putNumber("cameraPtoTRotation 4", cameraPoseTargetSpace[4]);
-            SmartDashboard.putNumber("cameraPtoTRotation 2", cameraPoseTargetSpace[2]);
-            SmartDashboard.putNumber("cameraPtoTRotation 1", cameraPoseTargetSpace[1]);
-            SmartDashboard.putNumber("cameraPtoTRotation 0", cameraPoseTargetSpace[0]);
-            SmartDashboard.putNumber("cameraPtoTRotation 3", cameraPoseTargetSpace[3]);
+            robotPoseTargetSpace = LimelightHelpers.getTargetPose_RobotSpace("limelight-banana");
+            SmartDashboard.putNumber("cameraPtoTRotation 5", robotPoseTargetSpace[5]);
+            SmartDashboard.putNumber("cameraPtoTRotation 4", robotPoseTargetSpace[4]);
+            SmartDashboard.putNumber("cameraPtoTRotation 2", robotPoseTargetSpace[2]);
+            SmartDashboard.putNumber("cameraPtoTRotation 1", robotPoseTargetSpace[1]);
+            SmartDashboard.putNumber("cameraPtoTRotation 0", robotPoseTargetSpace[0]);
+            SmartDashboard.putNumber("cameraPtoTRotation 3", robotPoseTargetSpace[3]);
             SmartDashboard.putNumber("tx", table.getEntry("tx").getDouble(0.0));
 
             return table.getEntry("tx").getDouble(0.0);
 
             // return table.getEntry("tx").getDouble(0.0);
         }
+        Pose2d differenceBetweenRobotToTarget = swerve.getOdometer().getPoseMeters().relativeTo(apriltagPose.get().toPose2d());
+        actualDis = Math.sqrt(Math.pow(differenceBetweenRobotToTarget.getX(),2) + Math.pow(differenceBetweenRobotToTarget.getY(),2));
+
         return 0;
     }
     public double getTargetHeight() {
@@ -71,11 +76,11 @@ public class Limelight extends Subsystem {
     public double getYAngleToTarget() {////
         //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
         if (isThereTarget()) {
-            cameraPoseTargetSpace = LimelightHelpers.getCameraPose_TargetSpace("limelight-banana");
-            SmartDashboard.putNumber("cameraPtoTRotation 4", cameraPoseTargetSpace[4]);
+            robotPoseTargetSpace = LimelightHelpers.getCameraPose_TargetSpace("limelight-banana");
+            SmartDashboard.putNumber("cameraPtoTRotation 4", robotPoseTargetSpace[4]);
             SmartDashboard.putNumber("ty", table.getEntry("ty").getDouble(0.0));
 
-            return cameraPoseTargetSpace[4];
+            return robotPoseTargetSpace[4];
         }
         return 0;
     }
@@ -85,11 +90,11 @@ public class Limelight extends Subsystem {
     public double getDistanceToTarget() {
         //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
         if (isThereTarget()) {
-            cameraPoseTargetSpace = LimelightHelpers.getCameraPose_TargetSpace("limelight-banana");
+            robotPoseTargetSpace = LimelightHelpers.getCameraPose_TargetSpace("limelight-banana");
             double distance = Math.sqrt(
-                    Math.pow(cameraPoseTargetSpace[0], 2) +
-                            Math.pow(cameraPoseTargetSpace[1], 2) +
-                            Math.pow(cameraPoseTargetSpace[2], 2)
+                    Math.pow(robotPoseTargetSpace[0], 2) +
+                            Math.pow(robotPoseTargetSpace[1], 2) +
+                            Math.pow(robotPoseTargetSpace[2], 2)
             );
             return distance;
         }
@@ -112,6 +117,15 @@ public class Limelight extends Subsystem {
         if(getAvgDistance()!=0) {
           //  actualDis = Math.sqrt(Math.pow(getAvgDistance(), 2) - Math.pow(getTargetHeight() - cameraHeight, 2));
             actualDis = getAvgDistance();
+        }
+        else {
+            //relativeTo(robot)
+            double aprilTagId = 10; // id of speaker    LimelightHelpers.getFiducialID("limelight-banana");
+            SmartDashboard.putNumber("aprilTagId",aprilTagId);
+            Optional<Pose3d> apriltagPose = layout.getTagPose((int)(aprilTagId)); //position of apriltag
+
+            Pose2d differenceBetweenRobotToTarget = swerve.getOdometer().getPoseMeters().relativeTo(apriltagPose.get().toPose2d());
+            actualDis = Math.sqrt(Math.pow(differenceBetweenRobotToTarget.getX(),2) + Math.pow(differenceBetweenRobotToTarget.getY(),2));
         }
          SmartDashboard.putNumber("hopefully real distance",actualDis);
         return actualDis;
