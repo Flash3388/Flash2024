@@ -53,10 +53,11 @@ public class Limelight extends Subsystem {
 
             // return table.getEntry("tx").getDouble(0.0);
         }
-        Pose2d differenceBetweenRobotToTarget = swerve.getOdometer().getPoseMeters().relativeTo(apriltagPose.get().toPose2d());
-        actualDis = Math.sqrt(Math.pow(differenceBetweenRobotToTarget.getX(),2) + Math.pow(differenceBetweenRobotToTarget.getY(),2));
+        double aprilTagId = 10; // id of speaker -optinal to see on which state i wanna be in-speaker or amp
+        Optional<Pose3d> apriltagPose = layout.getTagPose((int)(aprilTagId)); //position of apriltag
 
-        return 0;
+        Pose2d differenceBetweenRobotToTarget = swerve.getOdometer().getPoseMeters().relativeTo(apriltagPose.get().toPose2d());
+        return differenceBetweenRobotToTarget.getRotation().getDegrees();
     }
     public double getTargetHeight() {
         //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
