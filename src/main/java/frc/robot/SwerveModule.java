@@ -184,4 +184,7 @@ public class SwerveModule {
     public double getDistancePassed() {
         return driveEncoder.getPosition() * GEAR_RATIO_DRIVE * WHEEL_RADIUS_M  * Math.PI * 2;
     }
+    public SwerveModuleState getModuleStates(){
+        return  new SwerveModuleState((getVelocityRpm()/60) *2*Math.PI*WHEEL_RADIUS_M, Rotation2d.fromDegrees(getHeadingDegrees()));
+    }
 }

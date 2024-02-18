@@ -155,7 +155,7 @@ public class Swerve extends Subsystem {
         setDesiredStates(swerveModuleStates);
         field2d.setRobotPose(odometer.getPoseMeters());
     }
-    public void Pathdrive(ChassisSpeeds speeds){
+    public void pathDrive(ChassisSpeeds speeds){
         SwerveModuleState[] swerveModuleStates;
         swerveModuleStates = swerveDriveKinematics.toSwerveModuleStates(speeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates,4.4196);
@@ -166,10 +166,19 @@ public class Swerve extends Subsystem {
             swerveModules[i].setDesiredState(swerveModuleStates[i]);
         }
     }
+    public SwerveModuleState[] getModuleStates(){
+        SwerveModuleState[] swerveModuleStates = new SwerveModuleState[4];
+        for(int i =0; i <4; i++){
+            swerveModuleStates[i] = swerveModules[i].getModuleStates();
+        }
+        return swerveModuleStates;
+    }
     public Pose2d getPose() {
         return odometer.getPoseMeters();
     }
-
+    public ChassisSpeeds getSpeeds(){
+        return SwerveDriveKinematics.toChassisSpeeds(new SwerveDriveKinematics.SwerveDriveWheelStates(getModuleStates()));
+    }
 
 
     public void resetWheels() {
