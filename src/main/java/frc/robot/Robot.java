@@ -29,6 +29,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     private MoveDistance moveDistance;
 
     private ActionGroup moveAndShoot;
+    private ActionGroup shootAndMove;
 
     private final XboxController xbox_systems;
     private final XboxController xbox_driver; //driver
@@ -81,6 +82,10 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
          this.moveAndShoot = new MoveDistance(swerve, -1.2).andThen(new LimelightAutoAlign(limelight, swerve))
                 .andThen(new SetPointAngleByVision(limelight, intake, arm, xbox_systems)).alongWith(new ShooterSpeaker(shooter, intake,arm));
 
+         this.shootAndMove = new LimelightAutoAlign(limelight, swerve).andThen(Actions.instant(() -> arm.setNotAmp()))
+                         .andThen(Actions.instant(() -> arm.setSetPointAngle(Arm.SPEAKER_ANGLE))).andThen(new ShooterSpeaker(shooter, intake,arm)).andThen(Actions.instant(() -> swerve.resetWheels()))
+                         .andThen(new TakeIn(intake, arm))
+                         .alongWith(new MoveDistance(swerve, -1.2));
    /*
    write code to detect on which april tag id i'm looking at-so it'll calculate only based on the middle one
    -add time to when i can't see apriltags-10 seconds
@@ -117,7 +122,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         arm.resetPID();
         swerve.resetWheels();
         double dist = SmartDashboard.getNumber("set point distance", 0);
-        this.moveAndShoot.start();
+        //this.moveAndShoot.start();
+        this.shootAndMove.start();
 
     }
 
