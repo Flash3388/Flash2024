@@ -30,6 +30,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
     private ActionGroup moveAndShoot;
     private ActionGroup shootAndMove;
+    private ActionGroup shootMoveTakeAndShoot;
 
     private final XboxController xbox_systems;
     private final XboxController xbox_driver; //driver
@@ -91,8 +92,15 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         this.shootAndMove = new LimelightAutoAlign(limelight, swerve).andThen((new SetPointAngleByVision(limelight, intake, arm, shooter))
                 .alongWith(new Shoot(shooter, intake,arm))).andThen((Actions.instant(() -> swerve.resetWheels()))
                 .andThen(new TakeIn(intake, arm))
-                .alongWith(new MoveDistance(swerve, -1.2)));
+                .alongWith(new MoveDistance(swerve, -1.5)));
         // we need to make sure FL wheel is with its gear in
+
+        this.shootMoveTakeAndShoot = new LimelightAutoAlign(limelight, swerve).andThen((new SetPointAngleByVision(limelight, intake, arm, shooter))
+                .alongWith(new Shoot(shooter, intake,arm))).andThen((Actions.instant(() -> swerve.resetWheels()))
+                .andThen(new TakeIn(intake, arm)).alongWith(new MoveDistance(swerve, -1.5)))
+                .andThen(new LimelightAutoAlign(limelight, swerve).andThen((new SetPointAngleByVision(limelight, intake, arm, shooter))
+                        .alongWith(new Shoot(shooter, intake,arm))));
+
 
    /*
    write code to detect on which april tag id i'm looking at-so it'll calculate only based on the middle one
@@ -131,7 +139,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         swerve.resetWheels();
         double dist = SmartDashboard.getNumber("set point distance", 0);
         //this.moveAndShoot.start();
-        this.shootAndMove.start();
+        //this.shootAndMove.start();
+        this.shootMoveTakeAndShoot.start();
 
     }
 
