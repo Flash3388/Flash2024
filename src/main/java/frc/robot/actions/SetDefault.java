@@ -19,6 +19,7 @@ public class SetDefault extends ActionBase {
         this.arm = arm;
         this.intake = intake;
         this.shooter = shooter;
+        configure().setName("setDefault").save();
         requires(intake,shooter);
     }
     @Override

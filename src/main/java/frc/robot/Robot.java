@@ -67,6 +67,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
         xbox_systems.getDpad().right().whenActive(new Pull_In(intake));
         xbox_systems.getDpad().up().whenActive(shootSpeaker);
+        xbox_systems.getDpad().left().whenActive(new SetDefault(arm,shooter,intake));
 
         limelight.setPipline(2);
 
@@ -118,6 +119,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         shooter.resetI();
         limelight.init();
        // swerve.resetWheels();
+        swerve.resetCurrentAngle();
     }
 
     @Override

@@ -75,6 +75,9 @@ public class Swerve extends Subsystem {
         this.gyro.setYaw(0);
     }
 
+    public void resetCurrentAngle(){
+        this.currentAngle = gyro.getAngle();
+    }
     public void resetDistancePassed() {
         swerveModules[0].resetDistancePassed();
     }
