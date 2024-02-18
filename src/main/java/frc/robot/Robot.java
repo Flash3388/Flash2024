@@ -55,10 +55,10 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         arm.setDefaultAction(new ArmController(arm));
         xbox_systems.getButton(XboxButton.B).whenActive(new TakeIn(intake,arm));
         xbox_systems.getButton(XboxButton.Y).whileActive(new TakeOut(intake,arm,shooter));
-        xbox_systems.getButton(XboxButton.A).whenActive(new SetPointAngleByVision(limelight,intake,arm));
+        xbox_systems.getButton(XboxButton.A).whenActive(new SetPointAngleByVision(limelight,intake,arm, shooter));
         xbox_systems.getButton(XboxButton.X).whenActive(new ShooterSpeaker(shooter, intake, arm));
 
-        xbox_systems.getButton(XboxButton.RB).whenActive((Actions.instant(() -> arm.setYesAmp()))
+        xbox_systems.getButton(XboxButton.RB).whenActive((Actions.instant(() -> shooter.shootAmp())).andThen(Actions.instant(() -> arm.setYesAmp()))
                 .andThen(Actions.instant(() -> arm.setSetPointAngle(Arm.AMP_ANGLE_FROM_SHOOTER))));
         xbox_systems.getButton(XboxButton.LB).whenActive((Actions.instant(() -> arm.setNotAmp()))
                 .andThen(Actions.instant(() -> arm.setSetPointAngle(Arm.SPEAKER_ANGLE))));
@@ -68,29 +68,30 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
                 (Actions.instant(() -> arm.setSetPointAngle(calculateAngle(limelight.getDisHorizontalToTarget()))));
 
 
-        ActionGroup shootSpeaker = new TakeIn(intake,arm).andThen((new SetPointAngleByVision(limelight, intake, arm)).alongWith(new ShooterSpeaker(shooter, intake, arm)));
+        //ActionGroup shootSpeaker = new TakeIn(intake,arm).andThen((new SetPointAngleByVision(limelight, intake, arm, shooter)).alongWith(new ShooterSpeaker(shooter, intake, arm)));
 
         xbox_systems.getDpad().right().whenActive(new Pull_In(intake));
-        xbox_systems.getDpad().up().whenActive(shootSpeaker);
+        xbox_systems.getDpad().up().whenActive(new Shoot(shooter, intake, arm));
         xbox_systems.getDpad().left().whenActive(new SetDefault(arm,shooter,intake));
+        xbox_systems.getDpad().down().whenActive(new SetPointAngleByVision(limelight,intake,arm, shooter).alongWith(new Shoot(shooter, intake, arm)));
 
         limelight.setPipline(2);
 
         moveDistance = new MoveDistance(swerve );
         SmartDashboard.putNumber("set point distance", 0);
 
-         this.moveAndShoot = new MoveDistance(swerve, -1.2).andThen(new LimelightAutoAlign(limelight, swerve))
-                .andThen(new SetPointAngleByVision(limelight, intake, arm)).alongWith(new ShooterSpeaker(shooter, intake,arm));
-
+         /*this.moveAndShoot = new MoveDistance(swerve, -1.2).andThen(new LimelightAutoAlign(limelight, swerve))
+                .andThen(new SetPointAngleByVision(limelight, intake, arm, shooter)).alongWith(new ShooterSpeaker(shooter, intake,arm));
+*/
          /*this.shootAndMove = new LimelightAutoAlign(limelight, swerve).andThen((Actions.instant(() -> arm.setNotAmp()))
                          .andThen(Actions.instant(() -> arm.setSetPointAngle(Arm.SPEAKER_ANGLE)))).andThen(new ShooterSpeaker(shooter, intake,arm)).andThen(Actions.instant(() -> swerve.resetWheels()))
                          .andThen(new TakeIn(intake, arm))
                          .alongWith(new MoveDistance(swerve, -1.2));*/
 
-        this.shootAndMove = new LimelightAutoAlign(limelight, swerve).andThen(new SetPointAngleByVision(limelight, intake, arm))
-                .alongWith(new ShooterSpeaker(shooter, intake,arm)).andThen(Actions.instant(() -> swerve.resetWheels()))
+        this.shootAndMove = new LimelightAutoAlign(limelight, swerve).andThen((new SetPointAngleByVision(limelight, intake, arm, shooter))
+                .alongWith(new Shoot(shooter, intake,arm))).andThen((Actions.instant(() -> swerve.resetWheels()))
                 .andThen(new TakeIn(intake, arm))
-                .alongWith(new MoveDistance(swerve, -1.2));
+                .alongWith(new MoveDistance(swerve, -1.2)));
         // we need to make sure FL wheel is with its gear in
 
    /*

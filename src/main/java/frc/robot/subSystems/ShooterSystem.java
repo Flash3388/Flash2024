@@ -26,8 +26,7 @@ public class ShooterSystem extends Subsystem {
     private  double KD_LEFT = 0;
     private  double KF_LEFT = 0;
 
-
-
+    private static final double DEFAULT_SPEED = 0.1;
     public static final double SPEED_TARGET_SPEAKER = 4000;
     public static final double SPEED_TARGET_AMP = 500;
     public ShooterSystem(CANSparkMax rightEC, CANSparkMax leftEC){
@@ -68,7 +67,7 @@ public class ShooterSystem extends Subsystem {
         rightEC.setIdleMode(CANSparkBase.IdleMode.kCoast);
         leftEC.setIdleMode(CANSparkBase.IdleMode.kCoast);
 
-
+        moveDefault();
     }
 
 
@@ -161,6 +160,11 @@ public class ShooterSystem extends Subsystem {
     public void resetI(){
         pidRight.setIAccum(0);
         pidLeft.setIAccum(0);
+    }
+
+    public void moveDefault(){
+        rightEC.set(DEFAULT_SPEED);
+        leftEC.set(DEFAULT_SPEED);
     }
 }
 
