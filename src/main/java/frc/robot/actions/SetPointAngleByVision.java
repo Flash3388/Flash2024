@@ -17,14 +17,12 @@ public class SetPointAngleByVision extends ActionBase {
     private Limelight limelight;
     private Intake intake;
     private Arm arm;
-    private XboxController xbox;
 
 
-    public SetPointAngleByVision(Limelight limelight, Intake intake, Arm arm, XboxController xbox){
+    public SetPointAngleByVision(Limelight limelight, Intake intake, Arm arm){
         this.intake = intake;
         this.limelight = limelight;
         this.arm = arm;
-        this.xbox = xbox;
 
         //configure().setName("SetPointAngleByVision").save();
 
