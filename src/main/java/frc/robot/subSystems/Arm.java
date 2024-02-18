@@ -83,6 +83,16 @@ public class Arm extends Subsystem {
 
         master.setIdleMode(CANSparkBase.IdleMode.kBrake);
         follower.setIdleMode(CANSparkBase.IdleMode.kBrake);
+
+        master.getPIDController().setP(0);
+        master.getPIDController().setI(0);
+        master.getPIDController().setD(0);
+        master.getPIDController().setFF(0);
+
+        follower.getPIDController().setP(0);
+        follower.getPIDController().setI(0);
+        follower.getPIDController().setD(0);
+        follower.getPIDController().setFF(0);
     }
 
     public void moveToAngle(double angle){
@@ -99,7 +109,6 @@ public class Arm extends Subsystem {
 
         if(( getArmPosition() - angle) > 30)
             speed = speed / 3;
-
 
         if(getArmPosition() > 80 && speed > 0)
             speed = speed / 2;

@@ -6,6 +6,7 @@ import com.flash3388.flashlib.frc.robot.base.iterative.IterativeFrcRobot;
 import com.flash3388.flashlib.hid.XboxAxis;
 import com.flash3388.flashlib.hid.XboxButton;
 import com.flash3388.flashlib.hid.XboxController;
+import com.flash3388.flashlib.scheduling.actions.Action;
 import com.flash3388.flashlib.scheduling.actions.ActionGroup;
 import com.flash3388.flashlib.scheduling.actions.Actions;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -25,6 +26,9 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     private Limelight limelight;
     private Arm arm;
 
+    private MoveDistance moveDistance;
+
+    private ActionGroup moveAndShoot;
 
     private final XboxController xbox_systems;
     private final XboxController xbox_driver; //driver
@@ -71,7 +75,11 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
         limelight.setPipline(2);
 
+        moveDistance = new MoveDistance(swerve );
+        SmartDashboard.putNumber("set point distance", 0);
 
+         this.moveAndShoot = new MoveDistance(swerve, -1.2).andThen(new LimelightAutoAlign(limelight, swerve))
+                .andThen(new SetPointAngleByVision(limelight, intake, arm, xbox_systems)).alongWith(new ShooterSpeaker(shooter, intake,arm));
 
    /*
    write code to detect on which april tag id i'm looking at-so it'll calculate only based on the middle one
@@ -93,24 +101,29 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
     @Override
     public void teleopInit() {
+        swerve.resetWheels();
+        moveDistance.start();
 
     }
 
     @Override
     public void teleopPeriodic() {
-
-
+       // swerve.drive(0.5, 0, 0);
+        SmartDashboard.putNumber("Drive Distance", swerve.getDistancePassedMeters());
     }
 
     @Override
     public void autonomousInit() {
-
+        arm.resetPID();
+        swerve.resetWheels();
+        double dist = SmartDashboard.getNumber("set point distance", 0);
+        this.moveAndShoot.start();
 
     }
 
     @Override
     public void autonomousPeriodic() {
-
+        SmartDashboard.putNumber("Drive Distance", swerve.getDistancePassedMeters());
     }
 
     @Override
@@ -118,7 +131,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         arm.resetPID();
         shooter.resetI();
         limelight.init();
-       // swerve.resetWheels();
+        swerve.resetWheels();
         swerve.resetCurrentAngle();
     }
 
@@ -185,6 +198,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         }
 
  */
+        SmartDashboard.putNumber("set point A", arm.getSetPointAngle());
 
         SmartDashboard.putBoolean("IS IN NOTE", intake.isIN());
         SmartDashboard.putBoolean("IS AGAM", intake.isInAgam());
