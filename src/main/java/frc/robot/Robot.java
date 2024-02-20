@@ -40,14 +40,14 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         shooter = SystemFactory.createShooter();
         xbox_driver = getHidInterface().newXboxController(RobotMap.XBOX_DRIVER);
         xbox_systems = getHidInterface().newXboxController(RobotMap.XBOX_SYSTEMS);
-        limelight = new Limelight(swerve);
+        limelight = new Limelight(swerve,arm);
 
         //driver:
         swerve.setDefaultAction(new DriveWithXbox(swerve, xbox_driver));
-        xbox_driver.getButton(XboxButton.X).whenActive(new LimelightAutoAlign(limelight,swerve));
+        xbox_driver.getButton(XboxButton.X).whenActive(new LimelightAutoAlign(limelight,swerve,arm));
 
         //systems:
-        arm.setDefaultAction(new ArmController(arm));
+      /*  arm.setDefaultAction(new ArmController(arm));
         xbox_systems.getButton(XboxButton.B).whenActive(new TakeIn(intake,arm));
         xbox_systems.getButton(XboxButton.Y).whileActive(new TakeOut(intake,arm,shooter));
         xbox_systems.getButton(XboxButton.A).whenActive(new SetPointAngleByVision(limelight,intake,arm, xbox_systems));
@@ -70,7 +70,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
         limelight.setPipline(2);
 
-
+*/
 
    /*
     // X button- if we're in speaker mode-it'll just use auto align. otherwise(amp mode), it'll move to the sides untill
@@ -120,11 +120,14 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         shooter.resetI();
         limelight.init();
        // swerve.resetWheels();
+
+        arm.setNotAmp();
+        new LimelightAutoAlignWithDrive(xbox_driver, limelight, swerve, arm).start();
     }
 
     @Override
     public void testPeriodic() {
-        double angle2T = limelight.getXAngleToTarget();
+        double angle2T = limelight.getXAngleToTarget_Speaker();
         SmartDashboard.putNumber("angle2T",angle2T); //check if the value is correct-it may be the wrong one, so switch
 
         double distance = limelight.getDistanceToTarget();

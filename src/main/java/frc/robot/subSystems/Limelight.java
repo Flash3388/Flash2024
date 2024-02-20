@@ -1,5 +1,6 @@
 package frc.robot.subSystems;
 
+import com.flash3388.flashlib.math.Mathf;
 import com.flash3388.flashlib.robot.RunningRobot;
 import com.flash3388.flashlib.scheduling.Subsystem;
 import com.flash3388.flashlib.time.Clock;
@@ -10,6 +11,7 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.LimelightHelpers.LimelightHelpers;
 import edu.wpi.first.wpilibj.Timer;
@@ -42,11 +44,31 @@ public class Limelight extends Subsystem {
 
     public double getXAngleToTarget_Speaker() {// for speaker
         //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
-        double aprilTagId = 7; //default is blue alliance
-        if(layout.getOrigin().equals(AprilTagFieldLayout.OriginPosition.kRedAllianceWallRightSide)) //if are we red alliance
-            aprilTagId =4;
-        Pose2d differenceBetweenRobotToTarget;
-        Optional<Pose3d> apriltagPose = layout.getTagPose((int)(aprilTagId)); //position of apriltag
+        Optional<DriverStation.Alliance> allianceOptional = DriverStation.getAlliance();
+        if (allianceOptional.isEmpty()) {
+            return 0;
+        }
+
+        double aprilTagId = 7; //default is blue alliance - 7 is the correct one
+        DriverStation.Alliance alliance = allianceOptional.get();
+        if(alliance == DriverStation.Alliance.Red) //if are we red alliance
+            aprilTagId =7;
+
+        Optional<Pose3d> apriltagPoseOptional = layout.getTagPose((int)(aprilTagId)); //position of apriltag
+        if (apriltagPoseOptional.isEmpty()) {
+            return 0;
+        }
+
+        Pose3d apriltagPose = apriltagPoseOptional.get();
+        Pose2d robotPose = swerve.getRobotPose();
+        double wantedDirectAngle = Mathf.translateAngle(apriltagPose.toPose2d().getRotation().getDegrees() - 180);
+        double angleDiff = wantedDirectAngle - Mathf.translateAngle(robotPose.getRotation().getDegrees());
+        Pose2d robotPose2 = LimelightHelpers.getBotPose2d_wpiBlue("limelight-banana");
+        SmartDashboard.putNumber("odometry angle", angleDiff);
+        SmartDashboard.putNumber("aprilpose yaw", apriltagPose.toPose2d().getRotation().getDegrees());
+        SmartDashboard.putNumber("robot yaw", robotPose.getRotation().getDegrees());
+        SmartDashboard.putNumber("robot2 yaw", robotPose2.getRotation().getDegrees());
+
         if (isThereTarget()) {
 
             robotPoseTargetSpace = LimelightHelpers.getTargetPose_RobotSpace("limelight-banana");
@@ -59,24 +81,39 @@ public class Limelight extends Subsystem {
             SmartDashboard.putNumber("tx", table.getEntry("tx").getDouble(0.0));
 
             //check if it works
-            return robotPoseTargetSpace[5];
+
+           // return robotPoseTargetSpace[4];
 
 
-         //   return table.getEntry("tx").getDouble(0.0);
+           return table.getEntry("tx").getDouble(0.0);
         }
         //if i can't see target-use odometer
 
-
-        differenceBetweenRobotToTarget = apriltagPose.get().toPose2d().relativeTo(swerve.getOdometer().getPoseMeters());
-        return differenceBetweenRobotToTarget.getRotation().getDegrees();
+        return 0;//angleDiff;
     }
     public double getXAngleToTarget_Amp() {// for amp degrees
         //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
-        double aprilTagId = 6; //default is blue alliance
-        if(layout.getOrigin().equals(AprilTagFieldLayout.OriginPosition.kRedAllianceWallRightSide)) //if are we red alliance
-            aprilTagId =5;
 
-        Optional<Pose3d> apriltagPose = layout.getTagPose((int)(aprilTagId)); //position of apriltag
+        Optional<DriverStation.Alliance> allianceOptional = DriverStation.getAlliance();
+        if (allianceOptional.isEmpty()) {
+            return 0;
+        }
+
+        double aprilTagId = 6; //default is blue alliance
+        DriverStation.Alliance alliance = allianceOptional.get();
+        if(alliance == DriverStation.Alliance.Red) //if are we red alliance
+            aprilTagId = 5;
+
+        Optional<Pose3d> apriltagPoseOptional = layout.getTagPose((int)(aprilTagId)); //position of apriltag
+        if (apriltagPoseOptional.isEmpty()) {
+            return 0;
+        }
+
+        Pose3d apriltagPose = apriltagPoseOptional.get();
+        Pose2d differenceBetweenRobotToTarget;
+        differenceBetweenRobotToTarget = apriltagPose.toPose2d().relativeTo(swerve.getRobotPose());
+        SmartDashboard.putNumber("odometry angle", differenceBetweenRobotToTarget.getRotation().getDegrees());
+
         if (isThereTarget()) {
 
             robotPoseTargetSpace = LimelightHelpers.getTargetPose_RobotSpace("limelight-banana");
@@ -96,8 +133,6 @@ public class Limelight extends Subsystem {
         }
         //if i can't see target-use odometer
 
-
-        Pose2d differenceBetweenRobotToTarget = apriltagPose.get().toPose2d().relativeTo(swerve.getOdometer().getPoseMeters());
         return differenceBetweenRobotToTarget.getRotation().getDegrees();
     }
     public double getXDistanceToTarget_Amp() {// for amp distance
@@ -124,7 +159,8 @@ public class Limelight extends Subsystem {
         }
         //if i can't see target-use odometer
 
-        Pose2d differenceBetweenRobotToTarget = apriltagPose.get().toPose2d().relativeTo(swerve.getOdometer().getPoseMeters());
+        Pose2d differenceBetweenRobotToTarget = apriltagPose.get().toPose2d().relativeTo(swerve.getRobotPose());
+        if(differenceBetweenRobotToTarget.getX() > 2) return 0; //if it's too far-probably pressened by mistake
         return differenceBetweenRobotToTarget.getX(); //hoping it'll work-for both the positive and negative side
     }
 
@@ -196,7 +232,7 @@ public class Limelight extends Subsystem {
             SmartDashboard.putNumber("aprilTagId",aprilTagId);
             Optional<Pose3d> apriltagPose = layout.getTagPose((int)(aprilTagId)); //position of apriltag
 
-            Pose2d differenceBetweenRobotToTarget = swerve.getOdometer().getPoseMeters().relativeTo(apriltagPose.get().toPose2d());
+            Pose2d differenceBetweenRobotToTarget = swerve.getRobotPose().relativeTo(apriltagPose.get().toPose2d());
             actualDis = Math.sqrt(Math.pow(differenceBetweenRobotToTarget.getX(),2) + Math.pow(differenceBetweenRobotToTarget.getY(),2));
         }
          SmartDashboard.putNumber("hopefully real distance",actualDis);
@@ -294,7 +330,7 @@ public class Limelight extends Subsystem {
         if (apriltagPose.isPresent()) {
             SmartDashboard.putBoolean("aprilTagPresent", true);
             Pose2d robotPose = LimelightHelpers.getBotPose2d_wpiBlue("limelight-banana");
-            swerve.setOdometer(robotPose);
+            swerve.setOdometer(robotPose, Timer.getFPGATimestamp()); //check how to correctly check the limelight time
         }
     }
 

@@ -5,6 +5,7 @@ import com.flash3388.flashlib.robot.RunningRobot;
 import com.flash3388.flashlib.robot.control.PidController;
 import com.flash3388.flashlib.scheduling.Subsystem;
 import com.jmath.ExtendedMath;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -24,6 +25,7 @@ import org.opencv.core.Mat;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 
+@SuppressWarnings("removal")
 public class Swerve extends Subsystem {
 
     private static final double OFFSET = 0.37;
@@ -38,15 +40,14 @@ public class Swerve extends Subsystem {
     private double currentAngle;
     private PidController pid;
 
-    private SwerveDriveOdometry odometer;
-    private Limelight limelight = new frc.robot.subSystems.Limelight(this);
+    private SwerveDriveOdometry poseEstimator;
     private final Field2d field2d = new Field2d();
 
 
     public Swerve(SwerveModule[] swerveModules, WPI_Pigeon2 gyro) {
         this.swerveModules = swerveModules;
         this.gyro = gyro;
-        pid = new PidController(RunningRobot.getControl().getClock(), 0.01, 0, 0, 0);
+        pid = new PidController(0.01, 0, 0, 0);
 
         Translation2d fL = new Translation2d(OFFSET, OFFSET);
         Translation2d fR = new Translation2d(OFFSET, -OFFSET);
@@ -59,12 +60,11 @@ public class Swerve extends Subsystem {
         currentAngle = gyro.getAngle();
         //resetWheels();
 
-        odometer = new SwerveDriveOdometry(
-                swerveDriveKinematics,
+        poseEstimator = new SwerveDriveOdometry(swerveDriveKinematics,
                 new Rotation2d(0),
                 getModulePositions(), new Pose2d(0,0,new Rotation2d(Math.toRadians(0))));
         SmartDashboard.putData("Field", field2d);
-        field2d.setRobotPose(odometer.getPoseMeters());
+        field2d.setRobotPose(getRobotPose());
     }
 
     public double getHeadingDegrees() {
@@ -128,10 +128,6 @@ public class Swerve extends Subsystem {
 
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_SPEED);
         setDesiredStates(swerveModuleStates);
-        field2d.setRobotPose(odometer.getPoseMeters());
-
-
-
     }
 
 
@@ -150,7 +146,6 @@ public class Swerve extends Subsystem {
 
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_SPEED);
         setDesiredStates(swerveModuleStates);
-        field2d.setRobotPose(odometer.getPoseMeters());
     }
 
     public void resetWheels() {
@@ -176,35 +171,26 @@ public class Swerve extends Subsystem {
     }
 
     public void updateOdometer() {
-        odometer.update(
+        poseEstimator.update(
                 getSwerveRotation2D(),
                 getModulePositions());
         updateField();
     }
     public void updateField(){
-        field2d.setRobotPose(odometer.getPoseMeters());
+        field2d.setRobotPose(getRobotPose());
     }
-    public void setOdometer(Pose2d pose2d) {
-        odometer.resetPosition(gyro.getRotation2d(), getModulePositions(), pose2d);
+    public void setOdometer(Pose2d pose2d, double timestamp) {
+        poseEstimator.resetPosition(gyro.getRotation2d(), getModulePositions(), pose2d);
         updateField();
     }
-    public SwerveDriveOdometry getOdometer(){
-        return odometer;
-    }
-    public void resetOdometer() {
-        odometer.resetPosition(Rotation2d.fromDegrees(0), getModulePositions(),
-                new Pose2d(new Translation2d(0, 0), new Rotation2d(0)));
+    public Pose2d getRobotPose() {
+        return poseEstimator.getPoseMeters();
     }
 
     public Rotation2d getSwerveRotation2D() {
         return gyro.getRotation2d();
     }
 
-    public Pose2d getPose2D() {
-        return new Pose2d(
-                odometer.getPoseMeters().getTranslation(),
-                Rotation2d.fromDegrees(0));
-    }
 
     public void print() {
         SmartDashboard.putNumber("FL Heading", swerveModules[0].getHeadingDegrees());

@@ -17,9 +17,7 @@ public class LimelightAutoAlign  extends ActionBase {
     private final Swerve swerve;
     private final Arm arm;
     private double angle2Target = 0;
-    private double distance2Target = 0;
     private double startingAngle = 0;
-    private double startingDistance = 0;
     private PidController pidController;
     private final double KP = 0.045;
     private final double KI = 0.0015;
@@ -42,13 +40,9 @@ public class LimelightAutoAlign  extends ActionBase {
         SmartDashboard.putNumber("KI m", KI);
         SmartDashboard.putNumber("KD m", KD);
         SmartDashboard.putNumber("KF m", KF);
-        pidController = new PidController(RunningRobot.getControl().getClock(),
-                ()-> {return SmartDashboard.getNumber("KP m", KP);},
-                ()-> {return SmartDashboard.getNumber("KI m", KI);},
-                ()-> {return SmartDashboard.getNumber("KD m", KD);},
-                ()-> {return SmartDashboard.getNumber("KF m", KF);});
+        pidController = PidController.newNamedController("rotation", KP, KI, KD, 0);
         //something
-        pidController.setTolerance(PID_ERROR, Time.milliseconds(500));
+        pidController.setTolerance(PID_ERROR, 0.1);
         pidController.setOutputLimit(PID_LIMIT);
 
         //configure().setName("LimelightAutoAlign").save();
@@ -60,14 +54,12 @@ public class LimelightAutoAlign  extends ActionBase {
     public void initialize(ActionControl control) {
         startingAngle = swerve.getHeadingDegrees();
         SmartDashboard.putNumber("startingAngle",startingAngle);
-        SmartDashboard.putNumber("X angle to target",limelight.getXAngleToTarget());
         //how do i know to which state i wanna be in
 
         if(arm.isSetToAMP()){
             angle2Target = limelight.getXAngleToTarget_Amp() + startingAngle;
-            distance2Target = limelight.getXDistanceToTarget_Amp();
             //make the wheels be at 90 degrees
-            startingDistance = swerve.getDistancePassedMeters();
+            SmartDashboard.putNumber("X angle to target",angle2Target);
         }
         else
             this.angle2Target = limelight.getXAngleToTarget_Speaker() + startingAngle;
@@ -83,18 +75,20 @@ public class LimelightAutoAlign  extends ActionBase {
         // axis x- to the right, axis y- down
         //actionControl.finish;
         double gyroAngle = swerve.getHeadingDegrees();
+       // double currentDistance = swerve.getDistancePassedMeters();
 
 
         SmartDashboard.putNumber("gyro angle", gyroAngle);
         SmartDashboard.putNumber("starting angle", startingAngle);
         SmartDashboard.putNumber("angle2Target", angle2Target);
-        SmartDashboard.putNumber("graph angle2Target - current", angle2Target-gyroAngle);
+       // SmartDashboard.putNumber("graph angle2Target - current", angle2Target-gyroAngle);
 
 
         if(!ExtendedMath.constrained(gyroAngle, -PID_ERROR + angle2Target, PID_ERROR + angle2Target)) {
 
             // Direction rotateDirection = angle2Target < startingAngle ? Direction.BACKWARD : Direction.FORWARD; //if + then right, if - left
             double rotation = pidController.applyAsDouble(gyroAngle, angle2Target);
+       //     double xDrive = pidController.applyAsDouble(gyroAngle, angle2Target);
             // double rotation = pidController.applyAsDouble(gyroAngle, angle2Target) * swerve.MAX_SPEED;
             SmartDashboard.putNumber("rotation", -rotation);
             swerve.drive(0, 0, -rotation);
