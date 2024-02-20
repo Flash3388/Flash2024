@@ -1,6 +1,7 @@
 package frc.robot.subSystems;
 
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
+import com.flash3388.flashlib.math.Mathf;
 import com.flash3388.flashlib.robot.RunningRobot;
 import com.flash3388.flashlib.robot.control.PidController;
 import com.flash3388.flashlib.scheduling.Subsystem;
@@ -46,7 +47,7 @@ public class Swerve extends Subsystem {
     public Swerve(SwerveModule[] swerveModules, WPI_Pigeon2 gyro) {
         this.swerveModules = swerveModules;
         this.gyro = gyro;
-        pid = new PidController(RunningRobot.getControl().getClock(), 0.01, 0, 0, 0);
+        pid = new PidController(0.01, 0, 0, 0);
 
         Translation2d fL = new Translation2d(OFFSET, OFFSET);
         Translation2d fR = new Translation2d(OFFSET, -OFFSET);
@@ -83,7 +84,7 @@ public class Swerve extends Subsystem {
     }
 
     public double getDistancePassedMeters() {
-        return -swerveModules[0].getDistancePassedMeters();
+        return swerveModules[0].getDistancePassedMeters();
     }
 
     public void stop() {
@@ -168,6 +169,10 @@ public class Swerve extends Subsystem {
 
     public SwerveDriveKinematics getSwerveDriveKinematics() {
         return swerveDriveKinematics;
+    }
+
+    public double getFLHeading(){
+        return Mathf.translateAngle(swerveModules[0].getHeadingDegrees());
     }
 
     public SwerveModulePosition[] getModulePositions() {

@@ -31,6 +31,8 @@ public class MoveDistance extends ActionBase {
         this.swerve = swerve;
         this.distance = distance;
         this.pid = PidController.newNamedController("moveDistance", KP_DISTANCE, KI_DISTANCE, KD_DISTANCE, 0);
+        pid.setTolerance(ERROR, Double.POSITIVE_INFINITY);
+
         pid.setOutputLimit(1);
         requires(swerve);
     }
@@ -41,20 +43,29 @@ public class MoveDistance extends ActionBase {
 
     @Override
     public void initialize(ActionControl control) {
-        setPoint = swerve.getDistancePassedMeters() + distance;
+        SmartDashboard.putNumber("bla-1", swerve.getDistancePassedMeters());
+        swerve.resetDistancePassed();
+        setPoint = distance;
+        SmartDashboard.putNumber("bla", swerve.getDistancePassedMeters());
         SmartDashboard.putNumber("Set Point Number", setPoint);
         pid.reset();
     }
 
     @Override
     public void execute(ActionControl control) {
-        double speed = pid.applyAsDouble(swerve.getDistancePassedMeters(), setPoint) * Swerve.MAX_SPEED;
+        double distancePassed = swerve.getDistancePassedMeters();;
+
+        if(ExtendedMath.constrained(swerve.getFLHeading(), 170, 190))
+            distancePassed = -distancePassed;
+
+        double speed = pid.applyAsDouble(distancePassed, setPoint) * Swerve.MAX_SPEED;
+
 
         swerve.drive(speed, 0, 0);
         SmartDashboard.putNumber("pid's speed", speed);
+        SmartDashboard.putNumber("Drive Distance Action", distancePassed);
 
-
-        if(ExtendedMath.constrained(swerve.getDistancePassedMeters(), setPoint - ERROR, setPoint + ERROR)){
+        if(pid.isInTolerance()){
             control.finish();
         }
     }

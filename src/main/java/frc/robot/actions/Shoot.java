@@ -52,7 +52,6 @@ public class Shoot extends ActionBase {
         }
 
         else {
-
             if (shooter.gotToTarget(ShooterSystem.SPEED_TARGET_SPEAKER) && arm.isStabilizedAtTargetedPosition())
                 intake.shoot();
         }
@@ -65,7 +64,6 @@ public class Shoot extends ActionBase {
                 time = clock.currentTime().add(Time.seconds(DELAY_BEFORE_FINISH_IN_SECONDS));
             }
         }
-
         else{
             time = Time.INVALID;
         }

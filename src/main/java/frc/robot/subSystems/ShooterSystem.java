@@ -26,7 +26,7 @@ public class ShooterSystem extends Subsystem {
     private  double KD_LEFT = 0;
     private  double KF_LEFT = 0;
 
-    private static final double DEFAULT_SPEED = 0.1;
+    private static final double DEFAULT_SPEED = 0.2;
     public static final double SPEED_TARGET_SPEAKER = 4000;
     public static final double SPEED_TARGET_AMP = 500;
     public ShooterSystem(CANSparkMax rightEC, CANSparkMax leftEC){
@@ -119,7 +119,7 @@ public class ShooterSystem extends Subsystem {
     }
 
     public boolean gotToTarget(double rpmVal){
-        final double SPEED_ERROR = 100;
+        final double SPEED_ERROR = 200;
         return ExtendedMath.constrained(getSpeed(),rpmVal - SPEED_ERROR, rpmVal + SPEED_ERROR);
     }
 

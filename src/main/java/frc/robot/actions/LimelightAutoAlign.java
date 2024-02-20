@@ -36,13 +36,13 @@ public class LimelightAutoAlign  extends ActionBase {
         SmartDashboard.putNumber("KI m", KI);
         SmartDashboard.putNumber("KD m", KD);
         SmartDashboard.putNumber("KF m", KF);
-        pidController = new PidController(RunningRobot.getControl().getClock(),
+        pidController = new PidController(
                 ()-> {return SmartDashboard.getNumber("KP m", KP);},
                 ()-> {return SmartDashboard.getNumber("KI m", KI);},
                 ()-> {return SmartDashboard.getNumber("KD m", KD);},
                 ()-> {return SmartDashboard.getNumber("KF m", KF);});
         //something
-        pidController.setTolerance(PID_ERROR, Time.milliseconds(500));
+        pidController.setTolerance(PID_ERROR, Double.POSITIVE_INFINITY);
         pidController.setOutputLimit(PID_LIMIT);
 
         //configure().setName("LimelightAutoAlign").save();

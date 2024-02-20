@@ -10,7 +10,7 @@ import frc.robot.subSystems.Arm;
 import frc.robot.subSystems.Intake;
 import frc.robot.subSystems.ShooterSystem;
 
-public class ShooterSpeaker extends ActionBase {
+public class ShootSpeaker extends ActionBase {
     private ShooterSystem shooter;
     private Intake intake;
     private Arm arm;
@@ -20,7 +20,7 @@ public class ShooterSpeaker extends ActionBase {
     private Time time;
 
 
-    public ShooterSpeaker(ShooterSystem shooter, Intake intake, Arm arm){
+    public ShootSpeaker(ShooterSystem shooter, Intake intake, Arm arm){
         this.shooter = shooter;
         this.intake = intake;
         this.arm = arm;

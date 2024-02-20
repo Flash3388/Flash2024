@@ -20,7 +20,7 @@ import static edu.wpi.first.units.Units.Volts;
 
 public class SwerveModule {
 
-    private static final double STEER_P = 0.053; // 0.05 //0.052
+    private static final double STEER_P = 0.054; // 0.05 //0.052 0053
     private static final double STEER_I = 0.00003; //0
     private static final double STEER_D = 0.01;
     private static final double STEER_F = 0.;

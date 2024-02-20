@@ -27,7 +27,7 @@ public class Arm extends Subsystem {
     private PidController pid;
 
 
-    private static final double STABLE_ERROR = 1;
+    private static final double STABLE_ERROR = 1.5;
     private static final double STABLE_OUTPUT = 0.1;
 
     // Other Constants
@@ -105,7 +105,7 @@ public class Arm extends Subsystem {
 
         double speed = pid.applyAsDouble(getArmPosition(), angle) ;
         //speed = ExtendedMath.constrain(speed, -0.5, 0.5);
-        speed = ExtendedMath.constrain(speed, -0.5, 0.5);
+        speed = ExtendedMath.constrain(speed, -0.6, 0.6);
 
         if(( getArmPosition() - angle) > 30)
             speed = speed / 3;
