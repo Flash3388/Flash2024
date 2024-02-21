@@ -47,14 +47,14 @@ public class Limelight extends Subsystem {
     public double getXAngleToTarget_Speaker() {// for speaker
         //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
         Optional<DriverStation.Alliance> allianceOptional = DriverStation.getAlliance();
-        if (allianceOptional.isEmpty()) {
+        if (allianceOptional.isEmpty())     {
             return 0;
         }
 
-        double aprilTagId = 7; //default is blue alliance - 7 is the correct one
+        double aprilTagId = 4; //default is blue alliance - 7 is the correct one
         DriverStation.Alliance alliance = allianceOptional.get();
         if(alliance == DriverStation.Alliance.Red) //if are we red alliance
-            aprilTagId =7;
+            aprilTagId =4;
 
         Optional<Pose3d> apriltagPoseOptional = layout.getTagPose((int)(aprilTagId)); //position of apriltag
         if (apriltagPoseOptional.isEmpty()) {
@@ -63,41 +63,20 @@ public class Limelight extends Subsystem {
 
         Pose3d apriltagPose = apriltagPoseOptional.get();
         Pose2d robotPose = swerve.getRobotPose();
-        double wantedDirectAngle = Mathf.translateAngle(apriltagPose.toPose2d().getRotation().getDegrees() - 180);
-        double angleDiff = wantedDirectAngle - Mathf.translateAngle(robotPose.getRotation().getDegrees());
-        Pose2d robotPose2 = LimelightHelpers.getBotPose2d_wpiBlue("limelight-banana");
-        SmartDashboard.putNumber("odometry angle", angleDiff);
-        SmartDashboard.putNumber("aprilpose yaw", apriltagPose.toPose2d().getRotation().getDegrees());
-        SmartDashboard.putNumber("robot yaw", robotPose.getRotation().getDegrees());
-        SmartDashboard.putNumber("robot2 yaw", robotPose2.getRotation().getDegrees());
 
-        if (isThereTarget()) {
+        double deltaX = apriltagPose.getX() - robotPose.getX();
+        double deltaY = apriltagPose.getY() - robotPose.getY();
+        double angleToSpeakerRad= Math.atan2(deltaY,deltaX);
+        double angleToSpeakerDeg= Math.toDegrees(angleToSpeakerRad);
+        double angleFromRobotToSpeaker = angleToSpeakerDeg - robotPose.getRotation().getDegrees();
+        //normalize the angles
+        if(angleFromRobotToSpeaker >180) angleFromRobotToSpeaker-=360;
+        else if (angleFromRobotToSpeaker <-180) angleFromRobotToSpeaker+=360;
 
-            robotPoseTargetSpace = LimelightHelpers.getTargetPose_RobotSpace("limelight-banana");
-           /* SmartDashboard.putNumber("cameraPtoTRotation 5", robotPoseTargetSpace[5]);
-            SmartDashboard.putNumber("cameraPtoTRotation 4", robotPoseTargetSpace[4]);
-            SmartDashboard.putNumber("cameraPtoTRotation 2", robotPoseTargetSpace[2]);
-            SmartDashboard.putNumber("cameraPtoTRotation 1", robotPoseTargetSpace[1]);
-            SmartDashboard.putNumber("cameraPtoTRotation 0", robotPoseTargetSpace[0]);
-            SmartDashboard.putNumber("cameraPtoTRotation 3", robotPoseTargetSpace[3]);
-
-            */
-            SmartDashboard.putNumber("tx", table.getEntry("tx").getDouble(0.0));
-
-            SmartDashboard.putNumber("angle Tel Nof way",getXAngleToTarget_Speaker_TelNofWay());
-            SmartDashboard.putNumber("angle Tom way",getXAngleToTarget_Speaker_TomWay());
-
-            //check if it works
-
-           // return robotPoseTargetSpace[4];
-
-
-           return table.getEntry("tx").getDouble(0.0);
+        SmartDashboard.putNumber("angle to speaker", angleFromRobotToSpeaker);
+        return angleFromRobotToSpeaker;
         }
-        //if i can't see target-use odometer
 
-        return 0;//angleDiff;
-    }
     public double getXAngleToTarget_Amp() {// for amp degrees
         //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
 
@@ -118,30 +97,18 @@ public class Limelight extends Subsystem {
         }
 
         Pose3d apriltagPose = apriltagPoseOptional.get();
-        Pose2d differenceBetweenRobotToTarget;
-        differenceBetweenRobotToTarget = apriltagPose.toPose2d().relativeTo(swerve.getRobotPose());
-        SmartDashboard.putNumber("odometry angle", differenceBetweenRobotToTarget.getRotation().getDegrees());
+        Pose2d robotPose = swerve.getRobotPose();
 
-        if (isThereTarget()) {
+        double deltaX = apriltagPose.getX() - robotPose.getX();
+        double deltaY = apriltagPose.getY() - robotPose.getY();
+        double angleToSpeakerRad= Math.atan2(deltaY,deltaX);
+        double angleToSpeakerDeg= Math.toDegrees(angleToSpeakerRad);
+        double angleFromRobotToSpeaker = angleToSpeakerDeg - robotPose.getRotation().getDegrees();
+        //normalize the angles
+        if(angleFromRobotToSpeaker >180) angleFromRobotToSpeaker-=360;
+        else if (angleFromRobotToSpeaker <-180) angleFromRobotToSpeaker+=360;
 
-            robotPoseTargetSpace = LimelightHelpers.getTargetPose_RobotSpace("limelight-banana");
-            SmartDashboard.putNumber("cameraPtoTRotation 5", robotPoseTargetSpace[5]);
-            SmartDashboard.putNumber("cameraPtoTRotation 4", robotPoseTargetSpace[4]);
-            SmartDashboard.putNumber("cameraPtoTRotation 2", robotPoseTargetSpace[2]);
-            SmartDashboard.putNumber("cameraPtoTRotation 1", robotPoseTargetSpace[1]);
-            SmartDashboard.putNumber("cameraPtoTRotation 0", robotPoseTargetSpace[0]);
-            SmartDashboard.putNumber("cameraPtoTRotation 3", robotPoseTargetSpace[3]);
-            SmartDashboard.putNumber("tx", table.getEntry("tx").getDouble(0.0));
-
-            //check if it works
-            return robotPoseTargetSpace[5];
-
-
-            //   return table.getEntry("tx").getDouble(0.0);
-        }
-        //if i can't see target-use odometer
-
-        return differenceBetweenRobotToTarget.getRotation().getDegrees();
+        return angleFromRobotToSpeaker;
     }
     public double getXDistanceToTarget_Amp() {// for amp distance
         //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)

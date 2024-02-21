@@ -17,11 +17,11 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
     private final Swerve swerve;
     private final Arm arm;
     private double angle2Target = 0;
-    private double startingAngle = 0;
+    private double startingAngle = 0;//
     private PidController pidController;
-    private final double KP = 0.045;
-    private final double KI = 0.0015;
-    private final double KD = 0;
+    private final double KP = 0.09;
+    private final double KI = 0.00001;
+    private final double KD = 0.00;
     private final double KF = 0;
     private final double PID_ERROR = 2;
     private final double PID_LIMIT = 1;
@@ -70,6 +70,7 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
         double gyroAngle = swerve.getHeadingDegrees();
        // double currentDistance = swerve.getDistancePassedMeters();
 
+        SmartDashboard.putBoolean("is set AMP", arm.isSetToAMP());
         if(arm.isSetToAMP()){
             angle2Target = limelight.getXAngleToTarget_Amp() + gyroAngle;
             //make the wheels be at 90 degrees
@@ -81,23 +82,24 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
 
         SmartDashboard.putNumber("gyro angle", gyroAngle);
         SmartDashboard.putNumber("angle2Target", angle2Target);
+        SmartDashboard.putNumber("angle2Target new new", angle2Target);
        // SmartDashboard.putNumber("graph angle2Target - current", angle2Target-gyroAngle);
 
         double rotation2 = -xbox_driver.getAxis(XboxAxis.RightStickX).getAsDouble();
         rotation2 = Math.abs(rotation2) > 0.2 ? rotation2 : 0;
         double driveX = -xbox_driver.getAxis(XboxAxis.LeftStickX).getAsDouble() ;
         double driveY = -xbox_driver.getAxis(XboxAxis.LeftStickY).getAsDouble() ;
-        double rotation = limelight.isThereTarget() ?
-                pidController.applyAsDouble(gyroAngle, angle2Target) /3 :
-                rotation2;
+        double rotation = pidController.applyAsDouble(gyroAngle, angle2Target);
 
+
+        /*
+        double rotation = limelight.isThereTarget() ?
+                pidController.applyAsDouble(gyroAngle, angle2Target):
+                rotation2;
+         */
         driveY = Math.abs(driveY) > 0.2 ? driveY : 0;
         driveX = Math.abs(driveX) > 0.2 ? driveX : 0;
-        rotation = Math.abs(rotation) > 0.2 ? -rotation : 0;
-
-
-
-
+        rotation = Math.abs(rotation) > 0.2 ? rotation : 0;
 
         //     double xDrive = pidController.applyAsDouble(gyroAngle, angle2Target);
         // double rotation = pidController.applyAsDouble(gyroAngle, angle2Target) * swerve.MAX_SPEED;
