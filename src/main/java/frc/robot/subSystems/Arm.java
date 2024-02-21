@@ -27,7 +27,7 @@ public class Arm extends Subsystem {
     private PidController pid;
 
 
-    private static final double STABLE_ERROR = 1.5;
+    private static final double STABLE_ERROR = 1;
     private static final double STABLE_OUTPUT = 0.1;
 
     // Other Constants
