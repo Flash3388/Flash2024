@@ -6,6 +6,7 @@ import com.flash3388.flashlib.scheduling.Subsystem;
 import com.flash3388.flashlib.time.Clock;
 import com.flash3388.flashlib.time.Time;
 import com.jmath.ExtendedMath;
+import com.jmath.vectors.Vector2;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.*;
@@ -37,6 +38,7 @@ public class Limelight extends Subsystem {
         timer = new Timer();
         this.swerve = swerve;
         this.arm = arm;
+
     }
     public void setPipline(int n){
         table.getEntry("pipeline").setValue(n);
@@ -72,13 +74,18 @@ public class Limelight extends Subsystem {
         if (isThereTarget()) {
 
             robotPoseTargetSpace = LimelightHelpers.getTargetPose_RobotSpace("limelight-banana");
-            SmartDashboard.putNumber("cameraPtoTRotation 5", robotPoseTargetSpace[5]);
+           /* SmartDashboard.putNumber("cameraPtoTRotation 5", robotPoseTargetSpace[5]);
             SmartDashboard.putNumber("cameraPtoTRotation 4", robotPoseTargetSpace[4]);
             SmartDashboard.putNumber("cameraPtoTRotation 2", robotPoseTargetSpace[2]);
             SmartDashboard.putNumber("cameraPtoTRotation 1", robotPoseTargetSpace[1]);
             SmartDashboard.putNumber("cameraPtoTRotation 0", robotPoseTargetSpace[0]);
             SmartDashboard.putNumber("cameraPtoTRotation 3", robotPoseTargetSpace[3]);
+
+            */
             SmartDashboard.putNumber("tx", table.getEntry("tx").getDouble(0.0));
+
+            SmartDashboard.putNumber("angle Tel Nof way",getXAngleToTarget_Speaker_TelNofWay());
+            SmartDashboard.putNumber("angle Tom way",getXAngleToTarget_Speaker_TomWay());
 
             //check if it works
 
@@ -93,6 +100,7 @@ public class Limelight extends Subsystem {
     }
     public double getXAngleToTarget_Amp() {// for amp degrees
         //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
+
 
         Optional<DriverStation.Alliance> allianceOptional = DriverStation.getAlliance();
         if (allianceOptional.isEmpty()) {
@@ -330,12 +338,95 @@ public class Limelight extends Subsystem {
         if (apriltagPose.isPresent()) {
             SmartDashboard.putBoolean("aprilTagPresent", true);
             Pose2d robotPose = LimelightHelpers.getBotPose2d_wpiBlue("limelight-banana");
-            swerve.setOdometer(robotPose, Timer.getFPGATimestamp()); //check how to correctly check the limelight time
+            swerve.setOdometer(robotPose); //check how to correctly check the limelight time
         }
     }
 
+    public double getXAngleToTarget_Speaker_TelNofWay() {// for speaker
+        //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
+        Optional<DriverStation.Alliance> allianceOptional = DriverStation.getAlliance();
+        if (allianceOptional.isEmpty()) {
+            return 0;
+        }
+
+        double aprilTagId = 4; //default is blue alliance - 7 is the correct one
+        DriverStation.Alliance alliance = allianceOptional.get();
+        if(alliance == DriverStation.Alliance.Red) //if are we red alliance
+            aprilTagId =4;
+
+        Optional<Pose3d> apriltagPoseOptional = layout.getTagPose((int)(aprilTagId)); //position of apriltag
+        if (apriltagPoseOptional.isEmpty()) {
+            return 0;
+        }
+
+        Pose3d apriltagPose = apriltagPoseOptional.get();
+        Pose2d robotPose = swerve.getRobotPose();
+
+        double deltaX = apriltagPose.getX() - robotPose.getX();
+        double deltaY = apriltagPose.getY() - robotPose.getY();
+        double angleToSpeakerRad= Math.atan2(deltaY,deltaX);
+        double angleToSpeakerDeg= Math.toDegrees(angleToSpeakerRad);
+        double angleFromRobotToSpeaker = angleToSpeakerDeg - robotPose.getRotation().getDegrees();
+        //normalize the angles
+        if(angleFromRobotToSpeaker >180) angleFromRobotToSpeaker-=360;
+        else if (angleFromRobotToSpeaker <-180) angleFromRobotToSpeaker+=360;
+
+        return angleFromRobotToSpeaker;
 
 
+
+
+        /* doesn't matter if we see an april tag
+        if (isThereTarget()) {
+
+            double deltaX = apriltagPose.getX() - robotPose.getX();
+            double deltaY = apriltagPose.getY() - robotPose.getY();
+            double angleToSpeakerRad= Math.atan2(deltaY,deltaX);
+            double angleToSpeakerDeg= Math.toDegrees(angleToSpeakerRad);
+            double angleFromRobotToSpeaker = angleToSpeakerDeg - robotPose.getRotation().getDegrees();
+            //normalize the angles
+            if(angleFromRobotToSpeaker >180) angleFromRobotToSpeaker-=360;
+            else if (angleFromRobotToSpeaker <-180) angleFromRobotToSpeaker+=360;
+
+            return angleFromRobotToSpeaker;
+              */
+        }
+
+
+
+
+        public double getXAngleToTarget_Speaker_TomWay() {// for speaker
+            //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
+            Optional<DriverStation.Alliance> allianceOptional = DriverStation.getAlliance();
+            if (allianceOptional.isEmpty()) {
+                return 0;
+            }
+
+            double aprilTagId = 4; //default is blue alliance - 7 is the correct one
+            DriverStation.Alliance alliance = allianceOptional.get();
+            if(alliance == DriverStation.Alliance.Red) //if are we red alliance
+                aprilTagId =4;
+
+            Optional<Pose3d> apriltagPoseOptional = layout.getTagPose((int)(aprilTagId)); //position of apriltag
+            if (apriltagPoseOptional.isEmpty()) {
+                return 0;
+            }
+
+            Pose3d apriltagPose = apriltagPoseOptional.get();
+            Pose2d robotPose = swerve.getRobotPose();
+
+            Pose2d rotateAprilTag = apriltagPose.toPose2d().rotateBy(Rotation2d.fromDegrees(180));
+            Twist2d twist = robotPose.log(rotateAprilTag);
+            double rotationDiff = Math.toDegrees(twist.dtheta);
+
+            Vector2 robotV = new Vector2(robotPose.getX(),robotPose.getY());
+            Vector2 aprilTagV = new Vector2(apriltagPose.getX(),apriltagPose.getY());
+            double posVecDiff = Math.toDegrees(Math.acos((aprilTagV.dot(robotV) / robotV.magnitude() * aprilTagV.magnitude())));
+
+
+
+            return posVecDiff * rotationDiff;
+        }
 
 
 

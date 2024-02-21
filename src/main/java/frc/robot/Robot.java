@@ -122,7 +122,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
        // swerve.resetWheels();
 
         arm.setNotAmp();
-        new LimelightAutoAlignWithDrive(xbox_driver, limelight, swerve, arm).start();
+      //  new LimelightAutoAlignWithDrive(xbox_driver, limelight, swerve, arm).start();
     }
 
     @Override
