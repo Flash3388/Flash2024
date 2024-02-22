@@ -89,21 +89,31 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
         rotation2 = Math.abs(rotation2) > 0.2 ? rotation2 : 0;
         double driveX = -xbox_driver.getAxis(XboxAxis.LeftStickX).getAsDouble() ;
         double driveY = -xbox_driver.getAxis(XboxAxis.LeftStickY).getAsDouble() ;
-        double rotation = pidController.applyAsDouble(gyroAngle, angle2Target);
+       // double rotation = pidController.applyAsDouble(gyroAngle, angle2Target);
+
+       double rotation = pidController.applyAsDouble(gyroAngle, angle2Target); //using odometry
 
 
-        /*
-        double rotation = limelight.isThereTarget() ?
+        if(limelight.isThereTarget()){ //only if sees target + not good enough so that the odometer will be good -> use joystick
+            if(limelight.getAvgDistance() > 2.8 ) rotation = rotation2; //optionally create a pipeline that can't see targets
+            //so that the odometer will work- but if so, when do i turn it off and return to original
+        }
+
+
+
+
+       /* double rotation = limelight.isThereTarget() ?
                 pidController.applyAsDouble(gyroAngle, angle2Target):
                 rotation2;
          */
+
         driveY = Math.abs(driveY) > 0.2 ? driveY : 0;
         driveX = Math.abs(driveX) > 0.2 ? driveX : 0;
         rotation = Math.abs(rotation) > 0.2 ? rotation : 0;
 
         //     double xDrive = pidController.applyAsDouble(gyroAngle, angle2Target);
         // double rotation = pidController.applyAsDouble(gyroAngle, angle2Target) * swerve.MAX_SPEED;
-        SmartDashboard.putNumber("rotation", -rotation);
+        SmartDashboard.putNumber("rotation", rotation);
         swerve.drive(driveY, driveX, rotation);
         // move until distanceX is as close as possible 0,
         // indicating the robot is aligned with the target
