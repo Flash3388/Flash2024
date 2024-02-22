@@ -177,7 +177,7 @@ public class Swerve extends Subsystem {
         return odometer.getPoseMeters();
     }
     public ChassisSpeeds getSpeeds(){
-        return SwerveDriveKinematics.toChassisSpeeds(new SwerveDriveKinematics.SwerveDriveWheelStates(getModuleStates()));
+        return swerveDriveKinematics.toChassisSpeeds(new SwerveDriveKinematics.SwerveDriveWheelStates(getModuleStates()));
     }
 
 
