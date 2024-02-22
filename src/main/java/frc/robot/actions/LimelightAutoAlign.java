@@ -75,20 +75,17 @@ public class LimelightAutoAlign  extends ActionBase {
         // axis x- to the right, axis y- down
         //actionControl.finish;
         double gyroAngle = swerve.getHeadingDegrees();
-       // double currentDistance = swerve.getDistancePassedMeters();
-
 
         SmartDashboard.putNumber("gyro angle", gyroAngle);
         SmartDashboard.putNumber("starting angle", startingAngle);
         SmartDashboard.putNumber("angle2Target", angle2Target);
-       // SmartDashboard.putNumber("graph angle2Target - current", angle2Target-gyroAngle);
+        SmartDashboard.putNumber("graph angle2Target - current", angle2Target-gyroAngle);
 
 
         if(!ExtendedMath.constrained(gyroAngle, -PID_ERROR + angle2Target, PID_ERROR + angle2Target)) {
 
             // Direction rotateDirection = angle2Target < startingAngle ? Direction.BACKWARD : Direction.FORWARD; //if + then right, if - left
             double rotation = pidController.applyAsDouble(gyroAngle, angle2Target);
-       //     double xDrive = pidController.applyAsDouble(gyroAngle, angle2Target);
             // double rotation = pidController.applyAsDouble(gyroAngle, angle2Target) * swerve.MAX_SPEED;
             SmartDashboard.putNumber("rotation", -rotation);
             swerve.drive(0, 0, -rotation);

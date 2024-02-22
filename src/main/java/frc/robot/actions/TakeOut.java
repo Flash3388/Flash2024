@@ -34,6 +34,6 @@ public class TakeOut extends ActionBase {
     @Override
     public void end(FinishReason reason) {
     this.intake.stop();
-    shooter.stop();
+    shooter.moveDefault();
     }
 }

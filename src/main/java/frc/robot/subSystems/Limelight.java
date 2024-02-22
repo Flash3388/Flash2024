@@ -198,8 +198,10 @@ public class Limelight extends Subsystem {
         double cameraHeight = 0.485;
         double actualDis = 0;
         if(getAvgDistance()!=0) {
-          //  actualDis = Math.sqrt(Math.pow(getAvgDistance(), 2) - Math.pow(getTargetHeight() - cameraHeight, 2));
-            actualDis = getAvgDistance();
+            if(getAvgDistance() > 4)
+                actualDis = getAvgDistance();
+            else
+              actualDis = Math.sqrt(Math.pow(getAvgDistance(), 2) - Math.pow(getTargetHeight() - cameraHeight, 2));
         }
         else {
             //relativeTo(robot)
