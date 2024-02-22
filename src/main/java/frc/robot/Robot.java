@@ -52,7 +52,6 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         swerve.setDefaultAction(new DriveWithXbox(swerve, xbox_driver));
         xbox_driver.getButton(XboxButton.X).whenActive(new LimelightAutoAlign(limelight,swerve,arm));
 
-
        ///// xbox_systems.getButton(XboxButton.B).whenActive(new LimelightAutoAlignWithDrive(xbox_driver,limelight,swerve,arm));
 
 
@@ -72,7 +71,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xbox_systems.getButton(XboxButton.LB).whenActive(new ShootToSpeaker(shooter, arm, intake));
 
 
-        xbox_systems.getAxis(XboxAxis.RT).asButton(0.8 ,true).whenActive(new SetDefault(arm,shooter,intake));
+        xbox_systems.getAxis(XboxAxis.RT).asButton(0.8 ,true).whenActive(new SetDefault(arm,shooter,intake, limelight));
         xbox_systems.getAxis(XboxAxis.LT).asButton(0.8 ,true).whenActive
                 (Actions.instant(() -> arm.setSetPointAngle(calculateAngle(limelight.getDisHorizontalToTarget()))));
 
@@ -95,7 +94,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
                          .andThen(new TakeIn(intake, arm))
                          .alongWith(new MoveDistance(swerve, -1.2));*/
 
-        this.shootAndMove = new LimelightAutoAlign(limelight, swerve).andThen((new SetPointAngleByVision(limelight, intake, arm, shooter))
+        this.shootAndMove = new LimelightAutoAlign(limelight, swerve, arm).andThen((new SetPointAngleByVision(limelight, intake, arm, shooter))
                 .alongWith(new Shoot(shooter, intake,arm))).andThen((Actions.instant(() -> swerve.resetWheels()))
                 .andThen(new TakeIn(intake, arm))
                 .alongWith(new MoveDistance(swerve, -1.5)));
@@ -120,7 +119,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         this.shootMoveTakeAndShoot = (Actions.instant(() -> swerve.resetWheels()))
                         .andThen(new ShootToSpeaker(shooter, arm, intake).alongWith(new Shoot(shooter, intake,arm)))
                         .andThen((new TakeIn(intake, arm)).alongWith(new MoveDistance(swerve, -1.5)))
-                        .andThen(new LimelightAutoAlign(limelight, swerve))
+                        .andThen(new LimelightAutoAlign(limelight, swerve, arm))
                         .andThen((new SetPointAngleByVision(limelight, intake, arm, shooter)).alongWith(new Shoot(shooter, intake,arm)));
 
 
