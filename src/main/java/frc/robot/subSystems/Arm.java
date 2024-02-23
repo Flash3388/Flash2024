@@ -31,7 +31,7 @@ public class Arm extends Subsystem {
     private static final double STABLE_OUTPUT = 0.1;
 
     // Other Constants
-    public static final double SPEAKER_ANGLE = 30;
+    public static final double SPEAKER_ANGLE = 28;
     public static final double AMP_ANGLE_FROM_SHOOTER = 100;
     public static final double AMP_ANGLE_FROM_INTAKE = 53;
     public static final double FLOOR_ANGLE = -6.5; // the floor angle

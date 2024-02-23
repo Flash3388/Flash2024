@@ -42,7 +42,7 @@ public class LimelightAutoAlign  extends ActionBase {
         SmartDashboard.putNumber("KF m", KF);
         pidController = PidController.newNamedController("rotation", KP, KI, KD, 0);
         //something
-        pidController.setTolerance(PID_ERROR, 0.01);
+        pidController.setTolerance(PID_ERROR, 0.1);
         pidController.setOutputLimit(PID_LIMIT);
 
         //configure().setName("LimelightAutoAlign").save();
@@ -80,6 +80,7 @@ public class LimelightAutoAlign  extends ActionBase {
         SmartDashboard.putNumber("starting angle", startingAngle);
         SmartDashboard.putNumber("angle2Target", angle2Target);
         SmartDashboard.putNumber("graph angle2Target - current", angle2Target-gyroAngle);
+
 
         if(!ExtendedMath.constrained(gyroAngle, -PID_ERROR + angle2Target, PID_ERROR + angle2Target)) {
 

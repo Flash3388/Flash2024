@@ -20,6 +20,11 @@ import frc.robot.SwerveModule;
 @SuppressWarnings("removal")
 public class Swerve extends Subsystem {
 
+    private final double DRIVE_FIX_KP = 0.09;
+    private final double DRIVE_FIX_KI = 0.00001;
+    private final double DRIVE_FIX_KD = 0.00;
+    private final double DRIVE_FIX_KF = 0;
+
     private static final double OFFSET = 0.37;
     public static final double MAX_SPEED = 4.4196;
 
@@ -30,17 +35,16 @@ public class Swerve extends Subsystem {
 
     private final SwerveDriveKinematics swerveDriveKinematics;
     private double currentAngle;
-    private PidController pid;
+    private PidController pidRotateFix;
 
-    private SwerveDriveOdometry odometer;
+    private SwerveDrivePoseEstimator poseEstimator;
     private final Field2d field2d = new Field2d();
 
 
     public Swerve(SwerveModule[] swerveModules, WPI_Pigeon2 gyro) {
         this.swerveModules = swerveModules;
         this.gyro = gyro;
-        pid = new PidController(0.01, 0.0001, 0, 0);
-       // pid.setIZone(4); // degrees
+        pidRotateFix = PidController.newNamedController("driveRotation", DRIVE_FIX_KP, DRIVE_FIX_KI, DRIVE_FIX_KD, DRIVE_FIX_KF);
 
         Translation2d fL = new Translation2d(OFFSET, OFFSET);
         Translation2d fR = new Translation2d(OFFSET, -OFFSET);
@@ -54,11 +58,15 @@ public class Swerve extends Subsystem {
         //resetWheels();
 
 
-        odometer = new SwerveDriveOdometry(swerveDriveKinematics,
+        poseEstimator = new SwerveDrivePoseEstimator(swerveDriveKinematics,
                 new Rotation2d(0),
                 getModulePositions(), new Pose2d(0,0,new Rotation2d(Math.toRadians(0))));
         SmartDashboard.putData("Field", field2d);
         field2d.setRobotPose(getRobotPose());
+    }
+
+    public Field2d getField2d() {
+        return field2d;
     }
 
     public double getHeadingDegrees() {
@@ -109,7 +117,7 @@ public class Swerve extends Subsystem {
 
         if (rotation == 0) {
             if (!ExtendedMath.constrained(getHeadingDegrees(), currentAngle - 1.5, currentAngle + 1.5)) {
-                rotation = -ExtendedMath.constrain(pid.applyAsDouble(getHeadingDegrees(), currentAngle), -0.2, 0.2) * MAX_SPEED;
+                rotation = -ExtendedMath.constrain(pidRotateFix.applyAsDouble(getHeadingDegrees(), currentAngle), -0.2, 0.2) * MAX_SPEED;
             }
         } else {
             currentAngle = getHeadingDegrees();
@@ -117,7 +125,7 @@ public class Swerve extends Subsystem {
 
         if (fieldRelative){
             swerveModuleStates = swerveDriveKinematics.toSwerveModuleStates(
-                    ChassisSpeeds.fromFieldRelativeSpeeds(speedY, speedX, rotation, Rotation2d.fromDegrees(-getHeadingDegrees())));
+                    ChassisSpeeds.fromFieldRelativeSpeeds(speedY, speedX, rotation, getRobotPose().getRotation()));
         } else {
             swerveModuleStates = swerveDriveKinematics.toSwerveModuleStates(new ChassisSpeeds(speedY, speedX, rotation));
         }
@@ -133,7 +141,7 @@ public class Swerve extends Subsystem {
 
         if (rotation == 0) {
             if (!ExtendedMath.constrained(getHeadingDegrees(), currentAngle - 1.5, currentAngle + 1.5)) {
-                rotation = -ExtendedMath.constrain(pid.applyAsDouble(getHeadingDegrees(), currentAngle), -0.2, 0.2) * MAX_SPEED;
+                rotation = -ExtendedMath.constrain(pidRotateFix.applyAsDouble(getHeadingDegrees(), currentAngle), -0.2, 0.2) * MAX_SPEED;
             }
         } else {
             currentAngle = getHeadingDegrees();
@@ -155,10 +163,6 @@ public class Swerve extends Subsystem {
         setDesiredStates(startingPosition);
     }
 
-    public SwerveDriveKinematics getSwerveDriveKinematics() {
-        return swerveDriveKinematics;
-    }
-
     public double getFLHeading(){
         return Mathf.translateAngle(swerveModules[0].getHeadingDegrees());
     }
@@ -171,8 +175,8 @@ public class Swerve extends Subsystem {
         return positions;
     }
 
-    public void updateOdometer() {
-        odometer.update(
+    public void updatePositioning() {
+        poseEstimator.update(
                 getSwerveRotation2D(),
                 getModulePositions());
         updateField();
@@ -180,12 +184,11 @@ public class Swerve extends Subsystem {
     public void updateField(){
         field2d.setRobotPose(getRobotPose());
     }
-    public void setOdometer(Pose2d pose2d) {
-        odometer.resetPosition(gyro.getRotation2d(), getModulePositions(), pose2d);
-        updateField();
+    public void updatePositionFromVision(Pose2d pose2d, double poseTimestamp) {
+        poseEstimator.addVisionMeasurement(pose2d, poseTimestamp);
     }
     public Pose2d getRobotPose() {
-        return odometer.getPoseMeters();
+        return poseEstimator.getEstimatedPosition();
     }
 
     public Rotation2d getSwerveRotation2D() {
