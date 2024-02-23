@@ -198,14 +198,18 @@ public class Limelight extends Subsystem {
         double cameraHeight = 0.485;
         double actualDis = 0;
         if(getAvgDistance()!=0) {
-          //  actualDis = Math.sqrt(Math.pow(getAvgDistance(), 2) - Math.pow(getTargetHeight() - cameraHeight, 2));
-            actualDis = getAvgDistance();
+            if(getAvgDistance() > 4)
+                actualDis = getAvgDistance();
+            else
+              actualDis = Math.sqrt(Math.pow(getAvgDistance(), 2) - Math.pow(getTargetHeight() - cameraHeight, 2));
         }
         else {
             //relativeTo(robot)
             double aprilTagId = 10; // id of speaker    LimelightHelpers.getFiducialID("limelight-banana");
             SmartDashboard.putNumber("aprilTagId",aprilTagId);
             Optional<Pose3d> apriltagPose = layout.getTagPose((int)(aprilTagId)); //position of apriltag
+
+            //not sure if it'll work
 
             Pose2d differenceBetweenRobotToTarget = swerve.getRobotPose().relativeTo(apriltagPose.get().toPose2d());
             actualDis = Math.sqrt(Math.pow(differenceBetweenRobotToTarget.getX(),2) + Math.pow(differenceBetweenRobotToTarget.getY(),2));

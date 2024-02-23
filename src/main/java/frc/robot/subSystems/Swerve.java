@@ -1,6 +1,8 @@
 package frc.robot.subSystems;
 
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
+import com.flash3388.flashlib.math.Mathf;
+import com.flash3388.flashlib.robot.RunningRobot;
 import com.flash3388.flashlib.robot.control.PidController;
 import com.flash3388.flashlib.scheduling.Subsystem;
 import com.jmath.ExtendedMath;
@@ -66,6 +68,9 @@ public class Swerve extends Subsystem {
         this.gyro.setYaw(0);
     }
 
+    public void resetCurrentAngle(){
+        this.currentAngle = gyro.getAngle();
+    }
     public void resetDistancePassed() {
         swerveModules[0].resetDistancePassed();
     }
@@ -102,8 +107,8 @@ public class Swerve extends Subsystem {
         SwerveModuleState[] swerveModuleStates;
 
         if (rotation == 0) {
-            if (!ExtendedMath.constrained(getHeadingDegrees(), currentAngle - 2, currentAngle + 2)) {
-                rotation = -ExtendedMath.constrain(pid.applyAsDouble(getHeadingDegrees(), currentAngle), -0.1, 0.1);
+            if (!ExtendedMath.constrained(getHeadingDegrees(), currentAngle - 1.5, currentAngle + 1.5)) {
+                rotation = -ExtendedMath.constrain(pid.applyAsDouble(getHeadingDegrees(), currentAngle), -0.2, 0.2) * MAX_SPEED;
             }
         } else {
             currentAngle = getHeadingDegrees();
@@ -151,6 +156,10 @@ public class Swerve extends Subsystem {
 
     public SwerveDriveKinematics getSwerveDriveKinematics() {
         return swerveDriveKinematics;
+    }
+
+    public double getFLHeading(){
+        return Mathf.translateAngle(swerveModules[0].getHeadingDegrees());
     }
 
     public SwerveModulePosition[] getModulePositions() {
