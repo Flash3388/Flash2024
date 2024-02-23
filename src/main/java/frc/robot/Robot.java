@@ -234,7 +234,6 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
             double angle = -1.05 * Math.pow(distance, 2) + 11.2 * distance + 18.4;
             return angle;
         }
-
     }
 
 
