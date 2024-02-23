@@ -8,6 +8,8 @@ import com.flash3388.flashlib.hid.XboxButton;
 import com.flash3388.flashlib.hid.XboxController;
 import com.flash3388.flashlib.scheduling.actions.ActionGroup;
 import com.flash3388.flashlib.scheduling.actions.Actions;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.actions.*;
@@ -50,7 +52,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
         //driver:
         swerve.setDefaultAction(new DriveWithXbox(swerve, xbox_driver));
-        xbox_driver.getButton(XboxButton.X).whenActive(new LimelightAutoAlign(limelight,swerve,arm));
+        xbox_driver.getButton(XboxButton.X).whenActive(new LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm, true, true));
 
        ///// xbox_systems.getButton(XboxButton.B).whenActive(new LimelightAutoAlignWithDrive(xbox_driver,limelight,swerve,arm));
 
@@ -68,12 +70,12 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         /*xbox_systems.getButton(XboxButton.LB).whenActive((Actions.instant(() -> arm.setNotAmp()))
                 .andThen(Actions.instant(() -> arm.setSetPointAngle(Arm.SPEAKER_ANGLE))));*/
         xbox_systems.getButton(XboxButton.RB).whenActive(new ShootAMP(shooter, arm));
-        xbox_systems.getButton(XboxButton.LB).whenActive(new ShootToSpeaker(shooter, arm, intake));
+        xbox_systems.getButton(XboxButton.LB).whenActive(new ShootToSpeaker(shooter, arm, intake).alongWith(new Shoot(shooter, intake, arm)));
 
 
         xbox_systems.getAxis(XboxAxis.RT).asButton(0.8 ,true).whenActive(new SetDefault(arm,shooter,intake, limelight));
-        xbox_systems.getAxis(XboxAxis.LT).asButton(0.8 ,true).whenActive
-                (Actions.instant(() -> arm.setSetPointAngle(calculateAngle(limelight.getDisHorizontalToTarget()))));
+        /*xbox_systems.getAxis(XboxAxis.LT).asButton(0.8 ,true).whenActive
+                (Actions.instant(() -> arm.setSetPointAngle(calculateAngle(limelight.getDisHorizontalToTarget()))));*/
 
 
         //ActionGroup shootSpeaker = new TakeIn(intake,arm).andThen((new SetPointAngleByVision(limelight, intake, arm, shooter)).alongWith(new ShooterSpeaker(shooter, intake, arm)));
@@ -82,7 +84,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
        // xbox_systems.getDpad().up().whenActive(new Shoot(shooter, intake, arm));
         xbox_systems.getDpad().down().whenActive(new SetPointAngleByVision(limelight,intake,arm, shooter).alongWith(new Shoot(shooter, intake, arm)));
 
-        limelight.setPipline(2);
+        limelight.setPipline(0);
 
         SmartDashboard.putNumber("set point distance", 0);
 
@@ -94,7 +96,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
                          .andThen(new TakeIn(intake, arm))
                          .alongWith(new MoveDistance(swerve, -1.2));*/
 
-        this.shootAndMove = new LimelightAutoAlign(limelight, swerve, arm).andThen((new SetPointAngleByVision(limelight, intake, arm, shooter))
+        this.shootAndMove = new LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm, false, false).andThen((new SetPointAngleByVision(limelight, intake, arm, shooter))
                 .alongWith(new Shoot(shooter, intake,arm))).andThen((Actions.instant(() -> swerve.resetWheels()))
                 .andThen(new TakeIn(intake, arm))
                 .alongWith(new MoveDistance(swerve, -1.5)));
@@ -119,7 +121,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         this.shootMoveTakeAndShoot = (Actions.instant(() -> swerve.resetWheels()))
                         .andThen(new ShootToSpeaker(shooter, arm, intake).alongWith(new Shoot(shooter, intake,arm)))
                         .andThen((new TakeIn(intake, arm)).alongWith(new MoveDistance(swerve, -1.5)))
-                        .andThen(new LimelightAutoAlign(limelight, swerve, arm))
+                        .andThen(new LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm, false, false))
                         .andThen((new SetPointAngleByVision(limelight, intake, arm, shooter)).alongWith(new Shoot(shooter, intake,arm)));
 
 
@@ -167,10 +169,10 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         double dist = SmartDashboard.getNumber("set point distance", 0);
         //this.moveAndShoot.start();
         //this.shootAndMove.start();
-
-      //  this.shootMoveTakeAndShoot.start();
+        //this.shootMoveTakeAndShoot.start();
         //new MoveDistance(swerve, -2).start();
         //this.shootMoveTake.start();
+        new MoveByPoseY(swerve, 1).start();
     }
 
     @Override
@@ -238,8 +240,10 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     public void robotPeriodic() {
         arm.print();
         limelight.updateRobotPositionByAprilTag();
-        swerve.updateOdometer();
+        swerve.updatePositioning();
         shooter.print();
+
+        SmartDashboard.putNumber("Limelight angle diff to target", limelight.getXAngleToTarget_Speaker());
 
 
        // module – The CAN ID of the PDP/PDH. moduleType – Module type (CTRE or REV
@@ -252,6 +256,12 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         }
 
  */
+
+        SmartDashboard.putNumber("ActualGyroAngle", swerve.getHeadingDegrees());
+        SmartDashboard.putNumber("ActualPoseAngle", swerve.getRobotPose().getRotation().getDegrees());
+        SmartDashboard.putNumber("ActualAngleToSpeaker", limelight.getXAngleToTarget_Speaker());
+        SmartDashboard.putNumber("ActualAngleToSpeaker2", limelight.getAngleToSpeaker());
+
         SmartDashboard.putNumber("set point A", arm.getSetPointAngle());
 
         SmartDashboard.putBoolean("IS IN NOTE", intake.isIN());
@@ -260,6 +270,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         swerve.print();
 
         SmartDashboard.putNumber("Drive Distance", swerve.getDistancePassedMeters());
+        SmartDashboard.putNumber("Place Y Pose", swerve.getRobotPose().getY());
     }
 
     @Override

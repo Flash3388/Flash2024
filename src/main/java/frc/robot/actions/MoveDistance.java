@@ -53,7 +53,7 @@ public class MoveDistance extends ActionBase {
 
     @Override
     public void execute(ActionControl control) {
-        double distancePassed = swerve.getDistancePassedMeters();;
+        double distancePassed = -swerve.getDistancePassedMeters();;
 
         if(ExtendedMath.constrained(swerve.getFLHeading(), 170, 190))
             distancePassed = -distancePassed;
