@@ -230,7 +230,7 @@ public class Limelight extends Subsystem {
         }
         else {
             //relativeTo(robot)
-            double aprilTagId = 7; // id of speaker    LimelightHelpers.getFiducialID("limelight-banana");
+            double aprilTagId = 4; // id of speaker    LimelightHelpers.getFiducialID("limelight-banana");
             SmartDashboard.putNumber("aprilTagId",aprilTagId);
             Optional<Pose3d> apriltagPose = layout.getTagPose((int)(aprilTagId)); //position of apriltag
 
@@ -240,6 +240,7 @@ public class Limelight extends Subsystem {
             actualDis = Math.sqrt(Math.pow(differenceBetweenRobotToTarget.getX(),2) + Math.pow(differenceBetweenRobotToTarget.getY(),2));
         }
          SmartDashboard.putNumber("hopefully real distance",actualDis);
+         SmartDashboard.putNumber("odometry distance",actualDis);
         return actualDis;
 
     }

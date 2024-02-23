@@ -58,7 +58,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
         //driver:
         swerve.setDefaultAction(new DriveWithXbox(swerve, xbox_driver));
-        xbox_driver.getButton(XboxButton.X).whenActive(new LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm, true, true));
+        xbox_driver.getButton(XboxButton.X).whenActive(new
+                LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm, true, true));
       //  xbox_driver.getButton(XboxButton.X).whenActive(new LimelightAutoAlign(limelight,swerve,arm));
 
 
