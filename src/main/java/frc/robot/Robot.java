@@ -50,23 +50,30 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
         //driver:
         swerve.setDefaultAction(new DriveWithXbox(swerve, xbox_driver));
-        xbox_driver.getButton(XboxButton.X).whenActive(new LimelightAutoAlign(limelight,swerve,arm));
+      //  xbox_driver.getButton(XboxButton.X).whenActive(new LimelightAutoAlign(limelight,swerve,arm));
 
+
+        xbox_systems.getButton(XboxButton.X).whenActive((new MoveDistance(swerve, 1)));
        ///// xbox_systems.getButton(XboxButton.B).whenActive(new LimelightAutoAlignWithDrive(xbox_driver,limelight,swerve,arm));
 
 
         //systems:
-        arm.setDefaultAction(new ArmController(arm));
+       /* arm.setDefaultAction(new ArmController(arm));
         xbox_systems.getButton(XboxButton.B).whenActive(new TakeIn(intake,arm));
         xbox_systems.getButton(XboxButton.Y).whileActive(new TakeOut(intake,arm,shooter));
         xbox_systems.getButton(XboxButton.A).whenActive(new SetPointAngleByVision(limelight,intake,arm, shooter));
         //xbox_systems.getButton(XboxButton.X).whenActive(new ShootSpeaker(shooter, intake, arm));
         xbox_systems.getButton(XboxButton.X).whenActive(new Shoot(shooter, intake, arm));
 
+
+        */
+
         /*xbox_systems.getButton(XboxButton.RB).whenActive((Actions.instant(() -> shooter.shootAmp())).andThen(Actions.instant(() -> arm.setYesAmp()))
                 .andThen(Actions.instant(() -> arm.setSetPointAngle(Arm.AMP_ANGLE_FROM_SHOOTER))));*/
         /*xbox_systems.getButton(XboxButton.LB).whenActive((Actions.instant(() -> arm.setNotAmp()))
                 .andThen(Actions.instant(() -> arm.setSetPointAngle(Arm.SPEAKER_ANGLE))));*/
+
+        /*
         xbox_systems.getButton(XboxButton.RB).whenActive(new ShootAMP(shooter, arm));
         xbox_systems.getButton(XboxButton.LB).whenActive(new ShootToSpeaker(shooter, arm, intake));
 
@@ -75,9 +82,9 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xbox_systems.getAxis(XboxAxis.LT).asButton(0.8 ,true).whenActive
                 (Actions.instant(() -> arm.setSetPointAngle(calculateAngle(limelight.getDisHorizontalToTarget()))));
 
-
+*/
         //ActionGroup shootSpeaker = new TakeIn(intake,arm).andThen((new SetPointAngleByVision(limelight, intake, arm, shooter)).alongWith(new ShooterSpeaker(shooter, intake, arm)));
-
+/*
         xbox_systems.getDpad().right().whenActive(new Pull_In(intake));
        // xbox_systems.getDpad().up().whenActive(new Shoot(shooter, intake, arm));
         xbox_systems.getDpad().down().whenActive(new SetPointAngleByVision(limelight,intake,arm, shooter).alongWith(new Shoot(shooter, intake, arm)));
@@ -88,17 +95,21 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
          /*this.moveAndShoot = new MoveDistance(swerve, -1.2).andThen(new LimelightAutoAlign(limelight, swerve))
                 .andThen(new SetPointAngleByVision(limelight, intake, arm, shooter)).alongWith(new ShooterSpeaker(shooter, intake,arm));
-*/
+
          /*this.shootAndMove = new LimelightAutoAlign(limelight, swerve).andThen((Actions.instant(() -> arm.setNotAmp()))
                          .andThen(Actions.instant(() -> arm.setSetPointAngle(Arm.SPEAKER_ANGLE)))).andThen(new ShooterSpeaker(shooter, intake,arm)).andThen(Actions.instant(() -> swerve.resetWheels()))
                          .andThen(new TakeIn(intake, arm))
                          .alongWith(new MoveDistance(swerve, -1.2));*/
 
+        /*
         this.shootAndMove = new LimelightAutoAlign(limelight, swerve, arm).andThen((new SetPointAngleByVision(limelight, intake, arm, shooter))
                 .alongWith(new Shoot(shooter, intake,arm))).andThen((Actions.instant(() -> swerve.resetWheels()))
                 .andThen(new TakeIn(intake, arm))
                 .alongWith(new MoveDistance(swerve, -1.5)));
 
+
+
+         */
         // we need to make sure FL wheel is with its gear in
 
        /* original
@@ -115,7 +126,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
                         .andThen(new TakeIn(intake, arm)).alongWith(new MoveDistance(swerve, -1.5)))
                         .andThen(new LimelightAutoAlign(limelight, swerve).andThen((new SetPointAngleByVision(limelight, intake, arm, shooter))
                         .alongWith(new Shoot(shooter, intake,arm))));*/
-
+/*
         this.shootMoveTakeAndShoot = (Actions.instant(() -> swerve.resetWheels()))
                         .andThen(new ShootToSpeaker(shooter, arm, intake).alongWith(new Shoot(shooter, intake,arm)))
                         .andThen((new TakeIn(intake, arm)).alongWith(new MoveDistance(swerve, -1.5)))
@@ -128,6 +139,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
                 .alongWith(new Shoot(shooter, intake, arm))))
                 .andThen((new TakeIn(intake, arm)).alongWith(new MoveDistance(swerve, -1.5)));
 
+
+ */
 
 
    /*

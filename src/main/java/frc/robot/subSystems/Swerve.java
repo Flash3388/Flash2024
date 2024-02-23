@@ -39,7 +39,8 @@ public class Swerve extends Subsystem {
     public Swerve(SwerveModule[] swerveModules, WPI_Pigeon2 gyro) {
         this.swerveModules = swerveModules;
         this.gyro = gyro;
-        pid = new PidController(0.01, 0, 0, 0);
+        pid = new PidController(0.01, 0.0001, 0, 0);
+       // pid.setIZone(4); // degrees
 
         Translation2d fL = new Translation2d(OFFSET, OFFSET);
         Translation2d fR = new Translation2d(OFFSET, -OFFSET);
