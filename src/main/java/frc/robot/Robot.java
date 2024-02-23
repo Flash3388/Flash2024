@@ -40,6 +40,14 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
     public Robot(FrcRobotControl robotControl) {
         super(robotControl);
+        //double angle = -1.05 * Math.pow(distance, 2) + 11.2 * distance + 18.4;
+        SmartDashboard.putNumber("m of x^3",0);
+        SmartDashboard.putNumber("m of x^2",-1.05);
+        SmartDashboard.putNumber("m of x",11.2);
+        SmartDashboard.putNumber("k0",18.4);
+
+        SmartDashboard.putNumber("Horizontal_distance from target",0);
+
         this.arm = SystemFactory.createArm();
         swerve = SystemFactory.createSwerveSystem();
         intake = SystemFactory.createIntake();
@@ -59,8 +67,11 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
 
         //systems:
-        arm.setDefaultAction(new ArmController(arm));
-        xbox_systems.getButton(XboxButton.B).whenActive(new TakeIn(intake,arm));
+    //    arm.setDefaultAction(new ArmController(arm));
+    //    xbox_systems.getButton(XboxButton.B).whenActive(new TakeIn(intake,arm));
+
+      //  xbox_systems.getButton(XboxButton.B).whenActive(new MoveDistance(swerve, 1));
+
         xbox_systems.getButton(XboxButton.Y).whileActive(new TakeOut(intake,arm,shooter));
         xbox_systems.getButton(XboxButton.A).whenActive(new SetPointAngleByVision(limelight,intake,arm, shooter));
         //xbox_systems.getButton(XboxButton.X).whenActive(new ShootSpeaker(shooter, intake, arm));
@@ -188,9 +199,13 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         shooter.resetI();
         limelight.init();
         swerve.resetWheels();
-        swerve.resetCurrentAngle();
+       // swerve.resetCurrentAngle();
         arm.setNotAmp();
       //  new LimelightAutoAlignWithDrive(xbox_driver, limelight, swerve, arm).start();
+
+
+
+
     }
 
     @Override
@@ -198,40 +213,37 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         double angle2T = limelight.getXAngleToTarget_Speaker();
         SmartDashboard.putNumber("angle2T",angle2T); //check if the value is correct-it may be the wrong one, so switch
 
-        double distance = limelight.getDistanceToTarget();
         double avgDistance = limelight.getAvgDistance();
-        SmartDashboard.putNumber("distance",distance); //it may not work 100% accuratly, i need to tune it when i'm in the room
         SmartDashboard.putNumber("avg Distance",avgDistance); //it may not work 100% accuratly, i need to tune it when i'm in the room
-
-
-        double actud= Math.cos((limelight.getYAngleToTarget()+65)/distance);
-        SmartDashboard.putNumber("actual distance",actud); //it may not work 100% accuratly, i need to tune it when i'm in the room
-
-        double cameraHeight = 0.485;
-        double actualDis = Math.sqrt(Math.pow(avgDistance,2) - Math.pow(limelight.getTargetHeight() - cameraHeight,2));
-        SmartDashboard.putNumber("hopefully real distance",actualDis);
-
-        //double setPoint = SmartDashboard.getNumber("set point A", Arm.DEF_ANGLE);
-        SmartDashboard.putNumber("set point A", arm.getSetPointAngle());
-       // arm.setSetPointAngle(setPoint);
-
+        SmartDashboard.putNumber("hopefully real distance",limelight.getDisHorizontalToTarget());
         SmartDashboard.putBoolean("see target",limelight.isThereTarget());
 
-       /* SmartDashboard.putNumber("rotation",swerve.getPose2D().getRotation().getRadians());
-        SmartDashboard.putNumber("xTrans",swerve.getPose2D().getTranslation().getX());
-        SmartDashboard.putNumber("yTrans",swerve.getPose2D().getTranslation().getY());*/
+        //calculated angle
+        double distanceFromTarget = SmartDashboard.getNumber("Horizontal_distance from target",0);
+        calculateAngle(distanceFromTarget);
 
-        shooter.changePidValues();
-      //  shooter.setVelocity(SmartDashboard.getNumber("set point velocity", 0));
+        double setPoint = SmartDashboard.getNumber("set point A", Arm.DEF_ANGLE);
+        arm.setSetPointAngle(setPoint);
+
     }
     public double calculateAngle(double distance){
+
 
         if(distance == Double.MIN_VALUE) {
             arm.setPositioningNotControlled();
             return Double.MIN_VALUE;
         }
         else {
-            double angle = -1.05 * Math.pow(distance, 2) + 11.2 * distance + 18.4;
+            double M_x3 = SmartDashboard.getNumber("m of x^3",0);
+            double M_x2 =SmartDashboard.getNumber("m of x^2",-1.05);
+            double M_x1 =SmartDashboard.getNumber("m of x",11.2);
+            double k0 =SmartDashboard.getNumber("k0",18.4);
+
+
+
+
+            double angle =  M_x3 * Math.pow(distance,3) + M_x2 * Math.pow(distance, 2) + M_x1 * distance + k0;
+            SmartDashboard.putNumber("calculated angle", angle);
             return angle;
         }
     }
@@ -246,18 +258,6 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
         SmartDashboard.putNumber("Limelight angle diff to target", limelight.getXAngleToTarget_Speaker());
 
-
-       // module – The CAN ID of the PDP/PDH. moduleType – Module type (CTRE or REV
-/*
-        double currentMaster = a.getCurrent(18);
-        double currentFollower = a.getCurrent(19);
-
-        if (Math.abs(currentMaster - currentFollower) > 3) {
-            DriverStation.reportWarning("Current difference between arm master and follower", false);
-        }
-
- */
-
         SmartDashboard.putNumber("ActualGyroAngle", swerve.getHeadingDegrees());
         SmartDashboard.putNumber("ActualPoseAngle", swerve.getRobotPose().getRotation().getDegrees());
         SmartDashboard.putNumber("ActualAngleToSpeaker", limelight.getXAngleToTarget_Speaker());
@@ -266,7 +266,6 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         SmartDashboard.putNumber("set point A", arm.getSetPointAngle());
 
         SmartDashboard.putBoolean("IS IN NOTE", intake.isIN());
-        SmartDashboard.putBoolean("IS AGAM", intake.isInAgam());
 
         swerve.print();
 
