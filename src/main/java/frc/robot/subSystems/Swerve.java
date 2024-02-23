@@ -20,9 +20,9 @@ import frc.robot.SwerveModule;
 @SuppressWarnings("removal")
 public class Swerve extends Subsystem {
 
-    private final double DRIVE_FIX_KP = 0.09;
-    private final double DRIVE_FIX_KI = 0.00001;
-    private final double DRIVE_FIX_KD = 0.00;
+    private final double DRIVE_FIX_KP = 0.022; //0.025
+    private final double DRIVE_FIX_KI = 0.0000;
+    private final double DRIVE_FIX_KD = 0.00001; //0.00001
     private final double DRIVE_FIX_KF = 0;
 
     private static final double OFFSET = 0.37;
@@ -45,7 +45,7 @@ public class Swerve extends Subsystem {
         this.swerveModules = swerveModules;
         this.gyro = gyro;
         pidRotateFix = PidController.newNamedController("driveRotation", DRIVE_FIX_KP, DRIVE_FIX_KI, DRIVE_FIX_KD, DRIVE_FIX_KF);
-
+        pidRotateFix.setIZone(5);
         Translation2d fL = new Translation2d(OFFSET, OFFSET);
         Translation2d fR = new Translation2d(OFFSET, -OFFSET);
         Translation2d bL = new Translation2d(-OFFSET, OFFSET);
@@ -117,7 +117,14 @@ public class Swerve extends Subsystem {
 
         if (rotation == 0) {
             if (!ExtendedMath.constrained(getHeadingDegrees(), currentAngle - 1.5, currentAngle + 1.5)) {
-                rotation = -ExtendedMath.constrain(pidRotateFix.applyAsDouble(getHeadingDegrees(), currentAngle), -0.2, 0.2) * MAX_SPEED;
+                if(speedX != 0 || speedY!= 0)
+                    rotation = -ExtendedMath.constrain(pidRotateFix.applyAsDouble(getHeadingDegrees(), currentAngle), -0.2, 0.2) * MAX_SPEED;
+                else
+                    rotation = -ExtendedMath.constrain(pidRotateFix.applyAsDouble(getHeadingDegrees(), currentAngle), -0.2, 0.2) * MAX_SPEED / 3.2;
+
+
+
+             //   rotation = -ExtendedMath.constrain(pidRotateFix.applyAsDouble(getHeadingDegrees(), currentAngle), -0.2, 0.2) * MAX_SPEED;
             }
         } else {
             currentAngle = getHeadingDegrees();
@@ -140,7 +147,7 @@ public class Swerve extends Subsystem {
         SwerveModuleState[] swerveModuleStates;
 
         if (rotation == 0) {
-            if (!ExtendedMath.constrained(getHeadingDegrees(), currentAngle - 1.5, currentAngle + 1.5)) {
+            if (!ExtendedMath.constrained(getHeadingDegrees(), currentAngle - 1, currentAngle + 1)) {
                 rotation = -ExtendedMath.constrain(pidRotateFix.applyAsDouble(getHeadingDegrees(), currentAngle), -0.2, 0.2) * MAX_SPEED;
             }
         } else {

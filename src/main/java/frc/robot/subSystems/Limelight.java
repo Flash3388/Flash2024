@@ -29,6 +29,8 @@ public class Limelight extends Subsystem {
     private final LinearFilter filterY = LinearFilter.movingAverage(20);
     private final LinearFilter filterAngle = LinearFilter.movingAverage(20);
 
+    private double accuracyInVision = 100; //percents
+
 
     public Limelight(Swerve swerve, Arm arm){
         layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
@@ -228,7 +230,7 @@ public class Limelight extends Subsystem {
         }
         else {
             //relativeTo(robot)
-            double aprilTagId = 10; // id of speaker    LimelightHelpers.getFiducialID("limelight-banana");
+            double aprilTagId = 7; // id of speaker    LimelightHelpers.getFiducialID("limelight-banana");
             SmartDashboard.putNumber("aprilTagId",aprilTagId);
             Optional<Pose3d> apriltagPose = layout.getTagPose((int)(aprilTagId)); //position of apriltag
 
@@ -321,7 +323,7 @@ public class Limelight extends Subsystem {
         return LimelightHelpers.getTV("limelight-banana"); //tv=1.0 means a target is detected
     }
     public void updateRobotPositionByAprilTag(){
-        if (!isThereTarget() || getAvgDistance() >= 2.8) {
+        if (!isThereTarget() || getAvgDistance() >= 2) { //2.8
             SmartDashboard.putBoolean("aprilTagPresent",false);
             return;
         }
