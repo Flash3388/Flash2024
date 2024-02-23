@@ -23,6 +23,7 @@ public class SetDefault extends ActionBase {
         this.intake = intake;
         this.shooter = shooter;
         this.limelight = limelight;
+        configure().setName("setDefault").save();
         requires(intake,shooter,limelight);
     }
     @Override
@@ -30,6 +31,7 @@ public class SetDefault extends ActionBase {
         arm.doNotBaseOnLimelightDetection();
         arm.setNotAmp();
         arm.setSetPointAngle(Arm.DEF_ANGLE);
+        shooter.moveDefault();
         control.finish();
     }
 

@@ -1,13 +1,14 @@
 package frc.robot.subSystems;
 
 import com.flash3388.flashlib.scheduling.Subsystem;
+import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.DigitalInput;
 
 public class Intake extends Subsystem {
     private CANSparkMax motor;
     private final static double INTAKE_SPEED = 0.65;
-    private static final double SHOOT_SPEED = 0.9;
+    private static final double SHOOT_SPEED = 1;
 
     private static final double PULL_SPEED = 0.5;
     private DigitalInput in;
@@ -17,6 +18,8 @@ public class Intake extends Subsystem {
         this.motor = motor;
         this.in = digitalInput;
         this.agam = agam;
+        motor.setIdleMode(CANSparkBase.IdleMode.kBrake);
+
     }
 
     public void stop(){

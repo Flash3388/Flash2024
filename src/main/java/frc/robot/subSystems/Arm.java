@@ -31,7 +31,7 @@ public class Arm extends Subsystem {
     private static final double STABLE_OUTPUT = 0.1;
 
     // Other Constants
-    public static final double SPEAKER_ANGLE = 30;
+    public static final double SPEAKER_ANGLE = 28;
     public static final double AMP_ANGLE_FROM_SHOOTER = 100;
     public static final double AMP_ANGLE_FROM_INTAKE = 53;
     public static final double FLOOR_ANGLE = -6.5; // the floor angle
@@ -73,16 +73,26 @@ public class Arm extends Subsystem {
         pid = PidController.newNamedController("drive", KP, KI, KD, 0);
         pid.setIZone(I_ZONE);
 
-        setPointAngle = DEF_ANGLE;
+        setSetPointAngle(DEF_ANGLE);
         SmartDashboard.putNumber("set point A", DEF_ANGLE);
 
 
-        master.setSmartCurrentLimit(80);
-        follower.setSmartCurrentLimit(80);
+        master.setSmartCurrentLimit(60);
+        follower.setSmartCurrentLimit(60);
 
 
         master.setIdleMode(CANSparkBase.IdleMode.kBrake);
         follower.setIdleMode(CANSparkBase.IdleMode.kBrake);
+
+        master.getPIDController().setP(0);
+        master.getPIDController().setI(0);
+        master.getPIDController().setD(0);
+        master.getPIDController().setFF(0);
+
+        follower.getPIDController().setP(0);
+        follower.getPIDController().setI(0);
+        follower.getPIDController().setD(0);
+        follower.getPIDController().setFF(0);
     }
 
     public void moveToAngle(double angle){
@@ -94,12 +104,11 @@ public class Arm extends Subsystem {
         }
 
         double speed = pid.applyAsDouble(getArmPosition(), angle) ;
-        speed = ExtendedMath.constrain(speed, -0.5, 0.5);
+        //speed = ExtendedMath.constrain(speed, -0.5, 0.5);
+        speed = ExtendedMath.constrain(speed, -0.6, 0.6);
 
         if(( getArmPosition() - angle) > 30)
             speed = speed / 3;
-
-
 
         if(getArmPosition() > 80 && speed > 0)
             speed = speed / 2;
