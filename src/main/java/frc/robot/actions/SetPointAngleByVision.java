@@ -29,7 +29,7 @@ public class SetPointAngleByVision extends ActionBase {
 
         //configure().setName("SetPointAngleByVision").save();
 
-        requires(limelight, shooter);
+        requires(shooter);
     }
 
     @Override

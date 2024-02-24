@@ -78,11 +78,11 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
         double driveY = 0;
         if (withXbox) {
             rotation2 = -xbox_driver.getAxis(XboxAxis.RightStickX).getAsDouble();
-            rotation2 = Math.abs(rotation2) > 0.2 ? rotation2 : 0;
+            rotation2 = Math.abs(rotation2) > 0.2 ? rotation2 * Swerve.MAX_SPEED/2 : 0;
             driveX = -xbox_driver.getAxis(XboxAxis.LeftStickX).getAsDouble() ;
-            driveX = Math.abs(driveX) > 0.2 ? driveX : 0;
+            driveX = Math.abs(driveX) > 0.2 ? driveX * Swerve.MAX_SPEED/2 : 0;
             driveY = -xbox_driver.getAxis(XboxAxis.LeftStickY).getAsDouble() ;
-            driveY = Math.abs(driveY) > 0.2 ? driveY : 0;
+            driveY = Math.abs(driveY) > 0.2 ? driveY * Swerve.MAX_SPEED/2: 0;
         }
        // double rotation = pidController.applyAsDouble(gyroAngle, angle2Target);
 

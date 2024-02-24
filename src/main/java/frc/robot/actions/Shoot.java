@@ -8,6 +8,7 @@ import com.flash3388.flashlib.time.Clock;
 import com.flash3388.flashlib.time.Time;
 import frc.robot.subSystems.Arm;
 import frc.robot.subSystems.Intake;
+import frc.robot.subSystems.Limelight;
 import frc.robot.subSystems.ShooterSystem;
 
 public class Shoot extends ActionBase {
@@ -18,9 +19,10 @@ public class Shoot extends ActionBase {
     private static final double DELAY_BEFORE_FINISH_IN_SECONDS = 1;
     private Clock clock;
     private Time time;
+    private Limelight limelight;
 
 
-    public Shoot(ShooterSystem shooter, Intake intake, Arm arm){
+    public Shoot(ShooterSystem shooter, Intake intake, Arm arm, Limelight limelight){
         this.shooter = shooter;
         this.intake = intake;
         this.arm = arm;
@@ -28,7 +30,7 @@ public class Shoot extends ActionBase {
 
         this.clock = RunningRobot.getControl().getClock();
 
-        requires(intake);
+        requires(intake, limelight);
 
         //configure().setName("ShooterSpeaker").save();
     }
