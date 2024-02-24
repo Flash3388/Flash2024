@@ -38,9 +38,6 @@ public class Shoot extends ActionBase {
     @Override
     public void initialize(ActionControl control) {
         time = Time.INVALID;
-
-
-        shooter.shootSpeaker();
     }
 
     @Override

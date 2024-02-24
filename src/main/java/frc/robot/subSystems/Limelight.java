@@ -34,7 +34,7 @@ public class Limelight extends Subsystem {
 
     public Limelight(Swerve swerve, Arm arm){
         layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-        layout.setOrigin(AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide); //if we're on the blue side
+        layout.setOrigin(AprilTagFieldLayout.OriginPosition.kRedAllianceWallRightSide); //if we're on the red side
         timer = new Timer();
         this.swerve = swerve;
         this.arm = arm;
@@ -87,7 +87,7 @@ public class Limelight extends Subsystem {
             return 0;
         }
 
-        double aprilTagId = 4; //default is blue alliance - 7 is the correct one
+        double aprilTagId = 7; //default is blue alliance - 7 is the correct one
         DriverStation.Alliance alliance = allianceOptional.get();
         if(alliance == DriverStation.Alliance.Red) //if are we red alliance
             aprilTagId =4;
@@ -156,7 +156,7 @@ public class Limelight extends Subsystem {
 
         if(alliance == DriverStation.Alliance.Red) //if are we red alliance
         {
-            if(robotPose.getY() < layout.getFieldWidth() - yLength_BetweenDriversWall_HorizontalStage)
+            if(robotPose.getY() < layout.getFieldLength() - yLength_BetweenDriversWall_HorizontalStage)
                 aprilTagId = 13;
             else if(robotPose.getX() > XLength_BetweenSideWalls_SideStage)
                 aprilTagId = 12;
@@ -187,12 +187,22 @@ public class Limelight extends Subsystem {
         double deltaY = apriltagPose.getY() - robotPose.getY();
         double angleToSpeakerRad= Math.atan2(deltaY,deltaX);
         double angleToSpeakerDeg= Math.toDegrees(angleToSpeakerRad);
-        double angleFromRobotToSpeaker = angleToSpeakerDeg - robotPose.getRotation().getDegrees();
+        double angleFromRobotToStage = angleToSpeakerDeg - robotPose.getRotation().getDegrees();
         //normalize the angles
-        if(angleFromRobotToSpeaker >180) angleFromRobotToSpeaker-=360;
-        else if (angleFromRobotToSpeaker <-180) angleFromRobotToSpeaker+=360;
+        if(angleFromRobotToStage >180) angleFromRobotToStage-=360;
+        else if (angleFromRobotToStage <-180) angleFromRobotToStage+=360;
 
-        return angleFromRobotToSpeaker;
+        /*
+         angleFromRobotToStage = angleFromRobotToStage + 180; //corrected angle- the robot is backwards
+        if(angleFromRobotToStage >180) angleFromRobotToStage-=360;
+        else if (angleFromRobotToStage <-180) angleFromRobotToStage+=360;
+
+        return angleFromRobotToStage;
+         */
+
+
+
+        return (angleFromRobotToStage + 180) % 360;
     }
 
 
