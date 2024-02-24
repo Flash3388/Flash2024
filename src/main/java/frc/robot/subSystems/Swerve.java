@@ -16,6 +16,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.SwerveModule;
 
 @SuppressWarnings("removal")
@@ -26,8 +27,8 @@ public class Swerve extends Subsystem {
     private final double DRIVE_FIX_KD = 0.00001; //0.00001
     private final double DRIVE_FIX_KF = 0;
 
-    private static final double OFFSET = 0.37;
-    public static final double MAX_SPEED = 4.4196;
+    private static final double OFFSET = Constants.SWERVE_OFFSET;
+    public static final double MAX_SPEED = Constants.SWERVE_MAX_SPEED;
 
     private final SwerveModule[] swerveModules; //The array should contain the modules by
     // front-left, front-right, back-left, back-right
@@ -40,6 +41,8 @@ public class Swerve extends Subsystem {
 
     private SwerveDrivePoseEstimator poseEstimator;
     private final Field2d field2d = new Field2d();
+
+
 
 
     public Swerve(SwerveModule[] swerveModules, WPI_Pigeon2 gyro) {

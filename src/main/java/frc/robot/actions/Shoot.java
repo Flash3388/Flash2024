@@ -55,8 +55,7 @@ public class Shoot extends ActionBase {
 
         else {
             if (shooter.gotToTarget(ShooterSystem.SPEED_TARGET_SPEAKER) && arm.isStabilizedAtTargetedPosition())
-                intake.shoot();
-        }
+                intake.shoot();}
 
         if (!intake.isIN()) {
             if (time.isValid()) {

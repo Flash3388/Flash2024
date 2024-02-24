@@ -64,54 +64,40 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
         double gyroAngle = swerve.getHeadingDegrees();
        // double currentDistance = swerve.getDistancePassedMeters();
 
-        if(arm.isSetToAMP())
+        if(Arm.isSetToAMP)
             angle2Target = limelight.getXAngleToTarget_Amp() + gyroAngle;
-        else
+        else if(Arm.isSetToClimbing)
+            angle2Target = limelight.getXAngleToTarget_Climbing() + gyroAngle;
+        else //speaker
             this.angle2Target = limelight.getXAngleToTarget_Speaker() + gyroAngle;
 
+        SmartDashboard.putBoolean("is set to climbing", Arm.isSetToClimbing);
         SmartDashboard.putNumber("VisionAlign GyroAngle", gyroAngle);
-        SmartDashboard.putBoolean("VisionAlign SetToAMP", arm.isSetToAMP());
+        SmartDashboard.putBoolean("VisionAlign SetToAMP", Arm.isSetToAMP);
         SmartDashboard.putNumber("VisionAlign AngleToTarget", angle2Target);
 
-        double rotation2 = 0;
         double driveX = 0;
         double driveY = 0;
         if (withXbox) {
-            rotation2 = -xbox_driver.getAxis(XboxAxis.RightStickX).getAsDouble();
-            rotation2 = Math.abs(rotation2) > 0.2 ? rotation2 * Swerve.MAX_SPEED/2 : 0;
             driveX = -xbox_driver.getAxis(XboxAxis.LeftStickX).getAsDouble() ;
             driveX = Math.abs(driveX) > 0.2 ? driveX * Swerve.MAX_SPEED/2 : 0;
             driveY = -xbox_driver.getAxis(XboxAxis.LeftStickY).getAsDouble() ;
             driveY = Math.abs(driveY) > 0.2 ? driveY * Swerve.MAX_SPEED/2: 0;
         }
-       // double rotation = pidController.applyAsDouble(gyroAngle, angle2Target);
-
        double rotation = pidController.applyAsDouble(gyroAngle, angle2Target); //using odometry
+        SmartDashboard.putNumber("rotation", rotation);
 
-
-      /*  if(limelight.isThereTarget()){ //only if sees target + not good enough so that the odometer will be good -> use joystick
-            if(limelight.getAvgDistance() > 2.8 ) rotation = rotation2; //optionally create a pipeline that can't see targets
-            //so that the odometer will work- but if so, when do i turn it off and return to original
-        }*/
-
-
-
-
-       /* double rotation = limelight.isThereTarget() ?
-                pidController.applyAsDouble(gyroAngle, angle2Target):
-                rotation2;
-         */
-
+//make climbing continuouse and withXbox
+        //once starting climbing, cancel this action-with requires
         if (!continuous && pidController.isInTolerance())  {
             actionControl.finish();
             return;
         }
 
-        //     double xDrive = pidController.applyAsDouble(gyroAngle, angle2Target);
-        // double rotation = pidController.applyAsDouble(gyroAngle, angle2Target) * swerve.MAX_SPEED;
-
-        SmartDashboard.putNumber("rotation", rotation);
-        swerve.drive(driveY, driveX, rotation);
+        if(Arm.isSetToClimbing)
+            swerve.drive(driveY, 0, rotation,false);
+        else
+            swerve.drive(driveY, driveX, rotation,true);
 
         // move until distanceX is as close as possible 0,
         // indicating the robot is aligned with the target
