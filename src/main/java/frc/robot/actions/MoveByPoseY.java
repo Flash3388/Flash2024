@@ -29,17 +29,17 @@ public class MoveByPoseY extends ActionBase {
     }
     @Override
     public void initialize(ActionControl control) {
-        currentY_Place = swerve.getRobotPose().getY();
+        currentY_Place = swerve.getRobotPose().getX();
         //setPoint = currentY_Place + placeY;
         pid.reset();
     }
 
     @Override
     public void execute(ActionControl control) {
-        currentY_Place = swerve.getRobotPose().getY();
+        currentY_Place = swerve.getRobotPose().getX();
         double speed = pid.applyAsDouble(currentY_Place, placeY) * Swerve.MAX_SPEED;
 
-        swerve.drive(speed, 0, 0);
+        swerve.drive(speed, 0, 0, true);
         if(pid.isInTolerance()){
             control.finish();
         }
