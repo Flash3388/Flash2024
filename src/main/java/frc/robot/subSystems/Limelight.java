@@ -139,6 +139,64 @@ public class Limelight extends Subsystem {
 
         return angleFromRobotToSpeaker;
     }
+    public double getXAngleToTarget_Climbing() {
+        //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
+
+        Optional<DriverStation.Alliance> allianceOptional = DriverStation.getAlliance();
+        if (allianceOptional.isEmpty()) {
+            return 0;
+        }
+
+        Pose2d robotPose = swerve.getRobotPose();
+        DriverStation.Alliance alliance = allianceOptional.get();
+        double aprilTagId; //random
+
+        double yLength_BetweenDriversWall_HorizontalStage = 0.02539999 * (121.0 + 106.19); // inches * 0.02539999 = meters
+        double XLength_BetweenSideWalls_SideStage = layout.getFieldLength() / 2; //in meters
+
+        if(alliance == DriverStation.Alliance.Red) //if are we red alliance
+        {
+            if(robotPose.getY() < layout.getFieldWidth() - yLength_BetweenDriversWall_HorizontalStage)
+                aprilTagId = 13;
+            else if(robotPose.getX() > XLength_BetweenSideWalls_SideStage)
+                aprilTagId = 12;
+            else if (robotPose.getX() < XLength_BetweenSideWalls_SideStage) {
+                aprilTagId = 11;
+            }
+            else return 0;
+        }
+        else { //blue alliance
+            if(robotPose.getY() > yLength_BetweenDriversWall_HorizontalStage)
+                aprilTagId = 14;
+            else if(robotPose.getX() > XLength_BetweenSideWalls_SideStage)
+                aprilTagId = 15;
+            else if (robotPose.getX() < XLength_BetweenSideWalls_SideStage) {
+                aprilTagId = 16;
+            }
+            else return 0;
+        }
+
+        Optional<Pose3d> apriltagPoseOptional = layout.getTagPose((int)(aprilTagId)); //position of apriltag
+        if (apriltagPoseOptional.isEmpty()) {
+            return 0;
+        }
+
+        Pose3d apriltagPose = apriltagPoseOptional.get();
+
+        double deltaX = apriltagPose.getX() - robotPose.getX();
+        double deltaY = apriltagPose.getY() - robotPose.getY();
+        double angleToSpeakerRad= Math.atan2(deltaY,deltaX);
+        double angleToSpeakerDeg= Math.toDegrees(angleToSpeakerRad);
+        double angleFromRobotToSpeaker = angleToSpeakerDeg - robotPose.getRotation().getDegrees();
+        //normalize the angles
+        if(angleFromRobotToSpeaker >180) angleFromRobotToSpeaker-=360;
+        else if (angleFromRobotToSpeaker <-180) angleFromRobotToSpeaker+=360;
+
+        return angleFromRobotToSpeaker;
+    }
+
+
+
     public double getXDistanceToTarget_Amp() {// for amp distance
         //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
         double aprilTagId = 6; //default is blue alliance
@@ -224,6 +282,7 @@ public class Limelight extends Subsystem {
     }
 
     public double getDisHorizontalToTarget(){
+        // change the id according to which alliance i'm in
         double cameraHeight = 0.485;
         double actualDis = 0;
         double avgDis = getAvgDistance();
@@ -239,13 +298,9 @@ public class Limelight extends Subsystem {
         SmartDashboard.putNumber("aprilTagId",aprilTagId);
         Optional<Pose3d> apriltagPose = layout.getTagPose((int)(aprilTagId)); //position of apriltag
 
-        //not sure if it'll work
 
-        Pose2d differenceBetweenRobotToTarget = swerve.getRobotPose().relativeTo(apriltagPose.get().toPose2d());
-        double odometerDis = Math.sqrt(Math.pow(differenceBetweenRobotToTarget.getX(),2) + Math.pow(differenceBetweenRobotToTarget.getY(),2));
-
-
-
+        double odometerDis = Math.sqrt(Math.pow(swerve.getRobotPose().getX() - apriltagPose.get().getX() , 2) + Math.pow(swerve.getRobotPose().getY() - apriltagPose.get().getY(),2));
+//add auto align to climbing
 
         /*
         else {
@@ -261,12 +316,15 @@ public class Limelight extends Subsystem {
         }
 
          */
-        // SmartDashboard.putNumber("hopefully real distance",actualDis);
          SmartDashboard.putNumber("odometry distance",odometerDis);
          SmartDashboard.putNumber("actualDis",actualDis);
         return actualDis;
 
     }
+
+
+
+
     public double getAvgDistance(){
         double reading=getDistanceToTarget();
         if(reading!=0){ //see

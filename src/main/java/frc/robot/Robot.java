@@ -136,15 +136,15 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
                         .alongWith(new Shoot(shooter, intake,arm))));*/
 
         this.shootMoveTakeAndShoot = (Actions.instant(() -> swerve.resetWheels()))
-                        .andThen(new ShootToSpeaker(shooter, arm, intake).alongWith(new Shoot(shooter, intake,arm)))
+                        .andThen(new ShootToSpeaker(shooter, arm, intake).alongWith(new Shoot(shooter, intake,arm,limelight)))
                         .andThen((new TakeIn(intake, arm)).alongWith(new MoveDistance(swerve, -1.5)))
                         .andThen(new LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm, false, false))
-                        .andThen((new SetPointAngleByVision(limelight, intake, arm, shooter)).alongWith(new Shoot(shooter, intake,arm)));
+                        .andThen((new SetPointAngleByVision(limelight, intake, arm, shooter)).alongWith(new Shoot(shooter, intake,arm,limelight)));
 
 
         this.shootMoveTake = Actions.instant(() -> swerve.resetWheels()).andThen(Actions.instant(() -> arm.setNotAmp()).andThen(Actions.instant(() -> arm.setSetPointAngle(Arm.SPEAKER_ANGLE)))
                 .andThen(Actions.instant(() -> shooter.shootSpeaker())
-                .alongWith(new Shoot(shooter, intake, arm))))
+                .alongWith(new Shoot(shooter, intake, arm,limelight))))
                 .andThen((new TakeIn(intake, arm)).alongWith(new MoveDistance(swerve, -1.5)));
 
 

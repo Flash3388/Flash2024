@@ -19,8 +19,6 @@ public class Arm extends Subsystem {
     private static  double MAX_VELOCITY = 1; // meters per second
     private static  double MAX_ACCELERATION = 1; // meters per second squared
 
-
-
     private final CANSparkMax master;
     private final CANSparkMax follower;
     private final DutyCycleEncoder absEncoder;
@@ -28,6 +26,7 @@ public class Arm extends Subsystem {
 
 
     private static final double STABLE_ERROR = 1;
+    private static final double STABLE_ERROR_FOR_LONG_DISTANCE = 0.5;
     private static final double STABLE_OUTPUT = 0.1;
 
     // Other Constants
@@ -46,14 +45,17 @@ public class Arm extends Subsystem {
     private static final double GEAR_RATIO = 1/70.0;
 
     public static boolean isSetToAMP = false;
+    public static boolean isSetToClimbing = false;
 
     private double setPointAngle;
     public static boolean BASED_ON_LIMELIGHT_DETECTION = false;
+    public Limelight limelight;
 
     public Arm(CANSparkMax master, CANSparkMax follower, DutyCycleEncoder encoder){
         this.master = master;
         this.follower = follower;
         this.absEncoder = encoder;
+        this.limelight = limelight;
 
         this.follower.follow(this.master, true);
         this.master.follow(CANSparkBase.ExternalFollower.kFollowerDisabled, 0); // this is to make sure the master won't follow anyone
@@ -67,7 +69,6 @@ public class Arm extends Subsystem {
 
         SmartDashboard.putNumber("ARM Max Velocity", MAX_VELOCITY);
         SmartDashboard.putNumber("ARM Max Acceleration", MAX_ACCELERATION);
-
 
 
         pid = PidController.newNamedController("drive", KP, KI, KD, 0);
@@ -93,6 +94,7 @@ public class Arm extends Subsystem {
         follower.getPIDController().setI(0);
         follower.getPIDController().setD(0);
         follower.getPIDController().setFF(0);
+
     }
 
     public void moveToAngle(double angle){
@@ -185,6 +187,9 @@ public class Arm extends Subsystem {
         if (!isPositioningControlled()) {
             return false;
         }
+
+        if(!isSetToAMP() && limelight.getDisHorizontalToTarget() > 5)
+            return ExtendedMath.constrained(getArmPosition(), setPointAngle - STABLE_ERROR_FOR_LONG_DISTANCE, setPointAngle + STABLE_ERROR_FOR_LONG_DISTANCE) ;
 
         return ExtendedMath.constrained(getArmPosition(), setPointAngle - STABLE_ERROR, setPointAngle + STABLE_ERROR) ;
              //   && Math.abs(master.getAppliedOutput()) < STABLE_OUTPUT;

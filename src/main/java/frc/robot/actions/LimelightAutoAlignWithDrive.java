@@ -64,13 +64,16 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
         double gyroAngle = swerve.getHeadingDegrees();
        // double currentDistance = swerve.getDistancePassedMeters();
 
-        if(arm.isSetToAMP())
+        if(Arm.isSetToAMP)
             angle2Target = limelight.getXAngleToTarget_Amp() + gyroAngle;
-        else
+        else if(Arm.isSetToClimbing)
+            angle2Target = limelight.getXAngleToTarget_Climbing() + gyroAngle;
+        else //speaker
             this.angle2Target = limelight.getXAngleToTarget_Speaker() + gyroAngle;
 
+        SmartDashboard.putBoolean("is set to climbing", Arm.isSetToClimbing);
         SmartDashboard.putNumber("VisionAlign GyroAngle", gyroAngle);
-        SmartDashboard.putBoolean("VisionAlign SetToAMP", arm.isSetToAMP());
+        SmartDashboard.putBoolean("VisionAlign SetToAMP", Arm.isSetToAMP);
         SmartDashboard.putNumber("VisionAlign AngleToTarget", angle2Target);
 
         double rotation2 = 0;
@@ -111,7 +114,11 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
         // double rotation = pidController.applyAsDouble(gyroAngle, angle2Target) * swerve.MAX_SPEED;
 
         SmartDashboard.putNumber("rotation", rotation);
-        swerve.drive(driveY, driveX, rotation);
+
+        if(Arm.isSetToClimbing)
+            swerve.drive(driveY, 0, 0,false);
+        else
+            swerve.drive(driveY, driveX, rotation,true);
 
         // move until distanceX is as close as possible 0,
         // indicating the robot is aligned with the target
