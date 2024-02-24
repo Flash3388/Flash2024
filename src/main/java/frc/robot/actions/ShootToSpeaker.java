@@ -23,7 +23,7 @@ public class ShootToSpeaker extends ActionBase {
     public void initialize(ActionControl control) {
         shooterSystem.resetPID();
         arm.setNotAmp();
-        arm.setSetPointAngle(Arm.SPEAKER_ANGLE);
+        //arm.setSetPointAngle(Arm.SPEAKER_ANGLE);
     }
 
     @Override

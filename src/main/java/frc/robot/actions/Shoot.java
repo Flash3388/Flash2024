@@ -36,6 +36,9 @@ public class Shoot extends ActionBase {
     @Override
     public void initialize(ActionControl control) {
         time = Time.INVALID;
+
+
+        shooter.shootSpeaker();
     }
 
     @Override
@@ -53,8 +56,7 @@ public class Shoot extends ActionBase {
 
         else {
             if (shooter.gotToTarget(ShooterSystem.SPEED_TARGET_SPEAKER) && arm.isStabilizedAtTargetedPosition())
-                intake.shoot();
-        }
+                intake.shoot();}
 
         if (!intake.isIN()) {
             if (time.isValid()) {

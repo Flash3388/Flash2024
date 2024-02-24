@@ -74,6 +74,10 @@ public class Limelight extends Subsystem {
         else if (angleFromRobotToSpeaker <-180) angleFromRobotToSpeaker+=360;
 
         SmartDashboard.putNumber("angle to speaker", angleFromRobotToSpeaker);
+
+
+
+        getDisHorizontalToTarget();
         return angleFromRobotToSpeaker;
     }
 
@@ -222,12 +226,28 @@ public class Limelight extends Subsystem {
     public double getDisHorizontalToTarget(){
         double cameraHeight = 0.485;
         double actualDis = 0;
-        if(getAvgDistance()!=0) {
-            if(getAvgDistance() > 4)
-                actualDis = getAvgDistance();
+        double avgDis = getAvgDistance();
+        if(avgDis!=0) {
+            if(avgDis > 4)
+                actualDis = avgDis;
             else
-              actualDis = Math.sqrt(Math.pow(getAvgDistance(), 2) - Math.pow(getTargetHeight() - cameraHeight, 2));
+              actualDis = Math.sqrt(Math.pow(avgDis, 2) - Math.pow(getTargetHeight() - cameraHeight, 2));
         }
+
+
+        double aprilTagId = 4; // id of speaker    LimelightHelpers.getFiducialID("limelight-banana");
+        SmartDashboard.putNumber("aprilTagId",aprilTagId);
+        Optional<Pose3d> apriltagPose = layout.getTagPose((int)(aprilTagId)); //position of apriltag
+
+        //not sure if it'll work
+
+        Pose2d differenceBetweenRobotToTarget = swerve.getRobotPose().relativeTo(apriltagPose.get().toPose2d());
+        double odometerDis = Math.sqrt(Math.pow(differenceBetweenRobotToTarget.getX(),2) + Math.pow(differenceBetweenRobotToTarget.getY(),2));
+
+
+
+
+        /*
         else {
             //relativeTo(robot)
             double aprilTagId = 4; // id of speaker    LimelightHelpers.getFiducialID("limelight-banana");
@@ -239,8 +259,11 @@ public class Limelight extends Subsystem {
             Pose2d differenceBetweenRobotToTarget = swerve.getRobotPose().relativeTo(apriltagPose.get().toPose2d());
             actualDis = Math.sqrt(Math.pow(differenceBetweenRobotToTarget.getX(),2) + Math.pow(differenceBetweenRobotToTarget.getY(),2));
         }
-         SmartDashboard.putNumber("hopefully real distance",actualDis);
-         SmartDashboard.putNumber("odometry distance",actualDis);
+
+         */
+        // SmartDashboard.putNumber("hopefully real distance",actualDis);
+         SmartDashboard.putNumber("odometry distance",odometerDis);
+         SmartDashboard.putNumber("actualDis",actualDis);
         return actualDis;
 
     }

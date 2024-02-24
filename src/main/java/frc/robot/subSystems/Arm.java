@@ -163,7 +163,7 @@ public class Arm extends Subsystem {
     }
 
     public void setSetPointAngle(double setPointAngle) {
-      //  SmartDashboard.putNumber("set point A", setPointAngle);
+        SmartDashboard.putNumber("set point A", setPointAngle);
         if(setPointAngle == Double.MIN_VALUE)
             this.setPointAngle = setPointAngle;
         else {

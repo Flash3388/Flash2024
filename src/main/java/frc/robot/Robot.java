@@ -56,6 +56,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xbox_systems = getHidInterface().newXboxController(RobotMap.XBOX_SYSTEMS);
         limelight = new Limelight(swerve,arm);
 
+      //  shooter.setDefaultAction(new Shoot(shooter,intake,arm));
         //driver:
         swerve.setDefaultAction(new DriveWithXbox(swerve, xbox_driver));
         xbox_driver.getButton(XboxButton.X).whenActive(new
@@ -63,19 +64,21 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
       //  xbox_driver.getButton(XboxButton.X).whenActive(new LimelightAutoAlign(limelight,swerve,arm));
 
 
-        xbox_systems.getButton(XboxButton.X).whenActive((new MoveDistance(swerve, 1)));
+
+        //xbox_systems.getButton(XboxButton.X).whenActive((new MoveDistance(swerve, 1)));
        ///// xbox_systems.getButton(XboxButton.B).whenActive(new LimelightAutoAlignWithDrive(xbox_driver,limelight,swerve,arm));
 
 
         //systems:
-    //    arm.setDefaultAction(new ArmController(arm));
-    //    xbox_systems.getButton(XboxButton.B).whenActive(new TakeIn(intake,arm));
+        arm.setDefaultAction(new ArmController(arm));
+        xbox_systems.getButton(XboxButton.B).whenActive(new TakeIn(intake,arm));
 
       //  xbox_systems.getButton(XboxButton.B).whenActive(new MoveDistance(swerve, 1));
 
         xbox_systems.getButton(XboxButton.Y).whileActive(new TakeOut(intake,arm,shooter));
         xbox_systems.getButton(XboxButton.A).whenActive(new SetPointAngleByVision(limelight,intake,arm, shooter));
         //xbox_systems.getButton(XboxButton.X).whenActive(new ShootSpeaker(shooter, intake, arm));
+        arm.setNotAmp();
         xbox_systems.getButton(XboxButton.X).whenActive(new Shoot(shooter, intake, arm));
 
         /*xbox_systems.getButton(XboxButton.RB).whenActive((Actions.instant(() -> shooter.shootAmp())).andThen(Actions.instant(() -> arm.setYesAmp()))
