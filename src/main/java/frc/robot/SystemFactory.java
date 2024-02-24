@@ -7,11 +7,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import frc.robot.subSystems.Arm;
-import frc.robot.subSystems.Intake;
-
-import frc.robot.subSystems.ShooterSystem;
-import frc.robot.subSystems.Swerve;
+import frc.robot.subSystems.*;
 
 public class SystemFactory {
     public static Swerve createSwerveSystem(){
@@ -63,5 +59,10 @@ public class SystemFactory {
         CANSparkMax follow = new CANSparkMax(RobotMap.ARM_FOLLOW, CANSparkMaxLowLevel.MotorType.kBrushless);
         DutyCycleEncoder encoder = new DutyCycleEncoder(RobotMap.ARM_ENCODER);
         return new Arm(master, follow, encoder);
+    }
+
+    public static Climb createClimb(){
+        CANSparkMax motor = new CANSparkMax(RobotMap.CLIMB_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
+        return new Climb(motor);
     }
 }

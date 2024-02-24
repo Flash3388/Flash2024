@@ -7,6 +7,7 @@ public class RobotMap {
     public static final int ARM_MASTER = 15;
     public static final int ARM_FOLLOW = 16;
     public static final int ARM_ENCODER = 9;
+    public static final int CLIMB_MOTOR = 18;
 
     public static final int PIGEON = 9;
 
