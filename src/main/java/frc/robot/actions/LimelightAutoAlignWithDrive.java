@@ -66,10 +66,12 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
 
         if(Arm.isSetToAMP)
             angle2Target = limelight.getXAngleToTarget_Amp() + gyroAngle;
-        else if(Arm.isSetToClimbing)
+        else
+       /* if(Arm.isSetToClimbing)
             angle2Target = limelight.getXAngleToTarget_Climbing() + gyroAngle;
-        else //speaker
-            this.angle2Target = limelight.getXAngleToTarget_Speaker() + gyroAngle;
+        else *///speaker
+            //this.angle2Target = limelight.getXAngleToTarget_Speaker() + gyroAngle;
+            this.angle2Target = limelight.getXAngleTx_Speaker() + gyroAngle;
 
         SmartDashboard.putBoolean("is set to climbing", Arm.isSetToClimbing);
         SmartDashboard.putNumber("VisionAlign GyroAngle", gyroAngle);

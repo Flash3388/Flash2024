@@ -45,6 +45,7 @@ public class Arm extends Subsystem {
 
     private static final double GEAR_RATIO = 1/70.0;
 
+
     public static boolean isSetToAMP = false;
     public static boolean isSetToClimbing = false;
 
@@ -75,7 +76,7 @@ public class Arm extends Subsystem {
         pid = PidController.newNamedController("drive", KP, KI, KD, 0);
         pid.setIZone(I_ZONE);
 
-        setSetPointAngle(80);
+        setSetPointAngle(DEF_ANGLE);
         SmartDashboard.putNumber("set point A", DEF_ANGLE);
 
 
@@ -188,9 +189,6 @@ public class Arm extends Subsystem {
         if (!isPositioningControlled()) {
             return false;
         }
-
-        if(!isSetToAMP() && limelight.getDisHorizontalToTarget() > 5)
-            return ExtendedMath.constrained(getArmPosition(), setPointAngle - STABLE_ERROR_FOR_LONG_DISTANCE, setPointAngle + STABLE_ERROR_FOR_LONG_DISTANCE) ;
 
         return ExtendedMath.constrained(getArmPosition(), setPointAngle - STABLE_ERROR, setPointAngle + STABLE_ERROR) ;
              //   && Math.abs(master.getAppliedOutput()) < STABLE_OUTPUT;

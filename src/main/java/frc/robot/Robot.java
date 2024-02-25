@@ -71,14 +71,15 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xbox_systems.getButton(XboxButton.RB).whenActive(new ShootAMP(shooter, arm));
         xbox_systems.getButton(XboxButton.LB).whenActive(new ShootToSpeaker(shooter, arm, intake).alongWith(new Shoot(shooter, intake, arm, limelight)));
 
-
-        xbox_systems.getAxis(XboxAxis.RT).asButton(0.8 ,true).whenActive(new SetDefault(arm,shooter,intake, limelight));
+        xbox_systems.getAxis(XboxAxis.RT).asButton(0.8 ,true).whenActive(new SetDefault(arm,shooter,intake, limelight, climb));
         xbox_systems.getAxis(XboxAxis.LT).asButton(0.8 ,true).whenActive(new ClimbUp(climb, arm));
 
 
         xbox_systems.getDpad().right().whenActive(new Pull_In(intake));
         xbox_systems.getDpad().left().whenActive(new ClimbDown(climb));
         xbox_systems.getDpad().down().whenActive(new SetPointAngleByVision(limelight,intake,arm, shooter).alongWith(new Shoot(shooter, intake, arm, limelight)));
+        xbox_systems.getDpad().up().whenActive(Actions.instant(() -> Arm.isSetToClimbing = true)
+                .andThen(Actions.instant(() -> arm.setSetPointAngle(Arm.CLIMB_ANGLE))));
 
         limelight.setPipline(0);
 
@@ -160,10 +161,11 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     public void autonomousInit() {
         arm.resetPID();
         swerve.resetWheels();
-      //  this.shootMoveTakeAndShoot.start();
+        this.shootMoveTakeAndShoot.start();
         //new MoveDistance(swerve, -2).start();
         //this.shootMoveTake.start();
-        new MoveByPoseY(swerve, 10.33).start();
+        //new MoveByPoseY(swerve, 10.33).start();
+
     }
 
     @Override
@@ -180,8 +182,6 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         swerve.resetCurrentAngle();
         arm.setNotAmp();
       //  new LimelightAutoAlignWithDrive(xbox_driver, limelight, swerve, arm).start();
-
-
 
     }
 
@@ -203,12 +203,10 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         arm.setSetPointAngle(setPoint);*/
         SmartDashboard.putNumber("set point A", arm.getSetPointAngle());
 
-        double angle = SmartDashboard.getNumber("Set Arm Position", 80);
-        arm.setSetPointAngle(angle);
+        /*double angle = SmartDashboard.getNumber("Set Arm Position", 80);
+        arm.setSetPointAngle(angle);*/
     }
     public double calculateAngle(double distance){
-
-
         if(distance == Double.MIN_VALUE) {
             arm.setPositioningNotControlled();
             return Double.MIN_VALUE;
@@ -218,8 +216,6 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
             double M_x2 =SmartDashboard.getNumber("m of x^2",-1.05);
             double M_x1 =SmartDashboard.getNumber("m of x",11.2);
             double k0 =SmartDashboard.getNumber("k0",18.4);
-
-
 
 
             double angle =  M_x3 * Math.pow(distance,3) + M_x2 * Math.pow(distance, 2) + M_x1 * distance + k0;
@@ -243,7 +239,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         SmartDashboard.putNumber("ActualAngleToSpeaker", limelight.getXAngleToTarget_Speaker());
         SmartDashboard.putNumber("ActualAngleToSpeaker2", limelight.getAngleToSpeaker());
 
-        SmartDashboard.putNumber("set point A", arm.getSetPointAngle());
+       // SmartDashboard.putNumber("set point A", arm.getSetPointAngle());
 
         SmartDashboard.putBoolean("IS IN NOTE", intake.isIN());
 

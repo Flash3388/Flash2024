@@ -65,6 +65,9 @@ public class Swerve extends Subsystem {
         poseEstimator = new SwerveDrivePoseEstimator(swerveDriveKinematics,
                 new Rotation2d(0),
                 getModulePositions(), new Pose2d(0,0,new Rotation2d(Math.toRadians(0))));
+
+
+
         SmartDashboard.putData("Field", field2d);
         field2d.setRobotPose(getRobotPose());
     }

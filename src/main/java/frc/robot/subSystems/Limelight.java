@@ -34,7 +34,8 @@ public class Limelight extends Subsystem {
 
     public Limelight(Swerve swerve, Arm arm){
         layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-        layout.setOrigin(AprilTagFieldLayout.OriginPosition.kRedAllianceWallRightSide); //if we're on the red side
+        layout.setOrigin(AprilTagFieldLayout.OriginPosition.kRedAllianceWallRightSide); //opposite of what we are
+        swerve.updatePositionFromVision(new Pose2d(new Translation2d(layout.getFieldLength(),layout.getFieldWidth()),new Rotation2d(180)),1);
         timer = new Timer();
         this.swerve = swerve;
         this.arm = arm;
@@ -44,6 +45,13 @@ public class Limelight extends Subsystem {
         table.getEntry("pipeline").setValue(n);
     }
 
+    public double getXAngleTx_Speaker(){
+        return -table.getEntry("tx").getDouble(0.0);
+    }
+
+
+
+
     public double getXAngleToTarget_Speaker() {// for speaker
         //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
         Optional<DriverStation.Alliance> allianceOptional = DriverStation.getAlliance();
@@ -51,7 +59,7 @@ public class Limelight extends Subsystem {
             return 0;
         }
 
-        double aprilTagId = 4; //default is blue alliance - 7 is the correct one
+        double aprilTagId = 7; //default is blue alliance - 7 is the correct one
         DriverStation.Alliance alliance = allianceOptional.get();
         if(alliance == DriverStation.Alliance.Red) //if are we red alliance
             aprilTagId =4;
@@ -297,11 +305,13 @@ public class Limelight extends Subsystem {
         double actualDis = 0;
         double avgDis = getAvgDistance();
         if(avgDis!=0) {
-            if(avgDis > 4)
+            if(avgDis > 3)
                 actualDis = avgDis;
             else
               actualDis = Math.sqrt(Math.pow(avgDis, 2) - Math.pow(getTargetHeight() - cameraHeight, 2));
         }
+
+
 
 
         double aprilTagId = 4; // id of speaker    LimelightHelpers.getFiducialID("limelight-banana");
@@ -446,7 +456,7 @@ public class Limelight extends Subsystem {
             return 0;
         }
 
-        double aprilTagId = 4; //default is blue alliance - 7 is the correct one
+        double aprilTagId = 7; //default is blue alliance - 7 is the correct one
         DriverStation.Alliance alliance = allianceOptional.get();
         if(alliance == DriverStation.Alliance.Red) //if are we red alliance
             aprilTagId =4;

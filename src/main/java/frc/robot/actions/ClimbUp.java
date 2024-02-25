@@ -36,6 +36,6 @@ public class ClimbUp extends ActionBase {
 
     @Override
     public void end(FinishReason reason) {
-
+        Arm.isSetToClimbing = false;
     }
 }
