@@ -50,8 +50,8 @@ public class Limelight extends Subsystem {
         if (allianceOptional.isEmpty()) {
             return 0;
         }
-
-        double aprilTagId = 4; //default is blue alliance - 7 is the correct one
+//4
+        double aprilTagId = 7; //default is blue alliance - 7 is the correct one
         DriverStation.Alliance alliance = allianceOptional.get();
         if(alliance == DriverStation.Alliance.Red) //if are we red alliance
             aprilTagId =4;

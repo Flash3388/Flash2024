@@ -11,12 +11,8 @@ import com.flash3388.flashlib.scheduling.actions.Actions;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.actions.*;
-import frc.robot.subSystems.Intake;
-import frc.robot.subSystems.Limelight;
-import frc.robot.subSystems.ShooterSystem;
-import frc.robot.subSystems.Swerve;
+import frc.robot.subSystems.*;
 import frc.robot.actions.ArmController;
-import frc.robot.subSystems.Arm;
 
 public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobot {
     private Swerve swerve;
@@ -34,6 +30,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
     private final XboxController xbox_systems;
     private final XboxController xbox_driver; //driver
+    private Climb climb;
     PowerDistribution a = new PowerDistribution(1, PowerDistribution.ModuleType.kRev);
 
 
@@ -55,6 +52,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xbox_driver = getHidInterface().newXboxController(RobotMap.XBOX_DRIVER);
         xbox_systems = getHidInterface().newXboxController(RobotMap.XBOX_SYSTEMS);
         limelight = new Limelight(swerve,arm);
+        climb = SystemFactory.createClimb();
 
         //driver:
         swerve.setDefaultAction(new DriveWithXbox(swerve, xbox_driver));
@@ -89,15 +87,14 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
 
         xbox_systems.getAxis(XboxAxis.RT).asButton(0.8 ,true).whenActive(new SetDefault(arm,shooter,intake, limelight));
-        /*xbox_systems.getAxis(XboxAxis.LT).asButton(0.8 ,true).whenActive
-                (Actions.instant(() -> arm.setSetPointAngle(calculateAngle(limelight.getDisHorizontalToTarget()))));*/
-
+        xbox_systems.getAxis(XboxAxis.LT).asButton(0.8 ,true).whenActive(new ClimbUp(climb, arm));
 
         //ActionGroup shootSpeaker = new TakeIn(intake,arm).andThen((new SetPointAngleByVision(limelight, intake, arm, shooter)).alongWith(new ShooterSpeaker(shooter, intake, arm)));
 
         xbox_systems.getDpad().right().whenActive(new Pull_In(intake));
-       // xbox_systems.getDpad().up().whenActive(new Shoot(shooter, intake, arm));
+        xbox_systems.getDpad().left().whenActive(new ClimbDown(climb));
         xbox_systems.getDpad().down().whenActive(new SetPointAngleByVision(limelight,intake,arm, shooter).alongWith(new Shoot(shooter, intake, arm, limelight)));
+        xbox_systems.getDpad().up().whenActive(Actions.instant(() -> arm.setSetPointAngle(Arm.CLIMB_ANGLE)));
 
         limelight.setPipline(0);
 

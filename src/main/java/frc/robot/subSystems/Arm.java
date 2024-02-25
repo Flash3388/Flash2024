@@ -36,6 +36,7 @@ public class Arm extends Subsystem {
     public static final double AMP_ANGLE_FROM_INTAKE = 53;
     public static final double FLOOR_ANGLE = -6.5; // the floor angle
     public static final double DEF_ANGLE = 20.0;
+    public static final double CLIMB_ANGLE = 90.0;
 
 
     private static final double SLOW_SPEED_DOWN = -0.1;
