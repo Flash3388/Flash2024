@@ -313,6 +313,62 @@ public class Limelight extends Subsystem {
 
        */
     }
+    public double getXAngleToTarget_Climbing(){
+        Optional<DriverStation.Alliance> allianceOptional = DriverStation.getAlliance();
+        if (allianceOptional.isEmpty()) {
+            return 0;
+        }
+        Pose2d robotPose = swerve.getRobotPose();
+
+        double aprilTagId;
+        DriverStation.Alliance alliance = allianceOptional.get();
+
+        double yLength_BetweenDriversWall_HorizontalStage = 0.02539999 * (121.0 + 106.19);
+        double xLength_BetweenSideWalls_SideStage = layout.getFieldLength() / 2;
+
+        if(alliance == DriverStation.Alliance.Red) //if are we red alliance
+        {
+            if(robotPose.getY() < layout.getFieldLength() - yLength_BetweenDriversWall_HorizontalStage)
+                aprilTagId = 13;
+            else if(robotPose.getX() > xLength_BetweenSideWalls_SideStage)
+                aprilTagId = 12;
+            else
+                aprilTagId = 11;
+        }
+        else {
+            if(robotPose.getY() > yLength_BetweenDriversWall_HorizontalStage)
+                aprilTagId = 14;
+            else if(robotPose.getX() > xLength_BetweenSideWalls_SideStage)
+                aprilTagId = 15;
+            else
+                aprilTagId = 16;
+        }
+
+        Optional<Pose3d> apriltagPoseOptional = layout.getTagPose((int)(aprilTagId)); //position of apriltag
+        if (apriltagPoseOptional.isEmpty()) {
+            return 0;
+        }
+        Pose3d apriltagPose = apriltagPoseOptional.get();
+
+        double deltaX = apriltagPose.getX() - robotPose.getX();
+        double deltaY = apriltagPose.getY() - robotPose.getY();
+        double angleToSpeakerRad= Math.atan2(deltaY,deltaX);
+        double angleToSpeakerDeg= Math.toDegrees(angleToSpeakerRad);
+        double angleFromRobotToSpeaker = angleToSpeakerDeg - robotPose.getRotation().getDegrees();
+        //normalize the angles
+        if(angleFromRobotToSpeaker >180) angleFromRobotToSpeaker-=360;
+        else if (angleFromRobotToSpeaker <-180) angleFromRobotToSpeaker+=360;
+
+        //we need the robot 180 degrees to the target
+        angleFromRobotToSpeaker+=180;
+        //normalize the angles-again
+        if(angleFromRobotToSpeaker >180) angleFromRobotToSpeaker-=360;
+        else if (angleFromRobotToSpeaker <-180) angleFromRobotToSpeaker+=360;
+
+        return angleFromRobotToSpeaker;
+    }
+
+
     public void stopTimer(){
         timer.stop();
     }

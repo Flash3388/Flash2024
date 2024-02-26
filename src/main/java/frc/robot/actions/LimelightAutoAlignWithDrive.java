@@ -64,27 +64,25 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
         double gyroAngle = swerve.getHeadingDegrees();
        // double currentDistance = swerve.getDistancePassedMeters();
 
-        if(arm.isSetToAMP())
+        if(Arm.isSetToAMP)
             angle2Target = limelight.getXAngleToTarget_Amp() + gyroAngle;
-        else
+        else if (Arm.isSetToClimbing)
+            angle2Target = limelight.getXAngleToTarget_Climbing() + gyroAngle;
+        else //speaker
             this.angle2Target = limelight.getXAngleToTarget_Speaker() + gyroAngle;
 
         SmartDashboard.putNumber("VisionAlign GyroAngle", gyroAngle);
         SmartDashboard.putBoolean("VisionAlign SetToAMP", arm.isSetToAMP());
         SmartDashboard.putNumber("VisionAlign AngleToTarget", angle2Target);
 
-        double rotation2 = 0;
         double driveX = 0;
         double driveY = 0;
         if (withXbox) {
-            rotation2 = -xbox_driver.getAxis(XboxAxis.RightStickX).getAsDouble();
-            rotation2 = Math.abs(rotation2) > 0.2 ? rotation2 * Swerve.MAX_SPEED/2 : 0;
             driveX = -xbox_driver.getAxis(XboxAxis.LeftStickX).getAsDouble() ;
             driveX = Math.abs(driveX) > 0.2 ? driveX * Swerve.MAX_SPEED/2 : 0;
             driveY = -xbox_driver.getAxis(XboxAxis.LeftStickY).getAsDouble() ;
             driveY = Math.abs(driveY) > 0.2 ? driveY * Swerve.MAX_SPEED/2: 0;
         }
-       // double rotation = pidController.applyAsDouble(gyroAngle, angle2Target);
 
        double rotation = pidController.applyAsDouble(gyroAngle, angle2Target); //using odometry
 
@@ -102,7 +100,7 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
                 rotation2;
          */
 
-        if (!continuous && pidController.isInTolerance())  {
+        if (!continuous && pidController.isInTolerance() && !Arm.isSetToClimbing)  { //climbing won't be able to rotate
             actionControl.finish();
             return;
         }
@@ -111,7 +109,11 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
         // double rotation = pidController.applyAsDouble(gyroAngle, angle2Target) * swerve.MAX_SPEED;
 
         SmartDashboard.putNumber("rotation", rotation);
-        swerve.drive(driveY, driveX, rotation);
+
+        if(Arm.isSetToClimbing)
+            swerve.drive(driveY, 0, rotation);
+        else
+            swerve.drive(driveY, driveX, rotation);
 
         // move until distanceX is as close as possible 0,
         // indicating the robot is aligned with the target

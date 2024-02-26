@@ -47,6 +47,7 @@ public class Arm extends Subsystem {
     private static final double GEAR_RATIO = 1/70.0;
 
     public static boolean isSetToAMP = false;
+    public static boolean isSetToClimbing = false;
 
     private double setPointAngle;
     public static boolean BASED_ON_LIMELIGHT_DETECTION = false;
