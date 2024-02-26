@@ -8,11 +8,13 @@ import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.units.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.LimelightHelpers.LimelightHelpers;
 import edu.wpi.first.wpilibj.Timer;
 
+import java.time.Clock;
 import java.util.Optional;
 
 public class Limelight extends Subsystem {
@@ -22,7 +24,6 @@ public class Limelight extends Subsystem {
 
     private AprilTagFieldLayout layout;
     private Swerve swerve;
-    private Arm arm;
     private static final double DELAY_BEFORE_FINISH_IN_SECONDS = 2;
     private Timer timer;
     private final LinearFilter filterX = LinearFilter.movingAverage(20);
@@ -32,13 +33,11 @@ public class Limelight extends Subsystem {
     private double accuracyInVision = 100; //percents
 
 
-    public Limelight(Swerve swerve, Arm arm){
+    public Limelight(Swerve swerve){
         layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
         layout.setOrigin(AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide); //if we're on the blue side
         timer = new Timer();
         this.swerve = swerve;
-        this.arm = arm;
-
     }
     public void setPipline(int n){
         table.getEntry("pipeline").setValue(n);

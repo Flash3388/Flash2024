@@ -56,7 +56,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         shooter = SystemFactory.createShooter();
         xbox_driver = getHidInterface().newXboxController(RobotMap.XBOX_DRIVER);
         xbox_systems = getHidInterface().newXboxController(RobotMap.XBOX_SYSTEMS);
-        limelight = new Limelight(swerve,arm);
+        limelight = new Limelight(swerve);
         climb = SystemFactory.createClimb();
         this.usbCamera = CameraServer.startAutomaticCapture();
         this.videoSink = CameraServer.getServer();
