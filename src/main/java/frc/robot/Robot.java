@@ -42,13 +42,6 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
     public Robot(FrcRobotControl robotControl) {
         super(robotControl);
-        //double angle = -1.05 * Math.pow(distance, 2) + 11.2 * distance + 18.4;
-        SmartDashboard.putNumber("m of x^3",0);
-        SmartDashboard.putNumber("m of x^2",-1.82);
-        SmartDashboard.putNumber("m of x",15.5);
-        SmartDashboard.putNumber("k0",12.1);
-
-        SmartDashboard.putNumber("Horizontal_distance from target",0);
 
         this.arm = SystemFactory.createArm();
         swerve = SystemFactory.createSwerveSystem();
@@ -76,8 +69,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xbox_systems.getButton(XboxButton.B).whenActive(new TakeIn(intake,arm));
         xbox_systems.getButton(XboxButton.Y).whileActive(new TakeOut(intake,arm,shooter));
         xbox_systems.getButton(XboxButton.A).whenActive(new SetPointAngleByVision(limelight,intake,arm, shooter));
-       // xbox_systems.getButton(XboxButton.X).whenActive(new Shoot(shooter, intake, arm, limelight));
-        xbox_systems.getButton(XboxButton.X).whenActive(new ShootSpeaker(shooter, intake, arm));
+        xbox_systems.getButton(XboxButton.X).whenActive(new Shoot(shooter, intake, arm, limelight));
+
 
         xbox_systems.getButton(XboxButton.RB).whenActive(new ShootAMP(shooter, arm));
         xbox_systems.getButton(XboxButton.LB).whenActive(new ShootToSpeaker(shooter, arm, intake).alongWith(new Shoot(shooter, intake, arm, limelight)));
@@ -210,13 +203,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         SmartDashboard.putNumber("hopefully real distance",limelight.getDisHorizontalToTarget());
         SmartDashboard.putBoolean("see target",limelight.isThereTarget());
 
-        //calculated angle
-        double distanceFromTarget = SmartDashboard.getNumber("Horizontal_distance from target",0);
-        calculateAngle(distanceFromTarget);
 
-        double setPoint = SmartDashboard.getNumber("set point A", Arm.DEF_ANGLE);
-        arm.setSetPointAngle(setPoint);
-        //SmartDashboard.putNumber("set point A", arm.getSetPointAngle());
+        SmartDashboard.putNumber("set point A", arm.getSetPointAngle());
     }
     public double calculateAngle(double distance){
 
@@ -255,7 +243,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         SmartDashboard.putNumber("ActualAngleToSpeaker", limelight.getXAngleToTarget_Speaker());
         SmartDashboard.putNumber("ActualAngleToSpeaker2", limelight.getAngleToSpeaker());
 
-       // SmartDashboard.putNumber("set point A", arm.getSetPointAngle());
+        SmartDashboard.putNumber("set point A", arm.getSetPointAngle());
 
         SmartDashboard.putBoolean("IS IN NOTE", intake.isIN());
 
