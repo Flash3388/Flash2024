@@ -178,10 +178,10 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     public void autonomousInit() {
         arm.resetPID();
         swerve.resetWheels();
-      //  this.shootMoveTakeAndShoot.start();
+        this.shootMoveTakeAndShoot.start();
         //new MoveDistance(swerve, -2).start();
         //this.shootMoveTake.start();
-        new MoveByPoseY(swerve, 10.33).start();
+       // new MoveByPoseY(swerve, 10.33).start();
     }
 
     @Override
@@ -195,7 +195,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         shooter.resetI();
         limelight.init();
         swerve.resetWheels();
-       // swerve.resetCurrentAngle();
+        swerve.resetCurrentAngle();
         arm.setNotAmp();
       //  new LimelightAutoAlignWithDrive(xbox_driver, limelight, swerve, arm).start();
 
@@ -266,8 +266,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         swerve.print();
 
         SmartDashboard.putNumber("Drive Distance", swerve.getDistancePassedMeters());
-        SmartDashboard.putNumber("Place Y Pose", swerve.getRobotPose().getY());
-        SmartDashboard.putNumber("Place X Pose", swerve.getRobotPose().getX());
+        SmartDashboard.putNumber("Place Y robot", swerve.getRobotPose().getY());
+        SmartDashboard.putNumber("Place X robot", swerve.getRobotPose().getX());
     }
 
     @Override

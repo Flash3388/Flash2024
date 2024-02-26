@@ -51,7 +51,7 @@ dependencies {
     implementation group: 'com.flash3388.flashlib', name: 'flashlib.frc.robot', version: FLASHFRC_VERSION
     implementation group: 'com.flash3388.flashlib', name: 'flashlib.frc.nt', version: FLASHFRC_VERSION
     implementation group: 'com.flash3388.flashlib', name: 'flashlib.frc.devices', version: FLASHFRC_VERSION
-    implementation group: 'com.flash3388.flashlib', name: 'flashlib.core.robot', version: '3.2.6'
+   // implementation group: 'com.flash3388.flashlib', name: 'flashlib.core.robot', version: '3.2.6'
     implementation group: 'com.github.tomtzook', name: 'jmath', version: '1.2.0'
 
     implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: LOG4J_VERSION

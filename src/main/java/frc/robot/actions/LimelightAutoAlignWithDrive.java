@@ -111,7 +111,7 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
         // double rotation = pidController.applyAsDouble(gyroAngle, angle2Target) * swerve.MAX_SPEED;
 
         SmartDashboard.putNumber("rotation", rotation);
-        swerve.drive(driveY, driveX, rotation);
+        swerve.drive(driveY, driveX, rotation, true);
 
         // move until distanceX is as close as possible 0,
         // indicating the robot is aligned with the target

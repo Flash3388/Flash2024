@@ -58,7 +58,7 @@ public class MoveDistance extends ActionBase {
         if(ExtendedMath.constrained(swerve.getFLHeading(), 170, 190))
             distancePassed = -distancePassed;
 
-        double speed = pid.applyAsDouble(distancePassed, setPoint) * Swerve.MAX_SPEED;
+        double speed = pid.applyAsDouble(distancePassed, setPoint) * Swerve.MAX_SPEED *1.5;
 
 
         swerve.drive(speed, 0, 0);
