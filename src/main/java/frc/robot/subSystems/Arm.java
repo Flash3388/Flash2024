@@ -73,6 +73,8 @@ public class Arm extends Subsystem {
 
         pid = PidController.newNamedController("drive", KP, KI, KD, 0);
         pid.setIZone(I_ZONE);
+        pid.setTolerance(STABLE_ERROR, 0.01); //0.001
+
 
         setSetPointAngle(DEF_ANGLE);
         SmartDashboard.putNumber("set point A", DEF_ANGLE);
@@ -106,7 +108,7 @@ public class Arm extends Subsystem {
 
         double speed = pid.applyAsDouble(getArmPosition(), angle) ;
         //speed = ExtendedMath.constrain(speed, -0.5, 0.5);
-        speed = ExtendedMath.constrain(speed, -0.6, 0.6);
+        speed = ExtendedMath.constrain(speed, -0.8, 0.8);
 
         if(( getArmPosition() - angle) > 30)
             speed = speed / 3;
@@ -186,9 +188,11 @@ public class Arm extends Subsystem {
         if (!isPositioningControlled()) {
             return false;
         }
-
+/*
         return ExtendedMath.constrained(getArmPosition(), setPointAngle - STABLE_ERROR, setPointAngle + STABLE_ERROR) ;
-             //   && Math.abs(master.getAppliedOutput()) < STABLE_OUTPUT;
+          */   //   && Math.abs(master.getAppliedOutput()) < STABLE_OUTPUT;
+
+        return pid.isInTolerance();
     }
 
     public boolean isAtBottom() {

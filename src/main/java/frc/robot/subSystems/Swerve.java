@@ -188,6 +188,7 @@ public class Swerve extends Subsystem {
                 getSwerveRotation2D(),
                 getModulePositions());
         updateField();
+
     }
     public void updateField(){
         field2d.setRobotPose(getRobotPose());

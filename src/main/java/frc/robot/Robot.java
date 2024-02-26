@@ -8,6 +8,9 @@ import com.flash3388.flashlib.hid.XboxButton;
 import com.flash3388.flashlib.hid.XboxController;
 import com.flash3388.flashlib.scheduling.actions.ActionGroup;
 import com.flash3388.flashlib.scheduling.actions.Actions;
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.cscore.VideoSink;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.actions.*;
@@ -20,6 +23,9 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     private ShooterSystem shooter;
     private Limelight limelight;
     private Arm arm;
+    private Climb climb;
+    private UsbCamera usbCamera;
+    private VideoSink videoSink;
 
     private MoveDistance moveDistance;
 
@@ -30,7 +36,6 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
     private final XboxController xbox_systems;
     private final XboxController xbox_driver; //driver
-    private Climb climb;
     PowerDistribution a = new PowerDistribution(1, PowerDistribution.ModuleType.kRev);
 
 
@@ -53,6 +58,9 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xbox_systems = getHidInterface().newXboxController(RobotMap.XBOX_SYSTEMS);
         limelight = new Limelight(swerve,arm);
         climb = SystemFactory.createClimb();
+        this.usbCamera = CameraServer.startAutomaticCapture();
+        this.videoSink = CameraServer.getServer();
+        videoSink.setSource(null);
 
         //driver:
         swerve.setDefaultAction(new DriveWithXbox(swerve, xbox_driver));
@@ -60,41 +68,28 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
                 LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm, false, true));
         xbox_driver.getButton(XboxButton.A).whenActive(new
                 LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm, true, true));
-      //  xbox_driver.getButton(XboxButton.X).whenActive(new LimelightAutoAlign(limelight,swerve,arm));
 
-
-        //xbox_systems.getButton(XboxButton.X).whenActive((new MoveDistance(swerve, 1)));
-       ///// xbox_systems.getButton(XboxButton.B).whenActive(new LimelightAutoAlignWithDrive(xbox_driver,limelight,swerve,arm));
 
 
         //systems:
         arm.setDefaultAction(new ArmController(arm));
         xbox_systems.getButton(XboxButton.B).whenActive(new TakeIn(intake,arm));
-
-      //  xbox_systems.getButton(XboxButton.B).whenActive(new MoveDistance(swerve, 1));
-
         xbox_systems.getButton(XboxButton.Y).whileActive(new TakeOut(intake,arm,shooter));
         xbox_systems.getButton(XboxButton.A).whenActive(new SetPointAngleByVision(limelight,intake,arm, shooter));
-        //xbox_systems.getButton(XboxButton.X).whenActive(new ShootSpeaker(shooter, intake, arm));
         xbox_systems.getButton(XboxButton.X).whenActive(new Shoot(shooter, intake, arm, limelight));
 
-        /*xbox_systems.getButton(XboxButton.RB).whenActive((Actions.instant(() -> shooter.shootAmp())).andThen(Actions.instant(() -> arm.setYesAmp()))
-                .andThen(Actions.instant(() -> arm.setSetPointAngle(Arm.AMP_ANGLE_FROM_SHOOTER))));*/
-        /*xbox_systems.getButton(XboxButton.LB).whenActive((Actions.instant(() -> arm.setNotAmp()))
-                .andThen(Actions.instant(() -> arm.setSetPointAngle(Arm.SPEAKER_ANGLE))));*/
         xbox_systems.getButton(XboxButton.RB).whenActive(new ShootAMP(shooter, arm));
         xbox_systems.getButton(XboxButton.LB).whenActive(new ShootToSpeaker(shooter, arm, intake).alongWith(new Shoot(shooter, intake, arm, limelight)));
 
 
         xbox_systems.getAxis(XboxAxis.RT).asButton(0.8 ,true).whenActive(new SetDefault(arm,shooter,intake, limelight));
-        xbox_systems.getAxis(XboxAxis.LT).asButton(0.8 ,true).whenActive(new ClimbUp(climb, arm));
+        xbox_systems.getAxis(XboxAxis.LT).asButton(0.8 ,true).whenActive(new ClimbUp(climb, arm, usbCamera, videoSink));
 
-        //ActionGroup shootSpeaker = new TakeIn(intake,arm).andThen((new SetPointAngleByVision(limelight, intake, arm, shooter)).alongWith(new ShooterSpeaker(shooter, intake, arm)));
 
         xbox_systems.getDpad().right().whenActive(new Pull_In(intake));
         xbox_systems.getDpad().left().whenActive(new ClimbDown(climb));
         xbox_systems.getDpad().down().whenActive(new SetPointAngleByVision(limelight,intake,arm, shooter).alongWith(new Shoot(shooter, intake, arm, limelight)));
-        xbox_systems.getDpad().up().whenActive(Actions.instant(() -> arm.setSetPointAngle(Arm.CLIMB_ANGLE)));
+        xbox_systems.getDpad().up().whenActive(new ArmToClimbing(arm, shooter, usbCamera, videoSink));
 
         limelight.setPipline(0);
 
@@ -178,10 +173,10 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     public void autonomousInit() {
         arm.resetPID();
         swerve.resetWheels();
-      //  this.shootMoveTakeAndShoot.start();
+        this.shootMoveTakeAndShoot.start();
         //new MoveDistance(swerve, -2).start();
         //this.shootMoveTake.start();
-        new MoveByPoseY(swerve, 10.33).start();
+       // new MoveByPoseY(swerve, 10.33).start();
     }
 
     @Override
@@ -195,7 +190,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         shooter.resetI();
         limelight.init();
         swerve.resetWheels();
-       // swerve.resetCurrentAngle();
+        swerve.resetCurrentAngle();
         arm.setNotAmp();
       //  new LimelightAutoAlignWithDrive(xbox_driver, limelight, swerve, arm).start();
 
@@ -266,8 +261,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         swerve.print();
 
         SmartDashboard.putNumber("Drive Distance", swerve.getDistancePassedMeters());
-        SmartDashboard.putNumber("Place Y Pose", swerve.getRobotPose().getY());
-        SmartDashboard.putNumber("Place X Pose", swerve.getRobotPose().getX());
+        SmartDashboard.putNumber("Place Y robot", swerve.getRobotPose().getY());
+        SmartDashboard.putNumber("Place X robot", swerve.getRobotPose().getX());
     }
 
     @Override

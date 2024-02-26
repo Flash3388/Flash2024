@@ -8,6 +8,7 @@ import com.flash3388.flashlib.scheduling.actions.ActionBase;
 import com.flash3388.flashlib.time.Clock;
 import com.flash3388.flashlib.time.Time;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subSystems.Arm;
 import frc.robot.subSystems.Intake;
 import frc.robot.subSystems.Limelight;
@@ -44,6 +45,7 @@ public class SetPointAngleByVision extends ActionBase {
         if(intake.isIN() && arm.isBasedOnLimelightDetection()) {
             double distance = limelight.getDisHorizontalToTarget();
 
+            SmartDashboard.putNumber("odometer distance", distance);
             double angle = -1.05 * Math.pow(distance, 2) + 11.2 * distance + 18.4;
             arm.setSetPointAngle(angle);
             shooterSystem.shootSpeaker();

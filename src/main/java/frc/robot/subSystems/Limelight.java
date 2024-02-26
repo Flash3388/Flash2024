@@ -222,26 +222,35 @@ public class Limelight extends Subsystem {
     public double getDisHorizontalToTarget(){
         double cameraHeight = 0.485;
         double actualDis = 0;
-        if(getAvgDistance()!=0) {
+       /* if(getAvgDistance()!=0) {
             if(getAvgDistance() > 4)
                 actualDis = getAvgDistance();
             else
               actualDis = Math.sqrt(Math.pow(getAvgDistance(), 2) - Math.pow(getTargetHeight() - cameraHeight, 2));
         }
-        else {
+        else {*/
             //relativeTo(robot)
-            double aprilTagId = 4; // id of speaker    LimelightHelpers.getFiducialID("limelight-banana");
-            SmartDashboard.putNumber("aprilTagId",aprilTagId);
-            Optional<Pose3d> apriltagPose = layout.getTagPose((int)(aprilTagId)); //position of apriltag
 
-            //not sure if it'll work
-
-            Pose2d differenceBetweenRobotToTarget = swerve.getRobotPose().relativeTo(apriltagPose.get().toPose2d());
-            actualDis = Math.sqrt(Math.pow(differenceBetweenRobotToTarget.getX(),2) + Math.pow(differenceBetweenRobotToTarget.getY(),2));
+        Optional<DriverStation.Alliance> allianceOptional = DriverStation.getAlliance();
+        if (allianceOptional.isEmpty()) {
+            return 0;
         }
+
+        double aprilTagId = 7; //default is blue alliance
+        DriverStation.Alliance alliance = allianceOptional.get();
+        if(alliance == DriverStation.Alliance.Red) //if are we red alliance
+            aprilTagId = 4;
+
+        SmartDashboard.putNumber("aprilTagId",aprilTagId);
+        Optional<Pose3d> apriltagPose = layout.getTagPose((int)(aprilTagId)); //position of apriltag
+
+        //not sure if it'll work
+
+        actualDis = Math.sqrt(Math.pow(swerve.getRobotPose().getX()-apriltagPose.get().getX(),2) + Math.pow(swerve.getRobotPose().getY()- apriltagPose.get().getY(),2));
+
          SmartDashboard.putNumber("hopefully real distance",actualDis);
          SmartDashboard.putNumber("odometry distance",actualDis);
-        return actualDis;
+        return actualDis - 0.225;
 
     }
     public double getAvgDistance(){
@@ -324,7 +333,7 @@ public class Limelight extends Subsystem {
         return LimelightHelpers.getTV("limelight-banana"); //tv=1.0 means a target is detected
     }
     public void updateRobotPositionByAprilTag(){
-        if (!isThereTarget() || getAvgDistance() >= 2) { //2.8
+        if (!isThereTarget() || getAvgDistance() >= 2.5) { //2.8
             SmartDashboard.putBoolean("aprilTagPresent",false);
             return;
         }
