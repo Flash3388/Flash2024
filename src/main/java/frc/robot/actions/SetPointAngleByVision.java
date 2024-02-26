@@ -43,7 +43,7 @@ public class SetPointAngleByVision extends ActionBase {
     public void execute(ActionControl control) {
 
         if(intake.isIN() && arm.isBasedOnLimelightDetection()) {
-            double distance = limelight.getDisHorizontalToTarget() - 0.225;
+            double distance = limelight.getDisHorizontalToTarget();
 
             SmartDashboard.putNumber("odometer distance", distance);
             double angle = -1.05 * Math.pow(distance, 2) + 11.2 * distance + 18.4;

@@ -230,17 +230,27 @@ public class Limelight extends Subsystem {
         }
         else {*/
             //relativeTo(robot)
-            double aprilTagId = 4; // id of speaker    LimelightHelpers.getFiducialID("limelight-banana");
-            SmartDashboard.putNumber("aprilTagId",aprilTagId);
-            Optional<Pose3d> apriltagPose = layout.getTagPose((int)(aprilTagId)); //position of apriltag
 
-            //not sure if it'll work
+        Optional<DriverStation.Alliance> allianceOptional = DriverStation.getAlliance();
+        if (allianceOptional.isEmpty()) {
+            return 0;
+        }
 
-            actualDis = Math.sqrt(Math.pow(swerve.getRobotPose().getX()-apriltagPose.get().getX(),2) + Math.pow(swerve.getRobotPose().getY()- apriltagPose.get().getY(),2));
+        double aprilTagId = 7; //default is blue alliance
+        DriverStation.Alliance alliance = allianceOptional.get();
+        if(alliance == DriverStation.Alliance.Red) //if are we red alliance
+            aprilTagId = 4;
+
+        SmartDashboard.putNumber("aprilTagId",aprilTagId);
+        Optional<Pose3d> apriltagPose = layout.getTagPose((int)(aprilTagId)); //position of apriltag
+
+        //not sure if it'll work
+
+        actualDis = Math.sqrt(Math.pow(swerve.getRobotPose().getX()-apriltagPose.get().getX(),2) + Math.pow(swerve.getRobotPose().getY()- apriltagPose.get().getY(),2));
 
          SmartDashboard.putNumber("hopefully real distance",actualDis);
          SmartDashboard.putNumber("odometry distance",actualDis);
-        return actualDis;
+        return actualDis - 0.225;
 
     }
     public double getAvgDistance(){
