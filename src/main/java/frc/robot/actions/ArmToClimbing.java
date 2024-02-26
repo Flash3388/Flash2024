@@ -14,7 +14,7 @@ public class ArmToClimbing extends ActionBase {
     private ShooterSystem shooter;
     private UsbCamera camera;
     private VideoSink videoSink;
-    public ArmToClimbing(Arm arm, ShooterSystem shooter, UsbCamera camera, VideoSink videoSink){
+    public ArmToClimbing(Arm arm, ShooterSystem shooter){
         this.arm = arm;
         this.shooter = shooter;
         this.camera = camera;
@@ -26,7 +26,7 @@ public class ArmToClimbing extends ActionBase {
     public void initialize(ActionControl control) {
         shooter.stop();
         arm.setSetPointAngle(Arm.CLIMB_ANGLE);
-        videoSink.setSource(camera);
+     //   videoSink.setSource(camera);
         control.finish();
     }
 
