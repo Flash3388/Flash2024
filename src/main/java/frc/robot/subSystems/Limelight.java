@@ -32,12 +32,12 @@ public class Limelight extends Subsystem {
     private double accuracyInVision = 100; //percents
 
 
-    public Limelight(Swerve swerve, Arm arm){
+    public Limelight(Swerve swerve){
         layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
         layout.setOrigin(AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide); //if we're on the blue side
         timer = new Timer();
         this.swerve = swerve;
-        this.arm = arm;
+
 
     }
     public void setPipline(int n){

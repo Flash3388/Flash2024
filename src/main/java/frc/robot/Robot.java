@@ -44,9 +44,9 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         super(robotControl);
         //double angle = -1.05 * Math.pow(distance, 2) + 11.2 * distance + 18.4;
         SmartDashboard.putNumber("m of x^3",0);
-        SmartDashboard.putNumber("m of x^2",-1.05);
-        SmartDashboard.putNumber("m of x",11.2);
-        SmartDashboard.putNumber("k0",18.4);
+        SmartDashboard.putNumber("m of x^2",-1.82);
+        SmartDashboard.putNumber("m of x",15.5);
+        SmartDashboard.putNumber("k0",12.1);
 
         SmartDashboard.putNumber("Horizontal_distance from target",0);
 
@@ -56,11 +56,11 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         shooter = SystemFactory.createShooter();
         xbox_driver = getHidInterface().newXboxController(RobotMap.XBOX_DRIVER);
         xbox_systems = getHidInterface().newXboxController(RobotMap.XBOX_SYSTEMS);
-        limelight = new Limelight(swerve,arm);
+        limelight = new Limelight(swerve);
         climb = SystemFactory.createClimb();
-        this.usbCamera = CameraServer.startAutomaticCapture();
-        this.videoSink = CameraServer.getServer();
-        videoSink.setSource(null);
+       // this.usbCamera = CameraServer.startAutomaticCapture();
+       // this.videoSink = CameraServer.getServer();
+      //  videoSink.setSource(null);
 
         //driver:
         swerve.setDefaultAction(new DriveWithXbox(swerve, xbox_driver));
@@ -76,20 +76,21 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xbox_systems.getButton(XboxButton.B).whenActive(new TakeIn(intake,arm));
         xbox_systems.getButton(XboxButton.Y).whileActive(new TakeOut(intake,arm,shooter));
         xbox_systems.getButton(XboxButton.A).whenActive(new SetPointAngleByVision(limelight,intake,arm, shooter));
-        xbox_systems.getButton(XboxButton.X).whenActive(new Shoot(shooter, intake, arm, limelight));
+       // xbox_systems.getButton(XboxButton.X).whenActive(new Shoot(shooter, intake, arm, limelight));
+        xbox_systems.getButton(XboxButton.X).whenActive(new ShootSpeaker(shooter, intake, arm));
 
         xbox_systems.getButton(XboxButton.RB).whenActive(new ShootAMP(shooter, arm));
         xbox_systems.getButton(XboxButton.LB).whenActive(new ShootToSpeaker(shooter, arm, intake).alongWith(new Shoot(shooter, intake, arm, limelight)));
 
 
         xbox_systems.getAxis(XboxAxis.RT).asButton(0.8 ,true).whenActive(new SetDefault(arm,shooter,intake, limelight));
-        xbox_systems.getAxis(XboxAxis.LT).asButton(0.8 ,true).whenActive(new ClimbUp(climb, arm, usbCamera, videoSink));
+        xbox_systems.getAxis(XboxAxis.LT).asButton(0.8 ,true).whenActive(new ClimbUp(climb, arm));
 
 
         xbox_systems.getDpad().right().whenActive(new Pull_In(intake));
         xbox_systems.getDpad().left().whenActive(new ClimbDown(climb));
         xbox_systems.getDpad().down().whenActive(new SetPointAngleByVision(limelight,intake,arm, shooter).alongWith(new Shoot(shooter, intake, arm, limelight)));
-        xbox_systems.getDpad().up().whenActive(new ArmToClimbing(arm, shooter, usbCamera, videoSink));
+        xbox_systems.getDpad().up().whenActive(new ArmToClimbing(arm, shooter));
 
         limelight.setPipline(0);
 
@@ -213,9 +214,9 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         double distanceFromTarget = SmartDashboard.getNumber("Horizontal_distance from target",0);
         calculateAngle(distanceFromTarget);
 
-        /*double setPoint = SmartDashboard.getNumber("set point A", Arm.DEF_ANGLE);
-        arm.setSetPointAngle(setPoint);*/
-        SmartDashboard.putNumber("set point A", arm.getSetPointAngle());
+        double setPoint = SmartDashboard.getNumber("set point A", Arm.DEF_ANGLE);
+        arm.setSetPointAngle(setPoint);
+        //SmartDashboard.putNumber("set point A", arm.getSetPointAngle());
     }
     public double calculateAngle(double distance){
 
@@ -254,7 +255,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         SmartDashboard.putNumber("ActualAngleToSpeaker", limelight.getXAngleToTarget_Speaker());
         SmartDashboard.putNumber("ActualAngleToSpeaker2", limelight.getAngleToSpeaker());
 
-        SmartDashboard.putNumber("set point A", arm.getSetPointAngle());
+       // SmartDashboard.putNumber("set point A", arm.getSetPointAngle());
 
         SmartDashboard.putBoolean("IS IN NOTE", intake.isIN());
 

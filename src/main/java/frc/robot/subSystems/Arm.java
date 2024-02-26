@@ -27,7 +27,7 @@ public class Arm extends Subsystem {
     private PidController pid;
 
 
-    private static final double STABLE_ERROR = 1;
+    private static final double STABLE_ERROR = 0.5; //1
     private static final double STABLE_OUTPUT = 0.1;
 
     // Other Constants
@@ -50,11 +50,13 @@ public class Arm extends Subsystem {
 
     private double setPointAngle;
     public static boolean BASED_ON_LIMELIGHT_DETECTION = false;
+    private Limelight limelight;
 
     public Arm(CANSparkMax master, CANSparkMax follower, DutyCycleEncoder encoder){
         this.master = master;
         this.follower = follower;
         this.absEncoder = encoder;
+        this.limelight = limelight;
 
         this.follower.follow(this.master, true);
         this.master.follow(CANSparkBase.ExternalFollower.kFollowerDisabled, 0); // this is to make sure the master won't follow anyone
@@ -73,7 +75,7 @@ public class Arm extends Subsystem {
 
         pid = PidController.newNamedController("drive", KP, KI, KD, 0);
         pid.setIZone(I_ZONE);
-        pid.setTolerance(STABLE_ERROR, 0.01); //0.001
+        pid.setTolerance(STABLE_ERROR, 0.001); //0.001
 
 
         setSetPointAngle(DEF_ANGLE);
@@ -185,12 +187,20 @@ public class Arm extends Subsystem {
     }
 
     public boolean isStabilizedAtTargetedPosition() {
+        //pid.setTolerance(STABLE_ERROR, 0.01);
+
         if (!isPositioningControlled()) {
             return false;
         }
 /*
         return ExtendedMath.constrained(getArmPosition(), setPointAngle - STABLE_ERROR, setPointAngle + STABLE_ERROR) ;
           */   //   && Math.abs(master.getAppliedOutput()) < STABLE_OUTPUT;
+
+       /* if(!isSetToAMP && setPointAngle != CLIMB_ANGLE && limelight.getDisHorizontalToTarget() >= 3.6)
+        {
+            double error = 0.5;
+            pid.setTolerance(error, 0.01);
+        }*/
 
         return pid.isInTolerance();
     }
