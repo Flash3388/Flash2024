@@ -13,7 +13,7 @@ public class ClimbUp extends ActionBase {
     private Arm arm;
     private UsbCamera camera;
     private VideoSink videoSink;
-    public ClimbUp(Climb climb, Arm arm, UsbCamera camera, VideoSink videoSink){
+    public ClimbUp(Climb climb, Arm arm){
         this.climbMotor = climb;
         this.arm = arm;
         this.camera = camera;
@@ -42,6 +42,6 @@ public class ClimbUp extends ActionBase {
 
     @Override
     public void end(FinishReason reason) {
-        videoSink.setSource(null);
+       // videoSink.setSource(null);
     }
 }

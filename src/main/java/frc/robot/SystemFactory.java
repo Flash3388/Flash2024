@@ -65,4 +65,5 @@ public class SystemFactory {
         CANSparkMax motor = new CANSparkMax(RobotMap.CLIMB_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
         return new Climb(motor);
     }
+
 }

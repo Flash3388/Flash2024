@@ -38,6 +38,8 @@ public class Limelight extends Subsystem {
         layout.setOrigin(AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide); //if we're on the blue side
         timer = new Timer();
         this.swerve = swerve;
+
+
     }
     public void setPipline(int n){
         table.getEntry("pipeline").setValue(n);
