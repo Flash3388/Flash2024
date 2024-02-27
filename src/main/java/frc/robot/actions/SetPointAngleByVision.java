@@ -46,8 +46,8 @@ public class SetPointAngleByVision extends ActionBase {
             double distance = limelight.getDisHorizontalToTarget();
 
             SmartDashboard.putNumber("odometer distance", distance);
-            //double angle = -1.05 * Math.pow(distance, 2) + 11.2 * distance + 18.4;
-            double angle = -1.82 * Math.pow(distance, 2) + 15.5 * distance + 12.1;
+            double angle = -1.05 * Math.pow(distance, 2) + 11.2 * distance + 19.5 ; //18.4
+            //double angle = -1.82 * Math.pow(distance, 2) + 15.5 * distance + 12.1;
             arm.setSetPointAngle(angle);
             shooterSystem.shootSpeaker();
         }

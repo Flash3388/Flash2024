@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.castle.time.Time;
 import com.flash3388.flashlib.frc.robot.FrcRobotControl;
 import com.flash3388.flashlib.frc.robot.base.iterative.DelegatingFrcRobotControl;
 import com.flash3388.flashlib.frc.robot.base.iterative.IterativeFrcRobot;
@@ -32,6 +33,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     private ActionGroup shootAndMove;
     private ActionGroup shootMoveTakeAndShoot;
     private ActionGroup shootMoveTake;
+    private ActionGroup spinShootSpinTakeShoot;
 
     private final XboxController xbox_systems; // systems
     private final XboxController xbox_driver; //driver
@@ -124,6 +126,17 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
                 .andThen((new TakeIn(intake, arm)).alongWith(new MoveDistance(swerve, -1.5)));
 
 
+       /* this.spinShootSpinTakeShoot = new LimelightAutoAlignWithDrive(xbox_driver, limelight, swerve, arm, false, false)
+                .andThen((new SetPointAngleByVision(limelight, intake, arm,shooter)).alongWith(new Shoot(shooter, intake, arm, limelight)))
+                .andThen(new StraightToField(limelight, swerve)).andThen(Actions.instant(() -> swerve.resetWheels()))
+                .andThen((new TakeIn(intake, arm)).alongWith(new MoveDistance(swerve, -1.5)))
+                .andThen(new LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm, false, false))
+                .andThen((new SetPointAngleByVision(limelight, intake, arm, shooter)).alongWith(new Shoot(shooter, intake,arm, limelight)));
+      */
+
+         this.spinShootSpinTakeShoot = new LimelightAutoAlignWithDrive(xbox_driver, limelight, swerve, arm, false, false)
+                .andThen((new SetPointAngleByVision(limelight, intake, arm,shooter)).alongWith(new Shoot(shooter, intake, arm, limelight)));
+        SmartDashboard.putNumber("Which auto?", 1);
     }
 
     @Override
@@ -144,6 +157,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         limelight.init();
         swerve.resetCurrentAngle();
         arm.setNotAmp();
+        arm.setSetPointAngle(Arm.DEF_ANGLE);
     }
 
     @Override
@@ -156,13 +170,17 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         arm.resetPID();
         swerve.resetWheels();
         limelight.init();
-        this.shootMoveTakeAndShoot.start();
+
         swerve.resetCurrentAngle();
         arm.setNotAmp();
+        arm.setSetPointAngle(Arm.DEF_ANGLE);
 
-        //new MoveDistance(swerve, -2).start();
-        //this.shootMoveTake.start();
-       // new MoveByPoseY(swerve, 10.33).start();
+        double auto = SmartDashboard.getNumber("Which auto?", 1);
+        if(auto == 1)
+            this.shootMoveTakeAndShoot.start();
+        else if(auto == 2)
+            this.spinShootSpinTakeShoot.start();
+
     }
 
     @Override

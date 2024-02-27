@@ -3,6 +3,7 @@ package frc.robot.actions;
 import com.flash3388.flashlib.scheduling.ActionControl;
 import com.flash3388.flashlib.scheduling.FinishReason;
 import com.flash3388.flashlib.scheduling.actions.ActionBase;
+import com.jmath.ExtendedMath;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cscore.VideoSink;
 import frc.robot.subSystems.Arm;
@@ -13,6 +14,7 @@ public class ClimbUp extends ActionBase {
     private Arm arm;
     private UsbCamera camera;
     private VideoSink videoSink;
+    private static final double ERROR = 1;
     public ClimbUp(Climb climb, Arm arm){
         this.climbMotor = climb;
         this.arm = arm;
@@ -28,7 +30,7 @@ public class ClimbUp extends ActionBase {
 
     @Override
     public void execute(ActionControl control) {
-        if(arm.isStabilizedAtTargetedPosition())
+        if(ExtendedMath.constrained(arm.getArmPosition(), Arm.CLIMB_ANGLE - ERROR, Arm.CLIMB_ANGLE + ERROR))
         {
             climbMotor.climb();
         }
