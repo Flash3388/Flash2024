@@ -6,10 +6,13 @@ import com.flash3388.flashlib.robot.control.PidController;
 import com.flash3388.flashlib.scheduling.ActionControl;
 import com.flash3388.flashlib.scheduling.FinishReason;
 import com.flash3388.flashlib.scheduling.actions.ActionBase;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subSystems.Arm;
 import frc.robot.subSystems.Limelight;
 import frc.robot.subSystems.Swerve;
+
+import java.util.Optional;
 
 public class LimelightAutoAlignWithDrive extends ActionBase {
     private XboxController xbox_driver;
@@ -26,6 +29,7 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
     private final double PID_LIMIT = 1;
     private boolean continuous;
     private boolean withXbox;
+    private double signum = 1;
 
 
 
@@ -53,6 +57,13 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
     @Override
     public void initialize(ActionControl control) {
         pidController.reset();
+        signum = 1;
+        Optional<DriverStation.Alliance> allianceOptional = DriverStation.getAlliance();
+        if (!allianceOptional.isEmpty()) {
+            DriverStation.Alliance alliance = allianceOptional.get();
+            if(alliance == DriverStation.Alliance.Blue)
+                signum = -1;
+        }
     }
 
     @Override
@@ -71,14 +82,13 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
         double driveX = 0;
         double driveY = 0;
         if (withXbox) {
-            driveX = -xbox_driver.getAxis(XboxAxis.LeftStickX).getAsDouble() ;
+            driveX = signum * xbox_driver.getAxis(XboxAxis.LeftStickX).getAsDouble() ;
             driveX = Math.abs(driveX) > 0.2 ? driveX * Swerve.MAX_SPEED/2 : 0;
-            driveY = -xbox_driver.getAxis(XboxAxis.LeftStickY).getAsDouble() ;
+            driveY = signum * xbox_driver.getAxis(XboxAxis.LeftStickY).getAsDouble() ;
             driveY = Math.abs(driveY) > 0.2 ? driveY * Swerve.MAX_SPEED/2: 0;
         }
 
        double rotation = pidController.applyAsDouble(gyroAngle, angle2Target); //using odometry
-       rotation = Math.abs(rotation) > 0.2 ? rotation : 0;
 
 
         if (!continuous && pidController.isInTolerance())  {

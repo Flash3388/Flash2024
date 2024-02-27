@@ -17,6 +17,8 @@ import frc.robot.actions.*;
 import frc.robot.subSystems.*;
 import frc.robot.actions.ArmController;
 
+import java.time.Clock;
+
 public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobot {
     private Swerve swerve;
     private Intake intake;
@@ -80,6 +82,9 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xbox_systems.getDpad().down().whenActive(new SetPointAngleByVision(limelight,intake,arm, shooter).alongWith(new Shoot(shooter, intake, arm, limelight)));
         xbox_systems.getDpad().up().whenActive(new ArmToClimbing(arm, shooter));
 
+
+
+
         limelight.setPipline(0);
 
          /*this.moveAndShoot = new MoveDistance(swerve, -1.2).andThen(new LimelightAutoAlign(limelight, swerve))
@@ -122,7 +127,6 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
                 .andThen(Actions.instant(() -> shooter.shootSpeaker())
                 .alongWith(new Shoot(shooter, intake, arm, limelight))))
                 .andThen((new TakeIn(intake, arm)).alongWith(new MoveDistance(swerve, -1.5)));
-
 
     }
 
