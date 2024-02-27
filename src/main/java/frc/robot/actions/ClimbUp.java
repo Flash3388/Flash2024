@@ -16,8 +16,8 @@ public class ClimbUp extends ActionBase {
     public ClimbUp(Climb climb, Arm arm){
         this.climbMotor = climb;
         this.arm = arm;
-        this.camera = camera;
-        this.videoSink = videoSink;
+        //this.camera = camera;
+        //this.videoSink = videoSink;
         requires(climb);
     }
 

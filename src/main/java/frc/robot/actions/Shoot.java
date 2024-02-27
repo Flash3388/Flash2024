@@ -19,7 +19,6 @@ public class Shoot extends ActionBase {
     private static final double DELAY_BEFORE_FINISH_IN_SECONDS = 0.7;//1
     private Clock clock;
     private Time time;
-    private Limelight limelight;
 
 
     public Shoot(ShooterSystem shooter, Intake intake, Arm arm, Limelight limelight){

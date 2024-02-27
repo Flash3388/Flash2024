@@ -18,7 +18,7 @@ public class Intake extends Subsystem {
         this.motor = motor;
         this.in = digitalInput;
         this.agam = agam;
-        motor.setIdleMode(CANSparkBase.IdleMode.kBrake);
+        motor.setIdleMode(CANSparkBase.IdleMode.kCoast);
 
     }
 
