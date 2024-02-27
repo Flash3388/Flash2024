@@ -46,7 +46,7 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
 
         pidController = PidController.newNamedController("rotation", KP, KI, KD, 0);
 
-        pidController.setTolerance(PID_ERROR, 0.001);
+        pidController.setTolerance(PID_ERROR, 0.01); //0.001
         pidController.setOutputLimit(PID_LIMIT);
 
         //configure().setName("LimelightAutoAlign").save();
@@ -57,13 +57,15 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
     @Override
     public void initialize(ActionControl control) {
         pidController.reset();
-        signum = 1;
+        signum =1;
         Optional<DriverStation.Alliance> allianceOptional = DriverStation.getAlliance();
-        if (!allianceOptional.isEmpty()) {
+        if (allianceOptional.isEmpty()) {
             DriverStation.Alliance alliance = allianceOptional.get();
-            if(alliance == DriverStation.Alliance.Blue)
+            if (alliance == DriverStation.Alliance.Blue)
                 signum = -1;
+
         }
+
     }
 
     @Override
@@ -89,6 +91,7 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
         }
 
        double rotation = pidController.applyAsDouble(gyroAngle, angle2Target); //using odometry
+      // rotation = Math.abs(rotation) > 0.2 ? rotation : 0;
 
 
         if (!continuous && pidController.isInTolerance())  {

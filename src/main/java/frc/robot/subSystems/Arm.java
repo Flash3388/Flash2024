@@ -10,9 +10,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Arm extends Subsystem {
     // for motor PID
-    private static  double KP = 0.0099; // tune this
-    private static  double KI = 0.0004; // tune this
-    private static  double KD = 0.000001; // tune this
+    private static  double KP = 0.01; // tune this0.0099
+    private static  double KI = 0.0005; // tune this
+    private static  double KD = 0.000007; // tune this
     private static  double I_ZONE = 15; // tune this
 
     // for trapezoid profile
@@ -75,7 +75,7 @@ public class Arm extends Subsystem {
 
         pid = PidController.newNamedController("drive", KP, KI, KD, 0);
         pid.setIZone(I_ZONE);
-        pid.setTolerance(STABLE_ERROR, 0.001); //0.001
+        pid.setTolerance(STABLE_ERROR, 0.0001); //0.001
 
 
         setSetPointAngle(DEF_ANGLE);

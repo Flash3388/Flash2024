@@ -16,9 +16,11 @@ public class Shoot extends ActionBase {
     private Intake intake;
     private Arm arm;
 
-    private static final double DELAY_BEFORE_FINISH_IN_SECONDS =  1;//1
+    private static final double DELAY_BEFORE_FINISH_IN_SECONDS = 1;//1
     private Clock clock;
     private Time time;
+    private Time timerBeforeShoot;
+    private static final double DELAY_BEFORE_SHOOTING_IN_SECONDS = 0.5;//1
 
 
     public Shoot(ShooterSystem shooter, Intake intake, Arm arm, Limelight limelight){
@@ -37,6 +39,7 @@ public class Shoot extends ActionBase {
     @Override
     public void initialize(ActionControl control) {
         time = Time.INVALID;
+        timerBeforeShoot = Time.INVALID;
     }
 
     @Override
@@ -53,8 +56,20 @@ public class Shoot extends ActionBase {
         }
 
         else {
-            if (shooter.gotToTarget(ShooterSystem.SPEED_TARGET_SPEAKER) && arm.isStabilizedAtTargetedPosition())
+            if (shooter.gotToTarget(ShooterSystem.SPEED_TARGET_SPEAKER) && arm.isStabilizedAtTargetedPosition()){
                 intake.shoot();
+            }
+           /* if (timerBeforeShoot.isValid()) {
+                if(timerBeforeShoot.before(clock.currentTime()))
+                    intake.shoot();
+            } else {
+                timerBeforeShoot = clock.currentTime().add(Time.seconds(DELAY_BEFORE_SHOOTING_IN_SECONDS));
+            }
+        }
+        else{
+                timerBeforeShoot = Time.INVALID;
+        }*/
+
         }
 
         if (!intake.isIN()) {

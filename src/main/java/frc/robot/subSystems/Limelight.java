@@ -223,8 +223,7 @@ public class Limelight extends Subsystem {
 
         actualDis = Math.sqrt(Math.pow(swerve.getRobotPose().getX()-apriltagPose.get().getX(),2) + Math.pow(swerve.getRobotPose().getY()- apriltagPose.get().getY(),2));
 
-        return actualDis - 0.225;
-
+        return actualDis - 0.225; //0.225
     }
     public double getAvgDistance(){
         double reading=getDistanceToTarget();
@@ -266,6 +265,48 @@ public class Limelight extends Subsystem {
     public boolean isThereTarget(){
         return LimelightHelpers.getTV("limelight-banana"); //tv=1.0 means a target is detected
     }
+    public double angleToForward_FieldRelative_Odometer(){
+        Optional<DriverStation.Alliance> allianceOptional = DriverStation.getAlliance();
+        if (allianceOptional.isEmpty()) {
+            return 0;
+        }
+
+        double angle = swerve.getRobotPose().getRotation().getDegrees(); //default is red alliance
+        DriverStation.Alliance alliance = allianceOptional.get();
+        if(alliance == DriverStation.Alliance.Blue) //if we are blue alliance-limelight towards us
+            angle +=180;
+
+        //normalize
+        if(angle >180) angle-=360;
+        else if (angle <-180) angle+=360;
+
+        SmartDashboard.putNumber("angle to field forward", angle);
+        return angle;
+
+    }
+    public double angleOfForward_FieldRelative_Odometer(){
+        Optional<DriverStation.Alliance> allianceOptional = DriverStation.getAlliance();
+        if (allianceOptional.isEmpty()) {
+            return 0;
+        }
+
+        double angle = 0; //default is red alliance
+        DriverStation.Alliance alliance = allianceOptional.get();
+        if(alliance == DriverStation.Alliance.Blue) //if we are blue alliance-limelight towards us
+            angle +=180;
+
+        //normalize
+        if(angle >180) angle-=360;
+        else if (angle <-180) angle+=360;
+
+        SmartDashboard.putNumber("angle to field forward", angle);
+        return angle;
+
+    }
+
+
+
+
     public void updateRobotPositionByAprilTag(){
         if (!isThereTarget() || getAvgDistance() >= 2.5) {
             SmartDashboard.putBoolean("aprilTagPresent",false);

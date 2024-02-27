@@ -45,6 +45,7 @@ public class MoveDistance extends ActionBase {
     public void initialize(ActionControl control) {
         SmartDashboard.putNumber("bla-1", swerve.getDistancePassedMeters());
         swerve.resetDistancePassed();
+        swerve.resetWheels();
         setPoint = distance;
         SmartDashboard.putNumber("bla", swerve.getDistancePassedMeters());
         SmartDashboard.putNumber("Set Point Number", setPoint);
