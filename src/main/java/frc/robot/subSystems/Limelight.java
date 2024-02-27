@@ -20,22 +20,22 @@ import java.util.Optional;
 public class Limelight extends Subsystem {
     private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-banana");
     private double[] robotPoseTargetSpace = LimelightHelpers.getTargetPose_RobotSpace("limelight-banana");
-    //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
 
     private AprilTagFieldLayout layout;
     private Swerve swerve;
     private static final double DELAY_BEFORE_FINISH_IN_SECONDS = 2;
     private Timer timer;
-    private final LinearFilter filterX = LinearFilter.movingAverage(20);
-    private final LinearFilter filterY = LinearFilter.movingAverage(20);
-    private final LinearFilter filterAngle = LinearFilter.movingAverage(20);
+    private int Window_size =10;
+    private double[] readings = new double[Window_size];
+    public int numOfReadings = 0;
+    public double sum = 0;
 
     private double accuracyInVision = 100; //percents
 
 
     public Limelight(Swerve swerve){
         layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-        layout.setOrigin(AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide); //if we're on the blue side
+        layout.setOrigin(AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide); //always
         timer = new Timer();
         this.swerve = swerve;
 
@@ -46,13 +46,12 @@ public class Limelight extends Subsystem {
     }
 
     public double getXAngleToTarget_Speaker() {// for speaker
-        //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
         Optional<DriverStation.Alliance> allianceOptional = DriverStation.getAlliance();
         if (allianceOptional.isEmpty()) {
             return 0;
         }
-//4
-        double aprilTagId = 7; //default is blue alliance - 7 is the correct one
+
+        double aprilTagId = 7; //default is blue alliance
         DriverStation.Alliance alliance = allianceOptional.get();
         if(alliance == DriverStation.Alliance.Red) //if are we red alliance
             aprilTagId =4;
@@ -74,7 +73,6 @@ public class Limelight extends Subsystem {
         if(angleFromRobotToSpeaker >180) angleFromRobotToSpeaker-=360;
         else if (angleFromRobotToSpeaker <-180) angleFromRobotToSpeaker+=360;
 
-        SmartDashboard.putNumber("angle to speaker", angleFromRobotToSpeaker);
         return angleFromRobotToSpeaker;
     }
 
@@ -84,7 +82,7 @@ public class Limelight extends Subsystem {
             return 0;
         }
 
-        double aprilTagId = 4; //default is blue alliance - 7 is the correct one
+        double aprilTagId = 7; //default is blue alliance
         DriverStation.Alliance alliance = allianceOptional.get();
         if(alliance == DriverStation.Alliance.Red) //if are we red alliance
             aprilTagId =4;
@@ -104,8 +102,6 @@ public class Limelight extends Subsystem {
     }
 
     public double getXAngleToTarget_Amp() {// for amp degrees
-        //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
-
 
         Optional<DriverStation.Alliance> allianceOptional = DriverStation.getAlliance();
         if (allianceOptional.isEmpty()) {
@@ -137,13 +133,12 @@ public class Limelight extends Subsystem {
         return angleFromRobotToSpeaker;
     }
     public double getXDistanceToTarget_Amp() {// for amp distance
-        //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
         double aprilTagId = 6; //default is blue alliance
-        if(layout.getOrigin().equals(AprilTagFieldLayout.OriginPosition.kRedAllianceWallRightSide)) //if are we red alliance
+        if(layout.getOrigin().equals(AprilTagFieldLayout.OriginPosition.kRedAllianceWallRightSide))
             aprilTagId =5;
 
         //the movement is in the x axis
-        Optional<Pose3d> apriltagPose = layout.getTagPose((int)(aprilTagId)); //position of apriltag
+        Optional<Pose3d> apriltagPose = layout.getTagPose((int)(aprilTagId));
         if (isThereTarget()) {
 
             robotPoseTargetSpace = LimelightHelpers.getTargetPose_RobotSpace("limelight-banana");
@@ -182,19 +177,6 @@ public class Limelight extends Subsystem {
         }
         return 0;
     }
-    public double getYAngleToTarget() {////
-        //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
-        if (isThereTarget()) {
-            robotPoseTargetSpace = LimelightHelpers.getCameraPose_TargetSpace("limelight-banana");
-            SmartDashboard.putNumber("cameraPtoTRotation 4", robotPoseTargetSpace[4]);
-            SmartDashboard.putNumber("ty", table.getEntry("ty").getDouble(0.0));
-
-            return robotPoseTargetSpace[4];
-        }
-        return 0;
-    }
-
-
 
     public double getDistanceToTarget() {
         //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
@@ -209,15 +191,9 @@ public class Limelight extends Subsystem {
         }
         return 0;
     }
-    private int Window_size =10;
-    private double[] readings = new double[Window_size];
-    public int numOfReadings = 0;
-    public double sum = 0;
-    public int numOfNoTargetDetection = 0;
 
     public void init() {
         numOfReadings = 0;
-        numOfNoTargetDetection = 0;
     }
 
     public double getDisHorizontalToTarget(){
@@ -245,12 +221,8 @@ public class Limelight extends Subsystem {
         SmartDashboard.putNumber("aprilTagId",aprilTagId);
         Optional<Pose3d> apriltagPose = layout.getTagPose((int)(aprilTagId)); //position of apriltag
 
-        //not sure if it'll work
-
         actualDis = Math.sqrt(Math.pow(swerve.getRobotPose().getX()-apriltagPose.get().getX(),2) + Math.pow(swerve.getRobotPose().getY()- apriltagPose.get().getY(),2));
 
-         SmartDashboard.putNumber("hopefully real distance",actualDis);
-         SmartDashboard.putNumber("odometry distance",actualDis);
         return actualDis - 0.225;
 
     }
@@ -267,15 +239,8 @@ public class Limelight extends Subsystem {
                 readings = new double[Window_size];}
         }
 
-        SmartDashboard.putNumber(" no target Time counted", timer.get());
+        SmartDashboard.putNumber("no target Time counted", timer.get());
 
-
-
-      /*  if(numOfNoTargetDetection == 50){ //if we are not seeing the target for a while -> the measurements are wrong by now
-            readings = new double[Window_size]; //initialize the array
-            numOfNoTargetDetection = 0;
-        }
-*/
         int loopSize = Window_size;
         if(numOfReadings<Window_size){
             loopSize = numOfReadings;
@@ -290,38 +255,6 @@ public class Limelight extends Subsystem {
             avg=sum/loopSize;
         }
         return avg;
-
-
-      /*
-      Yaron's way. didn't quite work.
-        double reading=getDistanceToTarget();
-        if(reading!=0){
-            sum += reading;
-            if (numOfReadings > Window_size) {
-                sum -= readings[numOfReadings % 10];
-            }
-            readings[numOfReadings%10]=reading;
-
-            numOfReadings++;
-        }
-        int loopSize = Window_size;
-        if(numOfReadings<=Window_size){
-            loopSize = numOfReadings;
-        }
-
-        sum = 0;
-        for (int i = 0; i < loopSize ; i++) {
-            sum += readings[i];
-        }
-
-        double avg=0;
-        if(loopSize>0){
-            avg=sum/loopSize;
-        }
-
-        return avg;
-
-       */
     }
     public void stopTimer(){
         timer.stop();
@@ -334,84 +267,25 @@ public class Limelight extends Subsystem {
         return LimelightHelpers.getTV("limelight-banana"); //tv=1.0 means a target is detected
     }
     public void updateRobotPositionByAprilTag(){
-        if (!isThereTarget() || getAvgDistance() >= 2.5) { //2.8
+        if (!isThereTarget() || getAvgDistance() >= 2.5) {
             SmartDashboard.putBoolean("aprilTagPresent",false);
             return;
         }
 
         double aprilTagId = LimelightHelpers.getFiducialID("limelight-banana");
         SmartDashboard.putNumber("aprilTagId",aprilTagId);
-        Optional<Pose3d> apriltagPose = layout.getTagPose((int)(aprilTagId)); //position of apriltag
+        Optional<Pose3d> apriltagPose = layout.getTagPose((int)(aprilTagId));
         if (apriltagPose.isPresent()) {
             SmartDashboard.putBoolean("aprilTagPresent", true);
             Pose2d robotPose = LimelightHelpers.getBotPose2d_wpiBlue("limelight-banana");
 
-            //double newX = filterX.calculate(robotPose.getX());
-            //double newY = filterY.calculate(robotPose.getY());
-            //double newAngle = filterAngle.calculate(robotPose.getRotation().getDegrees());
-            //robotPose = new Pose2d(new Translation2d(newX, newY), Rotation2d.fromDegrees(newAngle));
-
-            double latency = LimelightHelpers.getLatency_Capture("limelight-banana") +
-                    LimelightHelpers.getLatency_Pipeline("limelight-banana");
+        /*    double latency = LimelightHelpers.getLatency_Capture("limelight-banana") +
+                    LimelightHelpers.getLatency_Pipeline("limelight-banana"); */
             double timestamp = Timer.getFPGATimestamp();// - latency;
             swerve.updatePositionFromVision(robotPose, timestamp); //check how to correctly check the limelight time
         }
     }
-
-    public double getXAngleToTarget_Speaker_TelNofWay() {// for speaker
-        //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
-        Optional<DriverStation.Alliance> allianceOptional = DriverStation.getAlliance();
-        if (allianceOptional.isEmpty()) {
-            return 0;
-        }
-
-        double aprilTagId = 4; //default is blue alliance - 7 is the correct one
-        DriverStation.Alliance alliance = allianceOptional.get();
-        if(alliance == DriverStation.Alliance.Red) //if are we red alliance
-            aprilTagId =4;
-
-        Optional<Pose3d> apriltagPoseOptional = layout.getTagPose((int)(aprilTagId)); //position of apriltag
-        if (apriltagPoseOptional.isEmpty()) {
-            return 0;
-        }
-
-        Pose3d apriltagPose = apriltagPoseOptional.get();
-        Pose2d robotPose = swerve.getRobotPose();
-
-        double deltaX = apriltagPose.getX() - robotPose.getX();
-        double deltaY = apriltagPose.getY() - robotPose.getY();
-        double angleToSpeakerRad= Math.atan2(deltaY,deltaX);
-        double angleToSpeakerDeg= Math.toDegrees(angleToSpeakerRad);
-        double angleFromRobotToSpeaker = angleToSpeakerDeg - robotPose.getRotation().getDegrees();
-        //normalize the angles
-        if(angleFromRobotToSpeaker >180) angleFromRobotToSpeaker-=360;
-        else if (angleFromRobotToSpeaker <-180) angleFromRobotToSpeaker+=360;
-
-        return angleFromRobotToSpeaker;
-
-
-
-
-        /* doesn't matter if we see an april tag
-        if (isThereTarget()) {
-
-            double deltaX = apriltagPose.getX() - robotPose.getX();
-            double deltaY = apriltagPose.getY() - robotPose.getY();
-            double angleToSpeakerRad= Math.atan2(deltaY,deltaX);
-            double angleToSpeakerDeg= Math.toDegrees(angleToSpeakerRad);
-            double angleFromRobotToSpeaker = angleToSpeakerDeg - robotPose.getRotation().getDegrees();
-            //normalize the angles
-            if(angleFromRobotToSpeaker >180) angleFromRobotToSpeaker-=360;
-            else if (angleFromRobotToSpeaker <-180) angleFromRobotToSpeaker+=360;
-
-            return angleFromRobotToSpeaker;
-              */
-        }
-
-
-
-
-        public double getXAngleToTarget_Speaker_TomWay() {// for speaker
+         /* public double getXAngleToTarget_Speaker_TomWay() {// for speaker
             //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
             Optional<DriverStation.Alliance> allianceOptional = DriverStation.getAlliance();
             if (allianceOptional.isEmpty()) {
@@ -439,21 +313,7 @@ public class Limelight extends Subsystem {
             Vector2 aprilTagV = new Vector2(apriltagPose.getX(),apriltagPose.getY());
             double posVecDiff = Math.toDegrees(Math.acos((aprilTagV.dot(robotV) / robotV.magnitude() * aprilTagV.magnitude())));
 
-
-
             return posVecDiff * rotationDiff;
-        }
-
-
-
-
-
-
-
-
-
-
-
-
+        } */
 
 }

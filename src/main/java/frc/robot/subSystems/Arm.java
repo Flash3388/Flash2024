@@ -50,13 +50,13 @@ public class Arm extends Subsystem {
 
     private double setPointAngle;
     public static boolean BASED_ON_LIMELIGHT_DETECTION = false;
-    private Limelight limelight;
+
 
     public Arm(CANSparkMax master, CANSparkMax follower, DutyCycleEncoder encoder){
         this.master = master;
         this.follower = follower;
         this.absEncoder = encoder;
-        this.limelight = limelight;
+
 
         this.follower.follow(this.master, true);
         this.master.follow(CANSparkBase.ExternalFollower.kFollowerDisabled, 0); // this is to make sure the master won't follow anyone
@@ -168,7 +168,7 @@ public class Arm extends Subsystem {
     }
 
     public void setSetPointAngle(double setPointAngle) {
-      //  SmartDashboard.putNumber("set point A", setPointAngle);
+
         if(setPointAngle == Double.MIN_VALUE)
             this.setPointAngle = setPointAngle;
         else {
