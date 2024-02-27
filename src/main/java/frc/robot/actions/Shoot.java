@@ -16,7 +16,7 @@ public class Shoot extends ActionBase {
     private Intake intake;
     private Arm arm;
 
-    private static final double DELAY_BEFORE_FINISH_IN_SECONDS = 0.7;//1
+    private static final double DELAY_BEFORE_FINISH_IN_SECONDS =  1;//1
     private Clock clock;
     private Time time;
 
