@@ -40,6 +40,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     private ActionGroup spinShootSpinTakeShoot;
     private ActionGroup spinShootMove;
     private ActionGroup moveBackward;
+    private ActionGroup side_spinShootMoveBackward;
 
 
     private final XboxController xbox_systems; // systems
@@ -69,6 +70,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xbox_driver.getAxis(XboxAxis.RT).asButton(0.8 ,true).whenActive(new SetDefault(arm,shooter,intake, limelight));
         xbox_driver.getDpad().up().whenActive(Actions.instant(() -> Swerve.IS_FIELD_RELATIVE = !Swerve.IS_FIELD_RELATIVE));
         xbox_driver.getDpad().down().whenActive(Actions.instant(() -> Swerve.SIGNUM = -Swerve.SIGNUM));
+        xbox_driver.getButton(XboxButton.LB).whileActive(new CollectNote(swerve));
 
         //systems:
         arm.setDefaultAction(new ArmController(arm));
@@ -103,7 +105,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         this.shootAndMove = new LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm, false, false).andThen((new SetPointAngleByVision(limelight, intake, arm, shooter))
                 .alongWith(new Shoot(shooter, intake,arm, limelight))).andThen((Actions.instant(() -> swerve.resetWheels()))
                 .andThen(new TakeIn(intake, arm))
-                .alongWith(new MoveDistance(swerve, -1.5)));
+                .alongWith(new MoveDistance(swerve, -1.5, false)));
 
 
        /* original
@@ -123,7 +125,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
         this.shootMoveTakeAndShoot = (Actions.instant(() -> swerve.resetWheels()))
                         .andThen(new ShootToSpeaker(shooter, arm, intake).alongWith(new Shoot(shooter, intake,arm, limelight)))
-                        .andThen((new TakeIn(intake, arm)).alongWith(new MoveDistance(swerve, -1.5)))
+                        .andThen((new TakeIn(intake, arm)).alongWith(new MoveDistance(swerve, -1.5, false)))
                         .andThen(new LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm, false, false))
                         .andThen((new SetPointAngleByVision(limelight, intake, arm, shooter)).alongWith(new Shoot(shooter, intake,arm, limelight)));
 
@@ -131,9 +133,14 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         this.shootMoveTake = Actions.instant(() -> swerve.resetWheels()).andThen(Actions.instant(() -> arm.setNotAmp()).andThen(Actions.instant(() -> arm.setSetPointAngle(Arm.SPEAKER_ANGLE)))
                 .andThen(Actions.instant(() -> shooter.shootSpeaker())
                 .alongWith(new Shoot(shooter, intake, arm, limelight))))
-                .andThen((new TakeIn(intake, arm)).alongWith(new MoveDistance(swerve, -1.5)));
+                .andThen((new TakeIn(intake, arm)).alongWith(new MoveDistance(swerve, -1.5, false)));
 
-        this.moveBackward = Actions.instant(() -> swerve.resetWheels()).andThen(new MoveDistance(swerve, -1.5));
+        this.moveBackward = Actions.instant(() -> swerve.resetWheels()).andThen(new MoveDistance(swerve, -1.5, false));
+
+        this.side_spinShootMoveBackward = new LimelightAutoAlignWithDrive(xbox_driver, limelight, swerve, arm, false, false)
+                .andThen((new SetPointAngleByVision(limelight, intake, arm,shooter)).alongWith(new Shoot(shooter, intake, arm, limelight)))
+                .andThen(Actions.instant(() -> swerve.resetWheels()))
+                .andThen(new MoveDistance(swerve, -1.5, true));
 
        /* this.spinShootSpinTakeShoot = new LimelightAutoAlignWithDrive(xbox_driver, limelight, swerve, arm, false, false)
                 .andThen((new SetPointAngleByVision(limelight, intake, arm,shooter)).alongWith(new Shoot(shooter, intake, arm, limelight)))
@@ -200,6 +207,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
             this.spinShootSpinTakeShoot.start();
         else if(auto == 3)
             this.moveBackward.start();
+        if(auto == 4)
+            this.side_spinShootMoveBackward.start();
     }
 
     @Override
