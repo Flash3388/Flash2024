@@ -25,13 +25,12 @@ public class MoveDistance extends ActionBase {
     private boolean isFieldRelative;
 
     public MoveDistance(Swerve swerve){
-        this(swerve, 0, false);
+        this(swerve, 0);
     }
 
-    public MoveDistance(Swerve swerve, double distance, boolean isFieldRelative){
+    public MoveDistance(Swerve swerve, double distance){
         this.swerve = swerve;
         this.distance = distance;
-        this.isFieldRelative = false;
         this.pid = PidController.newNamedController("moveDistance", KP_DISTANCE, KI_DISTANCE, KD_DISTANCE, 0);
         pid.setTolerance(ERROR, Double.POSITIVE_INFINITY);
 
@@ -64,7 +63,7 @@ public class MoveDistance extends ActionBase {
         double speed = pid.applyAsDouble(distancePassed, setPoint) * Swerve.MAX_SPEED *1.5;
 
 
-        swerve.drive(speed, 0, 0, isFieldRelative);
+        swerve.drive(speed, 0, 0);
         SmartDashboard.putNumber("pid's speed", speed);
         SmartDashboard.putNumber("Drive Distance Action", distancePassed);
 
