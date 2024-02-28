@@ -39,6 +39,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     private ActionGroup shootMoveTake;
     private ActionGroup spinShootSpinTakeShoot;
     private ActionGroup spinShootMove;
+    private ActionGroup moveBackward;
+
 
     private final XboxController xbox_systems; // systems
     private final XboxController xbox_driver; //driver
@@ -131,6 +133,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
                 .alongWith(new Shoot(shooter, intake, arm, limelight))))
                 .andThen((new TakeIn(intake, arm)).alongWith(new MoveDistance(swerve, -1.5)));
 
+        this.moveBackward = Actions.instant(() -> swerve.resetWheels()).andThen(new MoveDistance(swerve, -1.5));
 
        /* this.spinShootSpinTakeShoot = new LimelightAutoAlignWithDrive(xbox_driver, limelight, swerve, arm, false, false)
                 .andThen((new SetPointAngleByVision(limelight, intake, arm,shooter)).alongWith(new Shoot(shooter, intake, arm, limelight)))
@@ -195,7 +198,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
             this.shootMoveTakeAndShoot.start();
         else if(auto == 2)
             this.spinShootSpinTakeShoot.start();
-
+        else if(auto == 3)
+            this.moveBackward.start();
     }
 
     @Override
