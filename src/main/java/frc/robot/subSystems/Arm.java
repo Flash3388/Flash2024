@@ -32,10 +32,10 @@ public class Arm extends Subsystem {
 
     // Other Constants
     public static final double SPEAKER_ANGLE = 28;
-    public static final double AMP_ANGLE_FROM_SHOOTER = 100;
+    public static final double AMP_ANGLE_FROM_SHOOTER = 102;
     public static final double AMP_ANGLE_FROM_INTAKE = 53;
     public static final double FLOOR_ANGLE = -6.5; // the floor angle
-    public static final double DEF_ANGLE = 20.0;
+    public static final double DEF_ANGLE = 10.0;
     public static final double CLIMB_ANGLE = 90.0;
 
 
@@ -75,7 +75,7 @@ public class Arm extends Subsystem {
 
         pid = PidController.newNamedController("drive", KP, KI, KD, 0);
         pid.setIZone(I_ZONE);
-        pid.setTolerance(STABLE_ERROR, 0.0001); //0.001
+        pid.setTolerance(STABLE_ERROR, 0.0005); //0.0001
 
 
         setSetPointAngle(DEF_ANGLE);
@@ -172,7 +172,7 @@ public class Arm extends Subsystem {
         if(setPointAngle == Double.MIN_VALUE)
             this.setPointAngle = setPointAngle;
         else {
-            setPointAngle = ExtendedMath.constrain(setPointAngle, FLOOR_ANGLE, 100);
+            setPointAngle = ExtendedMath.constrain(setPointAngle, FLOOR_ANGLE, 110);
             this.setPointAngle = setPointAngle;
         }
     }

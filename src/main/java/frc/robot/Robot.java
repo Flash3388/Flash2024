@@ -12,11 +12,15 @@ import com.flash3388.flashlib.scheduling.actions.Actions;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cscore.VideoSink;
+import edu.wpi.first.net.PortForwarder;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.actions.*;
 import frc.robot.subSystems.*;
 import frc.robot.actions.ArmController;
+
+import java.util.Optional;
 
 public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobot {
     private Swerve swerve;
@@ -34,6 +38,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     private ActionGroup shootMoveTakeAndShoot;
     private ActionGroup shootMoveTake;
     private ActionGroup spinShootSpinTakeShoot;
+    private ActionGroup spinShootMove;
 
     private final XboxController xbox_systems; // systems
     private final XboxController xbox_driver; //driver
@@ -60,7 +65,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xbox_driver.getButton(XboxButton.A).whenActive(new
                 LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm, true, true));
         xbox_driver.getAxis(XboxAxis.RT).asButton(0.8 ,true).whenActive(new SetDefault(arm,shooter,intake, limelight));
-
+        xbox_driver.getDpad().up().whenActive(Actions.instant(() -> Swerve.IS_FIELD_RELATIVE = !Swerve.IS_FIELD_RELATIVE));
+        xbox_driver.getDpad().down().whenActive(Actions.instant(() -> Swerve.SIGNUM = -Swerve.SIGNUM));
 
         //systems:
         arm.setDefaultAction(new ArmController(arm));
@@ -158,6 +164,15 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         swerve.resetCurrentAngle();
         arm.setNotAmp();
         arm.setSetPointAngle(Arm.DEF_ANGLE);
+
+        //PortForwarder.add(5809, "wpilibpi.local", 5809);
+
+        Optional<DriverStation.Alliance> allianceOptional = DriverStation.getAlliance();
+        if (!allianceOptional.isEmpty()) {
+            DriverStation.Alliance alliance = allianceOptional.get();
+            if(alliance == DriverStation.Alliance.Blue)
+                Swerve.SIGNUM = -1;
+        }
     }
 
     @Override

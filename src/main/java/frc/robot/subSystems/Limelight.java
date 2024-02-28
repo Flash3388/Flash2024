@@ -283,34 +283,18 @@ public class Limelight extends Subsystem {
         return angle;
 
     }
-    public double angleOfForward_FieldRelative_Odometer(){
-        Optional<DriverStation.Alliance> allianceOptional = DriverStation.getAlliance();
-        if (allianceOptional.isEmpty()) {
-            return 0;
-        }
-
-        double angle = 0; //default is red alliance
-        DriverStation.Alliance alliance = allianceOptional.get();
-        if(alliance == DriverStation.Alliance.Blue) //if we are blue alliance-limelight towards us
-            angle +=180;
-
-        //normalize
-        if(angle >180) angle-=360;
-        else if (angle <-180) angle+=360;
-
-        SmartDashboard.putNumber("angle to field forward", angle);
-        return angle;
-
-    }
-
 
 
 
     public void updateRobotPositionByAprilTag(){
-        if (!isThereTarget() || getAvgDistance() >= 2.5) {
+        if (!isThereTarget() || getAvgDistance() > 3) {  /*|| getAvgDistance() >= 2.5*/
             SmartDashboard.putBoolean("aprilTagPresent",false);
             return;
         }
+        if(getAvgDistance() <= 1.6)
+            setPipline(1);
+        else //2-3.5 m
+            setPipline(0);
 
         double aprilTagId = LimelightHelpers.getFiducialID("limelight-banana");
         SmartDashboard.putNumber("aprilTagId",aprilTagId);
