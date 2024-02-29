@@ -68,18 +68,24 @@ public class AutoAlignToAmp_AndDrive extends ActionBase {
         distance2Target = limelight.getXDistanceToTarget_Amp();
         double driveX = 1;
         double driveY = 1;
-        if(Math.abs(distance2Target) <= 0.03)
-            driveX= 0;
+        if (Math.abs(distance2Target) <= 0.03)
+            driveX = 0;
         else
             driveX = distance2Target > 0 ? 1.5 : -1.5;
         driveY = -xbox_driver.getAxis(XboxAxis.LeftStickY).getAsDouble();
         driveY = Math.abs(driveY) > 0.2 ? driveY * Swerve.MAX_SPEED : 0;
 
-        double rotation = pidController.applyAsDouble(angle2Target , 0);
-        swerve.drive(driveY, driveX,rotation, false );
+        double rotation = pidController.applyAsDouble(angle2Target, 0);
+        swerve.drive(driveY, driveX, rotation, false);
 
-        if(!intake.isIN()) {
-
+        if (!intake.isIN()) {
+            if (time.isValid()) {
+                if (time.before(clock.currentTime()))
+                    actionControl.finish();
+            } else
+                time = clock.currentTime().add(Time.seconds(DELAY_BEFORE_FINISH_IN_SECONDS));
+        } else
+            time = Time.INVALID;
     }
 
     @Override
