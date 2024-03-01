@@ -14,7 +14,7 @@ public class ClimbUp extends ActionBase {
     private Arm arm;
     private UsbCamera camera;
     private VideoSink videoSink;
-    private static final double ERROR = 1;
+    private static final double ERROR = 2;
     public ClimbUp(Climb climb, Arm arm){
         this.climbMotor = climb;
         this.arm = arm;
