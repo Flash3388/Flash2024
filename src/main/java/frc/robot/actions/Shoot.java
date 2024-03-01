@@ -95,7 +95,7 @@ public class Shoot extends ActionBase {
 
     @Override
     public void end(FinishReason reason) {
-        shooter.moveDefault();
+        shooter.moveDefault(intake.isIN());
         intake.stop();
         arm.setNotAmp();
         arm.setSetPointAngle(Arm.DEF_ANGLE);

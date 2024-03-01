@@ -59,7 +59,7 @@ public class SetPointAngleByVision extends ActionBase {
     public void end(FinishReason reason) {
         arm.doNotBaseOnLimelightDetection(); //to be sure
         limelight.stopTimer();
-        shooterSystem.moveDefault();
+        shooterSystem.moveDefault(intake.isIN());
         Limelight.KEEP_UPDATING_ODOMETER = true;
     }
 }
