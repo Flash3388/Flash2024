@@ -121,11 +121,7 @@ public class Limelight extends Subsystem {
         Pose3d apriltagPose = apriltagPoseOptional.get();
         Pose2d robotPose = swerve.getRobotPose();
 
-        double deltaX = apriltagPose.getX() - robotPose.getX();
-        double deltaY = apriltagPose.getY() - robotPose.getY();
-        double angleToSpeakerRad= Math.atan2(deltaY,deltaX);
-        double angleToSpeakerDeg= Math.toDegrees(angleToSpeakerRad);
-        double angleFromRobotToSpeaker = angleToSpeakerDeg - robotPose.getRotation().getDegrees();
+        double angleFromRobotToSpeaker = 90 - robotPose.getRotation().getDegrees();
         //normalize the angles
        if(angleFromRobotToSpeaker >180) angleFromRobotToSpeaker-=360;
         else if (angleFromRobotToSpeaker <-180) angleFromRobotToSpeaker+=360;

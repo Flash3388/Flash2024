@@ -44,7 +44,7 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
         this.continuous = continuous;
         this.withXbox = withXbox;
 
-        pidController = PidController.newNamedController("rotation", KP, KI, KD, 0);
+        pidController = PidController.newNamedController("AutoAlignWithDrive.rotation", KP, KI, KD, 0);
 
         pidController.setTolerance(PID_ERROR, 0.01); //0.001
         pidController.setOutputLimit(PID_LIMIT);
