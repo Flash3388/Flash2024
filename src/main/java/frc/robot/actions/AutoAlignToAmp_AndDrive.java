@@ -21,7 +21,8 @@ public class AutoAlignToAmp_AndDrive extends ActionBase {
     private final Limelight limelight;
     private final Swerve swerve;
     private final Intake intake;
-    private PidController pidController;
+    private PidController pidController_rotation;
+    private PidController pidController_drive;
     private final double KP = 0.08;
     private final double KI = 0.00002; // 0.00001
     private final double KD = 0.00;
@@ -44,10 +45,13 @@ public class AutoAlignToAmp_AndDrive extends ActionBase {
         this.angle2Target = 0;
         this.distance2Target = 0;
 
-        pidController = PidController.newNamedController("rotation", KP, KI, KD, 0);
+        pidController_rotation = PidController.newNamedController("rotation", KP, KI, KD, 0);
+        pidController_rotation.setTolerance(PID_ERROR, 0.01); //0.001
+        pidController_rotation.setOutputLimit(PID_LIMIT);
 
-        pidController.setTolerance(PID_ERROR, 0.01); //0.001
-        pidController.setOutputLimit(PID_LIMIT);
+        pidController_drive = PidController.newNamedController("drive", KP, KI, KD, 0);
+        pidController_drive.setTolerance(PID_ERROR, 0.01); //0.001
+        pidController_drive.setOutputLimit(PID_LIMIT);
 
         this.clock = RunningRobot.getControl().getClock();
 
@@ -56,9 +60,10 @@ public class AutoAlignToAmp_AndDrive extends ActionBase {
 
     @Override
     public void initialize(ActionControl control) {
-        pidController.reset();
+        pidController_rotation.reset();
+        pidController_drive.reset();
         time = Time.INVALID;
-
+        Limelight.KEEP_UPDATING_ODOMETER = false;
     }
 
     @Override
@@ -70,17 +75,33 @@ public class AutoAlignToAmp_AndDrive extends ActionBase {
         if (Math.abs(distance2Target) <= 0.03)
             driveX = 0;
         else
-            driveX = distance2Target > 0 ? -0.5 : 0.5;
-        driveY = -xbox_driver.getAxis(XboxAxis.LeftStickY).getAsDouble();
-        driveY = Math.abs(driveY) > 0.2 ? driveY * Swerve.MAX_SPEED : 0;
-        double rotation = pidController.applyAsDouble(angle2Target, 0);
+            driveX = pidController_drive.applyAsDouble(distance2Target, 0);
+            driveX = Math.abs(driveX) > 0.1 ? driveX : 0;;
 
+        driveY = -xbox_driver.getAxis(XboxAxis.LeftStickY).getAsDouble();
+        driveY = Math.abs(driveY) > 0.1 ? driveY * Swerve.MAX_SPEED : 0; //0.2
+        double rotation = pidController_rotation.applyAsDouble(angle2Target, 0);
+        rotation = Math.abs(rotation) > 0.1 ? rotation : 0; //0.2
+
+        SmartDashboard.putNumber("rotation amp speed", rotation);
+        SmartDashboard.putNumber("drive X amp speed", driveX);
+        SmartDashboard.putNumber("drive Y amp speed", driveY);
+
+
+
+        if(driveX != 0 || rotation != 0)
+            swerve.drive(0, driveX, -rotation, false);
+        else
+            swerve.drive(driveY, 0, 0, false);
+
+       /*
         if(driveX != 0)
-            swerve.drive(0, driveX, 0, false);
+            swerve.drive(0, driveX, rotation, false);
         else if(rotation != 0) // in this the driveX == 0
             swerve.drive(0, 0, rotation, false);
         else //rotaion == driveX == 0
             swerve.drive(driveY, 0, 0, false);
+        */
 
         if (!intake.isIN()) {
             if (time.isValid()) {
@@ -95,6 +116,7 @@ public class AutoAlignToAmp_AndDrive extends ActionBase {
     @Override
     public void end(FinishReason reason) {
         swerve.stop();
+        Limelight.KEEP_UPDATING_ODOMETER = true;
     }
 }
 
