@@ -15,7 +15,6 @@ public class StraightToField extends ActionBase {
     private final Limelight limelight;
     private final Swerve swerve;
     private double angleInField = 0;
-    private double forwardAngleInField = 0;
     private PidController pidController;
     private final double KP = 0.08;
     private final double KI = 0.00001;
@@ -29,10 +28,10 @@ public class StraightToField extends ActionBase {
         this.limelight = limelight;
         this.swerve = swerve;
         this.angleInField = 0;
-        this.forwardAngleInField = 0;
         pidController = PidController.newNamedController("rotation in automation", KP, KI, KD, 0);
 
-        pidController.setTolerance(PID_ERROR, 0.001);
+        pidController.setTolerance(PID_ERROR, 0.01); //0.001
+
         pidController.setOutputLimit(PID_LIMIT);
 
         //configure().setName("LimelightAutoAlign").save();
@@ -44,16 +43,13 @@ public class StraightToField extends ActionBase {
     public void initialize(ActionControl control) {
         pidController.reset();
         angleInField = limelight.angleToForward_FieldRelative_Odometer(); //current
-        forwardAngleInField = limelight.angleOfForward_FieldRelative_Odometer(); //end
         SmartDashboard.putNumber("angle to forward", angleInField);
     }
 
     @Override
     public void execute(ActionControl actionControl) {
-        double gyroAngle = swerve.getHeadingDegrees();
 
-        double rotation = pidController.applyAsDouble(angleInField, forwardAngleInField ); //using odometry
-        rotation = Math.abs(rotation) > 0.2 ? rotation : 0;
+        double rotation = pidController.applyAsDouble(angleInField, 0 ); //using odometry
         SmartDashboard.putNumber("rotation", rotation);
 
         swerve.drive(0, 0, rotation, true);

@@ -13,8 +13,8 @@ public class MoveDistance extends ActionBase {
     private Swerve swerve;
     private PidController pid;
     private double distance;
-
     private double setPoint;
+
     private static  double KP_DISTANCE = 0.06; // tune this
     private static  double KI_DISTANCE = 0.001; // tune this
     private static  double KD_DISTANCE = 0; // tune this
@@ -22,6 +22,7 @@ public class MoveDistance extends ActionBase {
 
     private static final double ERROR = 0.01;
 
+    private boolean isFieldRelative;
 
     public MoveDistance(Swerve swerve){
         this(swerve, 0);

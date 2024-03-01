@@ -22,10 +22,10 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
     private double angle2Target = 0;
     private PidController pidController;
     private final double KP = 0.08;
-    private final double KI = 0.00001;
+    private final double KI = 0.00002; // 0.00001
     private final double KD = 0.00;
     private final double KF = 0;
-    private final double PID_ERROR = 0.5;
+    private final double PID_ERROR = 0.7;
     private final double PID_LIMIT = 1;
     private boolean continuous;
     private boolean withXbox;
@@ -57,14 +57,7 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
     @Override
     public void initialize(ActionControl control) {
         pidController.reset();
-        signum =1;
-        Optional<DriverStation.Alliance> allianceOptional = DriverStation.getAlliance();
-        if (allianceOptional.isEmpty()) {
-            DriverStation.Alliance alliance = allianceOptional.get();
-            if (alliance == DriverStation.Alliance.Blue)
-                signum = -1;
 
-        }
 
     }
 
@@ -84,10 +77,10 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
         double driveX = 0;
         double driveY = 0;
         if (withXbox) {
-            driveX = signum * xbox_driver.getAxis(XboxAxis.LeftStickX).getAsDouble() ;
-            driveX = Math.abs(driveX) > 0.2 ? driveX * Swerve.MAX_SPEED/2 : 0;
-            driveY = signum * xbox_driver.getAxis(XboxAxis.LeftStickY).getAsDouble() ;
-            driveY = Math.abs(driveY) > 0.2 ? driveY * Swerve.MAX_SPEED/2: 0;
+            driveX = Swerve.SIGNUM * xbox_driver.getAxis(XboxAxis.LeftStickX).getAsDouble() ;
+            driveX = Math.abs(driveX) > 0.2 ? driveX * Swerve.MAX_SPEED : 0;
+            driveY = Swerve.SIGNUM * xbox_driver.getAxis(XboxAxis.LeftStickY).getAsDouble() ;
+            driveY = Math.abs(driveY) > 0.2 ? driveY * Swerve.MAX_SPEED: 0;
         }
 
        double rotation = pidController.applyAsDouble(gyroAngle, angle2Target); //using odometry

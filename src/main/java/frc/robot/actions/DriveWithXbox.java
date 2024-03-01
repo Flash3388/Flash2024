@@ -14,6 +14,7 @@ import java.util.Optional;
 public class DriveWithXbox extends ActionBase {
     private Swerve swerve;
     private XboxController xbox_driver;
+    private double signum = 1;
 
     public DriveWithXbox(Swerve swerve, XboxController xbox_driver){
         this.swerve = swerve;
@@ -29,25 +30,18 @@ public class DriveWithXbox extends ActionBase {
     @Override
     public void execute(ActionControl control) {
 
-        double signum = 1;
-        Optional<DriverStation.Alliance> allianceOptional = DriverStation.getAlliance();
-        if (!allianceOptional.isEmpty()) {
-            DriverStation.Alliance alliance = allianceOptional.get();
-            if(alliance == DriverStation.Alliance.Blue)
-                signum = -1;
-        }
-
-        double driveY = signum * xbox_driver.getAxis(XboxAxis.LeftStickY).getAsDouble();
-        double driveX = signum * xbox_driver.getAxis(XboxAxis.LeftStickX).getAsDouble() ;
-        double rotation = -signum * xbox_driver.getAxis(XboxAxis.RightStickX).getAsDouble();
+        double driveY = Swerve.SIGNUM * xbox_driver.getAxis(XboxAxis.LeftStickY).getAsDouble();
+        double driveX = Swerve.SIGNUM * xbox_driver.getAxis(XboxAxis.LeftStickX).getAsDouble() ;
+        double rotation = -xbox_driver.getAxis(XboxAxis.RightStickX).getAsDouble();
 
         driveX = Math.abs(driveX) > 0.2 ? driveX * Swerve.MAX_SPEED : 0;
         driveY = Math.abs(driveY) > 0.2 ? driveY  * Swerve.MAX_SPEED : 0;
         rotation = Math.abs(rotation) > 0.2 ? rotation  * Swerve.MAX_SPEED : 0;
 
 
-        boolean isFiledRelative = SmartDashboard.getBoolean("Is Field Relative?", false);
-        this.swerve.drive(driveY /2 ,driveX / 2 ,rotation/2, true );
+      //  boolean isFiledRelative = SmartDashboard.getBoolean("Is Field Relative?", false);// "Is Field Relative?", false
+        SmartDashboard.putBoolean("Is Field Relative?", Swerve.IS_FIELD_RELATIVE);// "Is Field Relative?", false
+        this.swerve.drive(driveY  ,driveX  ,rotation, Swerve.IS_FIELD_RELATIVE);
     }
 
     @Override

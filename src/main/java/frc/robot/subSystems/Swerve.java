@@ -28,6 +28,8 @@ public class Swerve extends Subsystem {
 
     private static final double OFFSET = 0.37;
     public static final double MAX_SPEED = 4.4196;
+    public static boolean IS_FIELD_RELATIVE  = true;
+    public static int SIGNUM = 1;
 
     private final SwerveModule[] swerveModules; //The array should contain the modules by
     // front-left, front-right, back-left, back-right
