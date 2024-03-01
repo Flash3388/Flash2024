@@ -30,6 +30,7 @@ public class Limelight extends Subsystem {
     public double sum = 0;
 
     private double accuracyInVision = 100; //percents
+    public static boolean KEEP_UPDATING_ODOMETER = true;
 
 
     public Limelight(Swerve swerve){
@@ -272,7 +273,7 @@ public class Limelight extends Subsystem {
     }
 
     public void updateRobotPositionByAprilTag(){
-        if (!isThereTarget() || getAvgDistance() > 3) {  /*|| getAvgDistance() >= 2.5*/
+        if (!isThereTarget() || getAvgDistance() > 3 || !Limelight.KEEP_UPDATING_ODOMETER) {  /*|| getAvgDistance() >= 2.5*/
             SmartDashboard.putBoolean("aprilTagPresent",false);
             return;
         }

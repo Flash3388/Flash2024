@@ -37,6 +37,7 @@ public class SetPointAngleByVision extends ActionBase {
     public void initialize(ActionControl control) {
         arm.baseOnLimelightDetection();
         limelight.startTimer();
+        Limelight.KEEP_UPDATING_ODOMETER = false;
     }
 
     @Override
@@ -59,5 +60,6 @@ public class SetPointAngleByVision extends ActionBase {
         arm.doNotBaseOnLimelightDetection(); //to be sure
         limelight.stopTimer();
         shooterSystem.moveDefault();
+        Limelight.KEEP_UPDATING_ODOMETER = true;
     }
 }

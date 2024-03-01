@@ -71,6 +71,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xbox_driver.getDpad().up().whenActive(Actions.instant(() -> Swerve.IS_FIELD_RELATIVE = !Swerve.IS_FIELD_RELATIVE));
         xbox_driver.getDpad().down().whenActive(Actions.instant(() -> Swerve.SIGNUM = -Swerve.SIGNUM));
         xbox_driver.getButton(XboxButton.LB).whileActive(new CollectNote(swerve));
+      //  xbox_driver.getAxis(XboxAxis.LT).asButton(0.8 ,true).whenActive(new AutoAlignToAmp_AndDrive(xbox_driver,limelight,swerve, intake));
+
 
         //systems:
         arm.setDefaultAction(new ArmController(arm));

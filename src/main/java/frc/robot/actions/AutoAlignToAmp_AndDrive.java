@@ -36,12 +36,11 @@ public class AutoAlignToAmp_AndDrive extends ActionBase {
 
 
 
-    public AutoAlignToAmp_AndDrive(XboxController xbox_driver, Limelight limelight, Swerve swerve, Arm arm,
-                                       boolean continuous,
-                                       boolean withXbox) {
+    public AutoAlignToAmp_AndDrive(XboxController xbox_driver, Limelight limelight, Swerve swerve, Intake intake) {
         this.xbox_driver = xbox_driver;
         this.limelight = limelight;
         this.swerve = swerve;
+        this.intake = intake;
         this.angle2Target = 0;
         this.distance2Target = 0;
 
@@ -71,12 +70,17 @@ public class AutoAlignToAmp_AndDrive extends ActionBase {
         if (Math.abs(distance2Target) <= 0.03)
             driveX = 0;
         else
-            driveX = distance2Target > 0 ? 1.5 : -1.5;
+            driveX = distance2Target > 0 ? -0.5 : 0.5;
         driveY = -xbox_driver.getAxis(XboxAxis.LeftStickY).getAsDouble();
         driveY = Math.abs(driveY) > 0.2 ? driveY * Swerve.MAX_SPEED : 0;
-
         double rotation = pidController.applyAsDouble(angle2Target, 0);
-        swerve.drive(driveY, driveX, rotation, false);
+
+        if(driveX != 0)
+            swerve.drive(0, driveX, 0, false);
+        else if(rotation != 0) // in this the driveX == 0
+            swerve.drive(0, 0, rotation, false);
+        else //rotaion == driveX == 0
+            swerve.drive(driveY, 0, 0, false);
 
         if (!intake.isIN()) {
             if (time.isValid()) {
@@ -94,13 +98,3 @@ public class AutoAlignToAmp_AndDrive extends ActionBase {
     }
 }
 
-
-
-
-
-
-
-
-
-
-}
