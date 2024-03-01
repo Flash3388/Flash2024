@@ -67,7 +67,7 @@ public class ShooterSystem extends Subsystem {
         rightEC.setIdleMode(CANSparkBase.IdleMode.kCoast);
         leftEC.setIdleMode(CANSparkBase.IdleMode.kCoast);
 
-        moveDefault();
+        moveDefault(true);
     }
 
 
@@ -162,9 +162,16 @@ public class ShooterSystem extends Subsystem {
         pidLeft.setIAccum(0);
     }
 
-    public void moveDefault(){
-        rightEC.set(DEFAULT_SPEED);
-        leftEC.set(DEFAULT_SPEED);
+    public void moveDefault(boolean isIn){
+        if(isIn)
+        {
+            rightEC.set(DEFAULT_SPEED);
+            leftEC.set(DEFAULT_SPEED);
+        }
+        else {
+            stop();
+        }
+
     }
 }
 

@@ -1,5 +1,6 @@
 package frc.robot.subSystems;
 
+import com.castle.util.dependencies.DependencySupplier;
 import com.flash3388.flashlib.scheduling.Subsystem;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
@@ -13,6 +14,8 @@ public class Intake extends Subsystem {
     private static final double PULL_SPEED = 0.5;
     private DigitalInput in;
     private DigitalInput agam;
+
+    public static boolean IS_IN = false;
 
     public Intake(CANSparkMax motor,  DigitalInput digitalInput, DigitalInput agam){
         this.motor = motor;
@@ -36,7 +39,8 @@ public class Intake extends Subsystem {
     public void shoot(){
         this.motor.set(SHOOT_SPEED);
     }
-    public boolean isIN(){ return !this.in.get();
+    public boolean isIN(){
+        return !this.in.get();
     }
 
     public boolean isInAgam(){
