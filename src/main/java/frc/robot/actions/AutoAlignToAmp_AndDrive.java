@@ -33,7 +33,7 @@ public class AutoAlignToAmp_AndDrive extends ActionBase {
     private final double KF_DRIVE = 0;
 
     private final double PID_ERROR_ROTATION = 0.7;
-    private final double PID_ERROR_DRIVE = 0.2;
+    private final double PID_ERROR_DRIVE = 0.05;
     private final double PID_LIMIT = 1;
     private double angle2Target;
     private double distance2Target;

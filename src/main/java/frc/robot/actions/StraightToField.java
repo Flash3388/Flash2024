@@ -49,7 +49,7 @@ public class StraightToField extends ActionBase {
     @Override
     public void execute(ActionControl actionControl) {
 
-        double rotation = pidController.applyAsDouble(angleInField, 0 ); //using odometry
+        double rotation = pidController.applyAsDouble(swerve.getRobotPose().getRotation().getDegrees(), angleInField); //using odometry
         SmartDashboard.putNumber("rotation", rotation);
 
         swerve.drive(0, 0, rotation, true);

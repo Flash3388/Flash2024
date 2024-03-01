@@ -32,10 +32,10 @@ public class Arm extends Subsystem {
 
     // Other Constants
     public static final double SPEAKER_ANGLE = 28;
-    public static final double AMP_ANGLE_FROM_SHOOTER = 102;
+    public static final double AMP_ANGLE_FROM_SHOOTER = 104;
     public static final double AMP_ANGLE_FROM_INTAKE = 53;
-    public static final double FLOOR_ANGLE = -6.5; // the floor angle
-    public static final double DEF_ANGLE = 10.0;
+    public static final double FLOOR_ANGLE = -7.5; // the floor angle -7.5
+    public static final double DEF_ANGLE = 5; //10.0
     public static final double CLIMB_ANGLE = 90.0;
 
 
@@ -206,8 +206,10 @@ public class Arm extends Subsystem {
     }
 
     public boolean isAtBottom() {
+        double floorError = 2;
+
         return setPointAngle == FLOOR_ANGLE &&
-                ExtendedMath.constrained(getArmPosition(), FLOOR_ANGLE - STABLE_ERROR, FLOOR_ANGLE + STABLE_ERROR);
+                ExtendedMath.constrained(getArmPosition(), FLOOR_ANGLE - floorError, FLOOR_ANGLE + floorError);
     }
 
     // in case measurements do not work
