@@ -266,7 +266,7 @@ public class Limelight extends Subsystem {
 
     public void updateRobotPositionByAprilTag(){
         SmartDashboard.putNumber("y distance of robot from speaker", layout.getTagPose(4).get().getY() - swerve.getRobotPose().getY());
-
+        SmartDashboard.putNumber("x distance of robot from speaker", layout.getTagPose(4).get().getX() - swerve.getRobotPose().getX());
 
         if (!isThereTarget() || getAvgDistance() > 3 || !Limelight.KEEP_UPDATING_ODOMETER) {  /*|| getAvgDistance() >= 2.5*/
             SmartDashboard.putBoolean("aprilTagPresent",false);
