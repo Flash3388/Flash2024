@@ -73,7 +73,7 @@ public class Arm extends Subsystem {
 
 
 
-        pid = PidController.newNamedController("drive", KP, KI, KD, 0);
+        pid = PidController.newNamedController("ArmController", KP, KI, KD, 0);
         pid.setIZone(I_ZONE);
         pid.setTolerance(STABLE_ERROR, 0.0005); //0.0001
 

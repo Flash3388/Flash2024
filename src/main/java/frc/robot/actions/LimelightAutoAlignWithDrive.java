@@ -21,8 +21,8 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
     private final Arm arm;
     private double angle2Target = 0;
     private PidController pidController;
-    private final double KP = 0.08;
-    private final double KI = 0.00002; // 0.00001
+    private final double KP = 0.08; //0.08
+    private final double KI = 0.00002; // 0.00001  0.00002
     private final double KD = 0.00;
     private final double KF = 0;
     private final double PID_ERROR = 0.7;
@@ -44,7 +44,7 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
         this.continuous = continuous;
         this.withXbox = withXbox;
 
-        pidController = PidController.newNamedController("rotation", KP, KI, KD, 0);
+        pidController = PidController.newNamedController("AutoAlignWithDrive.rotation", KP, KI, KD, 0);
 
         pidController.setTolerance(PID_ERROR, 0.01); //0.001
         pidController.setOutputLimit(PID_LIMIT);

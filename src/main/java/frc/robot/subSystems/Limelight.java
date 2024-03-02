@@ -121,13 +121,9 @@ public class Limelight extends Subsystem {
         Pose3d apriltagPose = apriltagPoseOptional.get();
         Pose2d robotPose = swerve.getRobotPose();
 
-        double deltaX = apriltagPose.getX() - robotPose.getX();
-        double deltaY = apriltagPose.getY() - robotPose.getY();
-        double angleToSpeakerRad= Math.atan2(deltaY,deltaX);
-        double angleToSpeakerDeg= Math.toDegrees(angleToSpeakerRad);
-        double angleFromRobotToSpeaker = angleToSpeakerDeg - robotPose.getRotation().getDegrees();
+        double angleFromRobotToSpeaker = 90 - robotPose.getRotation().getDegrees();
         //normalize the angles
-        if(angleFromRobotToSpeaker >180) angleFromRobotToSpeaker-=360;
+       if(angleFromRobotToSpeaker >180) angleFromRobotToSpeaker-=360;
         else if (angleFromRobotToSpeaker <-180) angleFromRobotToSpeaker+=360;
 
         return angleFromRobotToSpeaker;
@@ -143,8 +139,8 @@ public class Limelight extends Subsystem {
         if(alliance == DriverStation.Alliance.Red) //if we are blue alliance-limelight towards us
             aprilTagId = 5;
         Optional<Pose3d> apriltagPose = layout.getTagPose((int)(aprilTagId));
-        double distance = Math.sqrt(Math.pow(swerve.getRobotPose().getY() - apriltagPose.get().getY(), 2));
-        if(swerve.getRobotPose().getY() - apriltagPose.get().getY() > 0) //if robot is to the right of the amp
+        double distance = Math.sqrt(Math.pow(swerve.getRobotPose().getX() - apriltagPose.get().getX(), 2));
+        if(swerve.getRobotPose().getX() - apriltagPose.get().getX() > 0) //if robot is to the right of the amp
             distance *= -1;
         return distance;
     }
