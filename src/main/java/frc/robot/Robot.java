@@ -38,6 +38,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     private ActionGroup spinShoot;
     private ActionGroup moveBackward;
     private ActionGroup side_spinShootMoveBackward;
+    private ActionGroup spinShootSpinTakeShoot;
     private Action moveToMiddleRed;
     private Action moveToMiddleBlue;
     private Action spinForward;
@@ -118,13 +119,13 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
                 .andThen((new SetPointAngleByVision(limelight, intake, arm,shooter)).alongWith(new Shoot(shooter, intake, arm, limelight)))
                 .andThen(new MoveDistance(swerve, -1.5, true));
 
-       /* this.spinShootSpinTakeShoot = new LimelightAutoAlignWithDrive(xbox_driver, limelight, swerve, arm, false, false)
+        this.spinShootSpinTakeShoot = new LimelightAutoAlignWithDrive(xbox_driver, limelight, swerve, arm, false, false)
                 .andThen((new SetPointAngleByVision(limelight, intake, arm,shooter)).alongWith(new Shoot(shooter, intake, arm, limelight)))
                 .andThen(new StraightToField(limelight, swerve)).andThen(Actions.instant(() -> swerve.resetWheels()))
-                .andThen((new TakeIn(intake, arm)).alongWith(new MoveDistance(swerve, -1.5)))
+                .andThen((new TakeIn(intake, arm)).alongWith(new MoveDistance(swerve, -1.5, false)))
                 .andThen(new LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm, false, false))
                 .andThen((new SetPointAngleByVision(limelight, intake, arm, shooter)).alongWith(new Shoot(shooter, intake,arm, limelight)));
-      */
+
 
          this.spinShoot = new LimelightAutoAlignWithDrive(xbox_driver, limelight, swerve, arm, false, false)
                 .andThen((new SetPointAngleByVision(limelight, intake, arm,shooter)).alongWith(new Shoot(shooter, intake, arm, limelight)));
@@ -139,6 +140,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
          chooser.addOption("spin and shoot", spinShoot);
          chooser.addOption("move backward", moveBackward);
          chooser.addOption("spin shoot and move backward", side_spinShootMoveBackward);
+         chooser.addOption("spin,shoot,move take and shoot", spinShootSpinTakeShoot);
 
          SmartDashboard.putData("Auto Chooser", chooser);
     }
@@ -183,7 +185,6 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         arm.resetPID();
         swerve.resetWheels();
         limelight.init();
-
         swerve.resetCurrentAngle();
         arm.setNotAmp();
         arm.setSetPointAngle(Arm.DEF_ANGLE);
