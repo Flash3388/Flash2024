@@ -9,10 +9,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Intake extends Subsystem {
     private CANSparkMax motor;
-    private final static double INTAKE_SPEED = 0.4; // 0.85
-    private static final double SHOOT_SPEED = 0.6; // 1.0
+    private final static double INTAKE_SPEED = 0.3; // 0.85
+    private static final double SHOOT_SPEED = 0.4; // 1.0
 
-    private static final double PULL_SPEED = 0.2; // 0.5
+    private static final double PULL_SPEED = 0.1; // 0.5
     private DigitalInput left;
     private DigitalInput right;
 
@@ -44,7 +44,7 @@ public class Intake extends Subsystem {
     }
 
     public boolean isInRight(){
-        return this.right.get();
+        return !this.right.get();
     }
 
     public boolean isInLeft(){

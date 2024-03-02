@@ -76,6 +76,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xbox_driver.getButton(XboxButton.LB).whileActive(new CollectNote(swerve));
         xbox_driver.getAxis(XboxAxis.LT).asButton(0.8 ,true).whenActive(new AutoAlignToAmp_AndDrive(xbox_driver,limelight,swerve, intake));
 
+        xbox_driver.getDpad().right().whenActive(new StraightToField(limelight,swerve));
+
         //systems:
         arm.setDefaultAction(new ArmController(arm));
         xbox_systems.getButton(XboxButton.B).whenActive(new TakeIn(intake,arm));
@@ -142,6 +144,10 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
          chooser.addOption("spin,shoot,move take and shoot", spinShootSpinTakeShoot);
 
          SmartDashboard.putData("Auto Chooser", chooser);
+
+        SmartDashboard.putNumber("k of angle", 19.5);
+
+
     }
 
     @Override
@@ -254,6 +260,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         shooter.print();
         swerve.print();
         intake.print();
+
 
         SmartDashboard.putNumber("ActualGyroAngle", swerve.getHeadingDegrees());
         SmartDashboard.putNumber("Drive Distance", swerve.getDistancePassedMeters());
