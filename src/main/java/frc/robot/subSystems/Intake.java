@@ -15,7 +15,6 @@ public class Intake extends Subsystem {
     private DigitalInput in;
     private DigitalInput agam;
 
-    public static boolean IS_IN = false;
 
     public Intake(CANSparkMax motor,  DigitalInput digitalInput, DigitalInput agam){
         this.motor = motor;
