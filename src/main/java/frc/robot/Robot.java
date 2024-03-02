@@ -76,7 +76,6 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xbox_driver.getButton(XboxButton.LB).whileActive(new CollectNote(swerve));
         xbox_driver.getAxis(XboxAxis.LT).asButton(0.8 ,true).whenActive(new AutoAlignToAmp_AndDrive(xbox_driver,limelight,swerve, intake));
 
-
         //systems:
         arm.setDefaultAction(new ArmController(arm));
         xbox_systems.getButton(XboxButton.B).whenActive(new TakeIn(intake,arm));
@@ -120,7 +119,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
                 .andThen(new MoveDistance(swerve, -1.5, true));
 
         this.spinShootSpinTakeShoot = new LimelightAutoAlignWithDrive(xbox_driver, limelight, swerve, arm, false, false)
-                .andThen((new SetPointAngleByVision(limelight, intake, arm,shooter)).alongWith(new Shoot(shooter, intake, arm, limelight)))
+                .andThen((new SetPointAngleByVision(limelight, intake, arm, shooter)).alongWith(new Shoot(shooter, intake, arm, limelight)))
                 .andThen(new StraightToField(limelight, swerve)).andThen(Actions.instant(() -> swerve.resetWheels()))
                 .andThen((new TakeIn(intake, arm)).alongWith(new MoveDistance(swerve, -1.5, false)))
                 .andThen(new LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm, false, false))
@@ -188,6 +187,13 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         swerve.resetCurrentAngle();
         arm.setNotAmp();
         arm.setSetPointAngle(Arm.DEF_ANGLE);
+
+        Optional<DriverStation.Alliance> allianceOptional = DriverStation.getAlliance();
+        if (!allianceOptional.isEmpty()) {
+            DriverStation.Alliance alliance = allianceOptional.get();
+            if(alliance == DriverStation.Alliance.Blue)
+                Swerve.SIGNUM = -1;
+        }
 
         Action autoAction = chooser.getSelected();
         if (autoAction != null) {

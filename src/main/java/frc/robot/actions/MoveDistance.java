@@ -48,7 +48,13 @@ public class MoveDistance extends ActionBase {
         SmartDashboard.putNumber("bla-1", swerve.getDistancePassedMeters());
         swerve.resetDistancePassed();
         swerve.resetWheels();
-        setPoint = distance;
+
+        if(!isFieldRelative)
+            setPoint = distance;
+        else {
+            setPoint = swerve.getRobotPose().getX() + Swerve.SIGNUM * distance;
+        }
+
         SmartDashboard.putNumber("bla", swerve.getDistancePassedMeters());
         SmartDashboard.putNumber("Set Point Number", setPoint);
         pid.reset();
@@ -56,20 +62,29 @@ public class MoveDistance extends ActionBase {
 
     @Override
     public void execute(ActionControl control) {
-        double distancePassed = -swerve.getDistancePassedMeters();;
+        if(!isFieldRelative) {
+            double distancePassed = -swerve.getDistancePassedMeters();
+            if (ExtendedMath.constrained(swerve.getFLHeading(), 170, 190))
+                distancePassed = -distancePassed;
 
-        if(ExtendedMath.constrained(swerve.getFLHeading(), 170, 190))
-            distancePassed = -distancePassed;
+            double speed = pid.applyAsDouble(distancePassed, setPoint) * Swerve.MAX_SPEED * 1.5;
 
-        double speed = pid.applyAsDouble(distancePassed, setPoint) * Swerve.MAX_SPEED *1.5;
+            swerve.drive(speed, 0, 0);
+            SmartDashboard.putNumber("pid's speed", speed);
+            SmartDashboard.putNumber("Drive Distance Action", distancePassed);
 
+            if (pid.isInTolerance()) {
+                control.finish();
+            }
+        }
+        else {
+            double currentX_Place = swerve.getRobotPose().getX();
+            double speed = pid.applyAsDouble(currentX_Place, setPoint) * Swerve.MAX_SPEED;
 
-        swerve.drive(speed, 0, 0, isFieldRelative);
-        SmartDashboard.putNumber("pid's speed", speed);
-        SmartDashboard.putNumber("Drive Distance Action", distancePassed);
-
-        if(pid.isInTolerance()){
-            control.finish();
+            swerve.drive(speed, 0, 0, true);
+            if(pid.isInTolerance()){
+                control.finish();
+            }
         }
     }
 
