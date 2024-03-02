@@ -253,6 +253,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         swerve.updatePositioning();
         shooter.print();
         swerve.print();
+        intake.print();
 
         SmartDashboard.putNumber("ActualGyroAngle", swerve.getHeadingDegrees());
         SmartDashboard.putNumber("Drive Distance", swerve.getDistancePassedMeters());
@@ -267,7 +268,6 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         SmartDashboard.putNumber("hopefully real distance",limelight.getDisHorizontalToTarget());
 
         SmartDashboard.putNumber("set point A", arm.getSetPointAngle());
-        SmartDashboard.putBoolean("IS IN NOTE", intake.isIN());
 
         SmartDashboard.putNumber("distance amp", limelight.getXDistanceToTarget_Amp());
         SmartDashboard.putNumber("angle amp", limelight.getXAngleToTarget_Amp());
