@@ -254,14 +254,10 @@ public class Limelight extends Subsystem {
             return 0;
         }
 
-        double angle = swerve.getRobotPose().getRotation().getDegrees(); //default is red alliance
+        double angle = 0; //default is red alliance
         DriverStation.Alliance alliance = allianceOptional.get();
         if(alliance == DriverStation.Alliance.Blue) //if we are blue alliance-limelight towards us
             angle +=180;
-
-        //normalize
-        if(angle >180) angle-=360;
-        else if (angle <-180) angle+=360;
 
         SmartDashboard.putNumber("angle to field forward", angle);
         return angle;

@@ -206,8 +206,10 @@ public class Arm extends Subsystem {
     }
 
     public boolean isAtBottom() {
+        double floorError = 2;
+
         return setPointAngle == FLOOR_ANGLE &&
-                ExtendedMath.constrained(getArmPosition(), FLOOR_ANGLE - STABLE_ERROR, FLOOR_ANGLE + STABLE_ERROR);
+                ExtendedMath.constrained(getArmPosition(), FLOOR_ANGLE - floorError, FLOOR_ANGLE + floorError);
     }
 
     // in case measurements do not work
