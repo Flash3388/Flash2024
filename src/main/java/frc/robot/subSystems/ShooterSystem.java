@@ -6,6 +6,7 @@ import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
@@ -27,6 +28,7 @@ public class ShooterSystem extends Subsystem {
     private  double KF_LEFT = 0;
 
     private static final double DEFAULT_SPEED = 0.2; //0.2;
+    private static final double AUTO_DEFAULT_SPEED = 0.3; //0.2;
     public static final double SPEED_TARGET_SPEAKER = 4000; // 4000
     public static final double SPEED_TARGET_AMP = 500; //500
     public ShooterSystem(CANSparkMax rightEC, CANSparkMax leftEC){
@@ -163,13 +165,17 @@ public class ShooterSystem extends Subsystem {
     }
 
     public void moveDefault(boolean isIn){
-        if(isIn)
-        {
-            rightEC.set(DEFAULT_SPEED);
-            leftEC.set(DEFAULT_SPEED);
+        if(DriverStation.isAutonomous()) {
+            rightEC.set(AUTO_DEFAULT_SPEED);
+            leftEC.set(AUTO_DEFAULT_SPEED);
         }
-        else {
-            stop();
+         else {
+            if (isIn) {
+                rightEC.set(DEFAULT_SPEED);
+                leftEC.set(DEFAULT_SPEED);
+            } else {
+                stop();
+            }
         }
 
     }

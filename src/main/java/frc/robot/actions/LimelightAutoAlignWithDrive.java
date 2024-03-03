@@ -9,6 +9,7 @@ import com.flash3388.flashlib.scheduling.actions.ActionBase;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subSystems.Arm;
+import frc.robot.subSystems.Intake;
 import frc.robot.subSystems.Limelight;
 import frc.robot.subSystems.Swerve;
 
@@ -25,15 +26,15 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
     private final double KI = 0.00002; // 0.00001  0.00002
     private final double KD = 0.00;
     private final double KF = 0;
-    private final double PID_ERROR = 0.7;
+    private final double PID_ERROR = 1; //0.7
     private final double PID_LIMIT = 1;
     private boolean continuous;
     private boolean withXbox;
     private double signum = 1;
 
+    private Intake intake;
 
-
-    public LimelightAutoAlignWithDrive(XboxController xbox_driver, Limelight limelight, Swerve swerve, Arm arm,
+    public LimelightAutoAlignWithDrive(XboxController xbox_driver, Limelight limelight, Swerve swerve, Arm arm, Intake intake,
                                        boolean continuous,
                                        boolean withXbox) {
         this.xbox_driver = xbox_driver;
@@ -43,10 +44,11 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
         this.angle2Target = 0;
         this.continuous = continuous;
         this.withXbox = withXbox;
+        this.intake = intake;
 
         pidController = PidController.newNamedController("AutoAlignWithDrive.rotation", KP, KI, KD, 0);
 
-        pidController.setTolerance(PID_ERROR, 0.01); //0.001
+        pidController.setTolerance(PID_ERROR, 0.1); //0.001 0.01
         pidController.setOutputLimit(PID_LIMIT);
 
         //configure().setName("LimelightAutoAlign").save();
@@ -64,6 +66,9 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
     @Override
     public void execute(ActionControl actionControl) {
         double gyroAngle = swerve.getHeadingDegrees();
+
+        if(!intake.isIN() && !DriverStation.isAutonomous())
+            actionControl.finish();
 
         if(arm.isSetToAMP())
             angle2Target = limelight.getXAngleToTarget_Amp() + gyroAngle;

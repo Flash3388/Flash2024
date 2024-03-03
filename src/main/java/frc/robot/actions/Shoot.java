@@ -6,6 +6,9 @@ import com.flash3388.flashlib.scheduling.FinishReason;
 import com.flash3388.flashlib.scheduling.actions.ActionBase;
 import com.flash3388.flashlib.time.Clock;
 import com.flash3388.flashlib.time.Time;
+import com.jmath.ExtendedMath;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subSystems.Arm;
 import frc.robot.subSystems.Intake;
 import frc.robot.subSystems.Limelight;
@@ -15,6 +18,7 @@ public class Shoot extends ActionBase {
     private ShooterSystem shooter;
     private Intake intake;
     private Arm arm;
+    private Limelight limelight;
 
     private static final double DELAY_BEFORE_FINISH_IN_SECONDS = 1;//1
     private Clock clock;
@@ -23,15 +27,15 @@ public class Shoot extends ActionBase {
     private static final double DELAY_BEFORE_SHOOTING_IN_SECONDS = 0.5;//1
 
 
+
     public Shoot(ShooterSystem shooter, Intake intake, Arm arm, Limelight limelight){
         this.shooter = shooter;
         this.intake = intake;
         this.arm = arm;
-
-
+        this.limelight = limelight;
         this.clock = RunningRobot.getControl().getClock();
-
-        requires(intake, limelight);
+        SmartDashboard.putBoolean("got here", false);
+        requires(intake);
 
         //configure().setName("ShooterSpeaker").save();
     }
@@ -40,6 +44,7 @@ public class Shoot extends ActionBase {
     public void initialize(ActionControl control) {
         time = Time.INVALID;
         timerBeforeShoot = Time.INVALID;
+        SmartDashboard.putBoolean("got here", false);
     }
 
     @Override
@@ -57,7 +62,14 @@ public class Shoot extends ActionBase {
 
         else {
             if (shooter.gotToTarget(ShooterSystem.SPEED_TARGET_SPEAKER) && arm.isStabilizedAtTargetedPosition()){
-                intake.shoot();
+                if(DriverStation.isAutonomous()){
+                    if(ExtendedMath.constrained(limelight.getXAngleToTarget_Speaker(), -1.5, 1.5)) {
+                        SmartDashboard.putBoolean("got here", true);
+                        intake.shoot();
+                    }
+                }
+                else
+                    intake.shoot();
             }
            /* if (timerBeforeShoot.isValid()) {
                 if(timerBeforeShoot.before(clock.currentTime()))

@@ -31,7 +31,8 @@ public class SetDefault extends ActionBase {
         arm.doNotBaseOnLimelightDetection();
         arm.setNotAmp();
         //arm.setSetPointAngle(Arm.DEF_ANGLE);
-        arm.setSetPointAngle(Arm.FLOOR_ANGLE);
+        if(arm.isPositioningControlled())
+            arm.setSetPointAngle(Arm.FLOOR_ANGLE);
         shooter.moveDefault(intake.isIN());
         control.finish();
     }
