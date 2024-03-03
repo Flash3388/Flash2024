@@ -53,6 +53,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
     private double distance = -1.2;
 
+
     public Robot(FrcRobotControl robotControl) {
         super(robotControl);
 
