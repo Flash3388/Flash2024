@@ -98,6 +98,8 @@ public class Shoot extends ActionBase {
         shooter.moveDefault(intake.isIN());
         intake.stop();
         arm.setNotAmp();
-        arm.setSetPointAngle(Arm.DEF_ANGLE);
+        //arm.setSetPointAngle(Arm.DEF_ANGLE);
+        arm.setSetPointAngle(Arm.FLOOR_ANGLE);
+
 }
 }

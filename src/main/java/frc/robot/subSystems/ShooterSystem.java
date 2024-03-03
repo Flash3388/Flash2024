@@ -26,7 +26,7 @@ public class ShooterSystem extends Subsystem {
     private  double KD_LEFT = 0;
     private  double KF_LEFT = 0;
 
-    private static final double DEFAULT_SPEED = 0.0; //0.2;
+    private static final double DEFAULT_SPEED = 0.2; //0.2;
     public static final double SPEED_TARGET_SPEAKER = 4000; // 4000
     public static final double SPEED_TARGET_AMP = 500; //500
     public ShooterSystem(CANSparkMax rightEC, CANSparkMax leftEC){
