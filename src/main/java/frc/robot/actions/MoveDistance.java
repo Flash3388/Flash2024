@@ -64,10 +64,10 @@ public class MoveDistance extends ActionBase {
     public void execute(ActionControl control) {
         if(!isFieldRelative) {
             double distancePassed = -swerve.getDistancePassedMeters();
-            if (ExtendedMath.constrained(swerve.getFLHeading(), 170, 190))
+            if (ExtendedMath.constrained(swerve.getFLHeading(), 165, 195))
                 distancePassed = -distancePassed;
 
-            double speed = pid.applyAsDouble(distancePassed, setPoint) * Swerve.MAX_SPEED * 1.5;
+            double speed = pid.applyAsDouble(distancePassed, setPoint) * Swerve.MAX_SPEED * 2;
 
             swerve.drive(speed, 0, 0);
             SmartDashboard.putNumber("pid's speed", speed);
