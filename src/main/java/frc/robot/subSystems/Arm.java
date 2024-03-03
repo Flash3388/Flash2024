@@ -78,7 +78,8 @@ public class Arm extends Subsystem {
         pid.setTolerance(STABLE_ERROR, 0.0005); //0.0001
 
 
-        setSetPointAngle(DEF_ANGLE);
+        //setSetPointAngle(DEF_ANGLE);
+        setPositioningNotControlled();
         SmartDashboard.putNumber("set point A", DEF_ANGLE);
 
 

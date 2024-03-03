@@ -35,5 +35,6 @@ public class TakeOut extends ActionBase {
     public void end(FinishReason reason) {
     this.intake.stop();
     shooter.moveDefault(intake.isIN());
+    arm.setSetPointAngle(Arm.FLOOR_ANGLE);
     }
 }
