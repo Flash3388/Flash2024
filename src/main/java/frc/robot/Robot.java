@@ -29,6 +29,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     private Limelight limelight;
     private Arm arm;
     private Climb climb;
+    private RaspberryPi raspberryPi;
     private UsbCamera usbCamera;
     private VideoSink videoSink;
 
@@ -65,6 +66,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xbox_systems = getHidInterface().newXboxController(RobotMap.XBOX_SYSTEMS);
         limelight = new Limelight(swerve);
         climb = SystemFactory.createClimb();
+        this.raspberryPi = new RaspberryPi();
        // this.usbCamera = CameraServer.startAutomaticCapture();
        // this.videoSink = CameraServer.getServer();
        //  videoSink.setSource(null);
@@ -81,6 +83,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xbox_driver.getDpad().right().whenActive(new StraightToField(limelight,swerve));
 
         xbox_driver.getButton(XboxButton.LB).whileActive(new CollectNote(swerve));
+       // xbox_driver.getButton(XboxButton.LB).whileActive(new RotateToNote(raspberryPi, swerve).andThen(new CollectNote(swerve)));
         xbox_driver.getButton(XboxButton.RB).whenActive(Actions.instant(() -> arm.setSetPointAngle(Arm.FLOOR_ANGLE)));
 
         xbox_driver.getAxis(XboxAxis.RT).asButton(0.8 ,true).whenActive(new SetDefault(arm,shooter,intake, limelight));
@@ -192,6 +195,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         swerve.resetCurrentAngle();
         arm.setNotAmp();
         //arm.setSetPointAngle(Arm.DEF_ANGLE);
+        if(arm.getArmPosition() >= 5)
+            arm.setSetPointAngle(Arm.FLOOR_ANGLE);
         SmartDashboard.putBoolean("got here", false);
 
         //PortForwarder.add(5809, "wpilibpi.local", 5809);
