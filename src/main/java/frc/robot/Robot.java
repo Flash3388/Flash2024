@@ -81,6 +81,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xbox_driver.getDpad().up().whenActive(Actions.instant(() -> Swerve.IS_FIELD_RELATIVE = !Swerve.IS_FIELD_RELATIVE));
         xbox_driver.getDpad().down().whenActive(Actions.instant(() -> Swerve.SIGNUM = -Swerve.SIGNUM));
         xbox_driver.getDpad().right().whenActive(new StraightToField(limelight,swerve));
+        xbox_driver.getDpad().left().whenActive(new RotateToNote(raspberryPi, swerve));
 
         xbox_driver.getButton(XboxButton.LB).whileActive(new CollectNote(swerve));
        // xbox_driver.getButton(XboxButton.LB).whileActive(new RotateToNote(raspberryPi, swerve).andThen(new CollectNote(swerve)));
@@ -142,7 +143,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
                 .andThen((new LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm, intake,false, false))
                 .alongWith((new SetPointAngleByVision(limelight, intake, arm, shooter)).alongWith(new Shoot(shooter, intake,arm, limelight))));
                 //.andThen(new StraightToField(limelight, swerve));
-*/
+       */
 
         this.spinShootSpinTakeShoot = new LimelightAutoAlignWithDrive(xbox_driver, limelight, swerve, arm, intake,false, false)
                 .alongWith((new SetPointAngleByVision(limelight, intake, arm, shooter)).alongWith(new Shoot(shooter, intake, arm, limelight)))
@@ -151,6 +152,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
                 .andThen((new TakeIn(intake, arm, shooter)).alongWith(new MoveDistance(swerve, distance, false).andThen(new LimelightAutoAlignWithDrive(xbox_driver, limelight, swerve, arm, intake,false, false))))
                 .andThen((new SetPointAngleByVision(limelight, intake, arm, shooter)).alongWith(new Shoot(shooter, intake,arm, limelight)));
         //.andThen(new StraightToField(limelight, swerve));
+
 
 
 
@@ -286,7 +288,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         arm.print();
         limelight.updateRobotPositionByAprilTag();
         swerve.updatePositioning();
-        shooter.print();
+        //shooter.print();
         swerve.print();
         intake.print();
 
