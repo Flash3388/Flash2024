@@ -63,12 +63,12 @@ public class Shoot extends ActionBase {
         else {
             if (shooter.gotToTarget(ShooterSystem.SPEED_TARGET_SPEAKER) && arm.isStabilizedAtTargetedPosition()){
                 if(DriverStation.isAutonomous()){
-                    if(ExtendedMath.constrained(limelight.getXAngleToTarget_Speaker(), -1.5, 1.5)) {
+                    if(ExtendedMath.constrained(limelight.getXAngleToTarget_Speaker(), -2, 2)) {
                         SmartDashboard.putBoolean("got here", true);
                         intake.shoot();
                     }
                 }
-                else
+                else if(ExtendedMath.constrained(limelight.getXAngleToTarget_Speaker(), -1.5, 1.5))
                     intake.shoot();
             }
            /* if (timerBeforeShoot.isValid()) {

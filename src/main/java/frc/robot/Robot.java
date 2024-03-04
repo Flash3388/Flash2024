@@ -285,7 +285,6 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         swerve.print();
         intake.print();
 
-
         SmartDashboard.putNumber("ActualGyroAngle", swerve.getHeadingDegrees());
         SmartDashboard.putNumber("Drive Distance", swerve.getDistancePassedMeters());
         SmartDashboard.putNumber("Place Y robot", swerve.getRobotPose().getY());

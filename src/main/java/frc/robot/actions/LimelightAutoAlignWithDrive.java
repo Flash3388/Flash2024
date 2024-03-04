@@ -26,6 +26,7 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
     private final double KI = 0.00002; // 0.00001  0.00002
     private final double KD = 0.00;
     private final double KF = 0;
+    private final double I_ZONE = 8;
     private final double PID_ERROR = 1; //0.7
     private final double PID_LIMIT = 1;
     private boolean continuous;
@@ -50,6 +51,7 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
 
         pidController.setTolerance(PID_ERROR, 0.1); //0.001 0.01
         pidController.setOutputLimit(PID_LIMIT);
+        pidController.setIZone(I_ZONE);
 
         //configure().setName("LimelightAutoAlign").save();
 
