@@ -49,6 +49,13 @@ public class SetPointAngleByVision extends ActionBase {
              //double k = SmartDashboard.getNumber("k of angle", 19.5);
              double k = 0.354 * Math.pow(distance,3) - 3.85 * Math.pow(distance, 2) + 13 * distance + 5.56;
 
+             double[] xy = limelight.get_XY_DiffInRobotSpeaker();
+             /*double k = 12.38556225 + 3.54503416 * xy[0] + 2.56487567 * xy[1] - 0.45363053 * xy[0] * xy[0] +
+                     0.0675593 * xy[1] * xy[1] - 0.7283734 * xy[0] * xy[1];
+              */
+
+
+
             //double angle = -1.05 * Math.pow(distance, 2) + 11.2 * distance + 19.5 ; //18.4
             double angle = -1.05 * Math.pow(distance, 2) + 11.2 * distance + k ; //18.4
             //double angle = -1.82 * Math.pow(distance, 2) + 15.5 * distance + 12.1;

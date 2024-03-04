@@ -291,6 +291,24 @@ public class Limelight extends Subsystem {
             swerve.updatePositionFromVision(robotPose, timestamp); //check how to correctly check the limelight time
         }
     }
+    public double[] get_XY_DiffInRobotSpeaker(){
+        Optional<DriverStation.Alliance> allianceOptional = DriverStation.getAlliance();
+        if (allianceOptional.isEmpty()) {
+            double[] xy = {0,0};
+            return xy;
+        }
+        int aprilTagID = 4; //default is red
+        DriverStation.Alliance alliance = allianceOptional.get();
+        if(alliance == DriverStation.Alliance.Blue) //if we are blue alliance-limelight towards us
+            aprilTagID = 7;
+
+        double x = layout.getTagPose(aprilTagID).get().getX() - swerve.getRobotPose().getX();
+        double y = layout.getTagPose(aprilTagID).get().getY() - swerve.getRobotPose().getY();
+
+        double[] xy = {x, y};
+        return xy;
+    }
+
          /* public double getXAngleToTarget_Speaker_TomWay() {// for speaker
             //(Xpos, Ypos, Zpos, Xrot, Yrot, Zrot)
             Optional<DriverStation.Alliance> allianceOptional = DriverStation.getAlliance();
