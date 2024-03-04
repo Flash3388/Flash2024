@@ -89,6 +89,8 @@ public class ShootSpeaker extends ActionBase {
         shooter.stop();
         intake.stop();
         arm.setNotAmp();
-        arm.setSetPointAngle(Arm.DEF_ANGLE);
+       // arm.setSetPointAngle(Arm.DEF_ANGLE);
+        arm.setSetPointAngle(Arm.FLOOR_ANGLE);
+
     }
 }

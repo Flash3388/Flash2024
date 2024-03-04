@@ -6,6 +6,7 @@ import com.flash3388.flashlib.robot.control.PidController;
 import com.flash3388.flashlib.scheduling.ActionControl;
 import com.flash3388.flashlib.scheduling.FinishReason;
 import com.flash3388.flashlib.scheduling.actions.ActionBase;
+import com.jmath.ExtendedMath;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subSystems.Arm;
 import frc.robot.subSystems.Limelight;
@@ -16,10 +17,10 @@ public class StraightToField extends ActionBase {
     private final Swerve swerve;
     private double angleInField = 0;
     private PidController pidController;
-    private final double KP = 0.08;
-    private final double KI = 0.00001;
-    private final double KD = 0.00;
-    private final double PID_ERROR = 1;
+    private final double KP = 0.1;
+    private final double KI = 0.0003;
+    private final double KD = 0.0002;
+    private final double PID_ERROR = 0.5;
     private final double PID_LIMIT = 1;
 
 
@@ -29,8 +30,8 @@ public class StraightToField extends ActionBase {
         this.swerve = swerve;
         this.angleInField = 0;
         pidController = PidController.newNamedController("rotation in automation", KP, KI, KD, 0);
-
-        pidController.setTolerance(PID_ERROR, 0.01); //0.001
+        pidController.setIZone(15);
+        pidController.setTolerance(PID_ERROR, Double.POSITIVE_INFINITY); //0.001
 
         pidController.setOutputLimit(PID_LIMIT);
 
@@ -49,7 +50,11 @@ public class StraightToField extends ActionBase {
     @Override
     public void execute(ActionControl actionControl) {
 
-        double rotation = pidController.applyAsDouble(angleInField, 0 ); //using odometry
+        double rotation = pidController.applyAsDouble(swerve.getRobotPose().getRotation().getDegrees(), angleInField); //using odometry
+        double diff = Math.abs(swerve.getRobotPose().getRotation().getDegrees() - angleInField);
+        if(ExtendedMath.constrained(diff , 1, 8))
+            rotation /= 1.5;
+
         SmartDashboard.putNumber("rotation", rotation);
 
         swerve.drive(0, 0, rotation, true);

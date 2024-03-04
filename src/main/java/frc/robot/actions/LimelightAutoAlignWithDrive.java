@@ -9,6 +9,7 @@ import com.flash3388.flashlib.scheduling.actions.ActionBase;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subSystems.Arm;
+import frc.robot.subSystems.Intake;
 import frc.robot.subSystems.Limelight;
 import frc.robot.subSystems.Swerve;
 
@@ -21,19 +22,20 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
     private final Arm arm;
     private double angle2Target = 0;
     private PidController pidController;
-    private final double KP = 0.08;
-    private final double KI = 0.00002; // 0.00001
+    private final double KP = 0.08; //0.08
+    private final double KI = 0.00002; // 0.00001  0.00002
     private final double KD = 0.00;
     private final double KF = 0;
-    private final double PID_ERROR = 0.7;
+    private final double I_ZONE = 8;
+    private final double PID_ERROR = 1; //0.7
     private final double PID_LIMIT = 1;
     private boolean continuous;
     private boolean withXbox;
     private double signum = 1;
 
+    private Intake intake;
 
-
-    public LimelightAutoAlignWithDrive(XboxController xbox_driver, Limelight limelight, Swerve swerve, Arm arm,
+    public LimelightAutoAlignWithDrive(XboxController xbox_driver, Limelight limelight, Swerve swerve, Arm arm, Intake intake,
                                        boolean continuous,
                                        boolean withXbox) {
         this.xbox_driver = xbox_driver;
@@ -43,11 +45,13 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
         this.angle2Target = 0;
         this.continuous = continuous;
         this.withXbox = withXbox;
+        this.intake = intake;
 
-        pidController = PidController.newNamedController("rotation", KP, KI, KD, 0);
+        pidController = PidController.newNamedController("AutoAlignWithDrive.rotation", KP, KI, KD, 0);
 
-        pidController.setTolerance(PID_ERROR, 0.01); //0.001
+        pidController.setTolerance(PID_ERROR, 0.1); //0.001 0.01
         pidController.setOutputLimit(PID_LIMIT);
+        pidController.setIZone(I_ZONE);
 
         //configure().setName("LimelightAutoAlign").save();
 
@@ -65,6 +69,9 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
     public void execute(ActionControl actionControl) {
         double gyroAngle = swerve.getHeadingDegrees();
 
+        if(!intake.isIN() && !DriverStation.isAutonomous())
+            actionControl.finish();
+
         if(arm.isSetToAMP())
             angle2Target = limelight.getXAngleToTarget_Amp() + gyroAngle;
         else
@@ -78,9 +85,9 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
         double driveY = 0;
         if (withXbox) {
             driveX = Swerve.SIGNUM * xbox_driver.getAxis(XboxAxis.LeftStickX).getAsDouble() ;
-            driveX = Math.abs(driveX) > 0.2 ? driveX * Swerve.MAX_SPEED : 0;
+            driveX = Math.abs(driveX) > 0.2 ? driveX * driveX * Math.signum(driveX) * Swerve.MAX_SPEED : 0;
             driveY = Swerve.SIGNUM * xbox_driver.getAxis(XboxAxis.LeftStickY).getAsDouble() ;
-            driveY = Math.abs(driveY) > 0.2 ? driveY * Swerve.MAX_SPEED: 0;
+            driveY = Math.abs(driveY) > 0.2 ? driveY * driveY * Math.signum(driveY) * Swerve.MAX_SPEED: 0;
         }
 
        double rotation = pidController.applyAsDouble(gyroAngle, angle2Target); //using odometry
@@ -94,7 +101,6 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
 
         SmartDashboard.putNumber("rotation", rotation);
         swerve.drive(driveY, driveX, rotation, true);
-
     }
 
     @Override

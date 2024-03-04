@@ -37,16 +37,20 @@ public class SetPointAngleByVision extends ActionBase {
     public void initialize(ActionControl control) {
         arm.baseOnLimelightDetection();
         limelight.startTimer();
+        Limelight.KEEP_UPDATING_ODOMETER = false;
     }
 
     @Override
     public void execute(ActionControl control) {
-
         if(intake.isIN() && arm.isBasedOnLimelightDetection()) {
             double distance = limelight.getDisHorizontalToTarget();
 
             SmartDashboard.putNumber("odometer distance", distance);
-            double angle = -1.05 * Math.pow(distance, 2) + 11.2 * distance + 19.5 ; //18.4
+             //double k = SmartDashboard.getNumber("k of angle", 19.5);
+             double k = 0.354 * Math.pow(distance,3) - 3.85 * Math.pow(distance, 2) + 13 * distance + 5.56;
+
+            //double angle = -1.05 * Math.pow(distance, 2) + 11.2 * distance + 19.5 ; //18.4
+            double angle = -1.05 * Math.pow(distance, 2) + 11.2 * distance + k ; //18.4
             //double angle = -1.82 * Math.pow(distance, 2) + 15.5 * distance + 12.1;
             arm.setSetPointAngle(angle);
             shooterSystem.shootSpeaker();
@@ -58,6 +62,7 @@ public class SetPointAngleByVision extends ActionBase {
     public void end(FinishReason reason) {
         arm.doNotBaseOnLimelightDetection(); //to be sure
         limelight.stopTimer();
-        shooterSystem.moveDefault();
+        shooterSystem.moveDefault(intake.isIN());
+        Limelight.KEEP_UPDATING_ODOMETER = true;
     }
 }

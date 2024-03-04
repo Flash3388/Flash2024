@@ -34,9 +34,9 @@ public class DriveWithXbox extends ActionBase {
         double driveX = Swerve.SIGNUM * xbox_driver.getAxis(XboxAxis.LeftStickX).getAsDouble() ;
         double rotation = -xbox_driver.getAxis(XboxAxis.RightStickX).getAsDouble();
 
-        driveX = Math.abs(driveX) > 0.2 ? driveX * Swerve.MAX_SPEED : 0;
-        driveY = Math.abs(driveY) > 0.2 ? driveY  * Swerve.MAX_SPEED : 0;
-        rotation = Math.abs(rotation) > 0.2 ? rotation  * Swerve.MAX_SPEED : 0;
+        driveX = Math.abs(driveX) > 0.1 ? driveX * driveX * Math.signum(driveX) * Swerve.MAX_SPEED : 0;
+        driveY = Math.abs(driveY) > 0.1 ? driveY * driveY * Math.signum(driveY) * Swerve.MAX_SPEED : 0;
+        rotation = Math.abs(rotation) > 0.1 ? rotation * Math.signum(rotation) * rotation * Swerve.MAX_SPEED : 0;
 
 
       //  boolean isFiledRelative = SmartDashboard.getBoolean("Is Field Relative?", false);// "Is Field Relative?", false

@@ -25,12 +25,13 @@ public class MoveDistance extends ActionBase {
     private boolean isFieldRelative;
 
     public MoveDistance(Swerve swerve){
-        this(swerve, 0);
+        this(swerve, 0, false);
     }
 
-    public MoveDistance(Swerve swerve, double distance){
+    public MoveDistance(Swerve swerve, double distance, boolean isFieldRelative){
         this.swerve = swerve;
         this.distance = distance;
+        this.isFieldRelative = false;
         this.pid = PidController.newNamedController("moveDistance", KP_DISTANCE, KI_DISTANCE, KD_DISTANCE, 0);
         pid.setTolerance(ERROR, Double.POSITIVE_INFINITY);
 
@@ -47,7 +48,13 @@ public class MoveDistance extends ActionBase {
         SmartDashboard.putNumber("bla-1", swerve.getDistancePassedMeters());
         swerve.resetDistancePassed();
         swerve.resetWheels();
-        setPoint = distance;
+
+        if(!isFieldRelative)
+            setPoint = distance;
+        else {
+            setPoint = swerve.getRobotPose().getX() + Swerve.SIGNUM * distance;
+        }
+
         SmartDashboard.putNumber("bla", swerve.getDistancePassedMeters());
         SmartDashboard.putNumber("Set Point Number", setPoint);
         pid.reset();
@@ -55,20 +62,29 @@ public class MoveDistance extends ActionBase {
 
     @Override
     public void execute(ActionControl control) {
-        double distancePassed = -swerve.getDistancePassedMeters();;
+        if(!isFieldRelative) {
+            double distancePassed = -swerve.getDistancePassedMeters();
+            if (ExtendedMath.constrained(swerve.getFLHeading(), 165, 195))
+                distancePassed = -distancePassed;
 
-        if(ExtendedMath.constrained(swerve.getFLHeading(), 170, 190))
-            distancePassed = -distancePassed;
+            double speed = pid.applyAsDouble(distancePassed, setPoint) * Swerve.MAX_SPEED * 2;
 
-        double speed = pid.applyAsDouble(distancePassed, setPoint) * Swerve.MAX_SPEED *1.5;
+            swerve.drive(speed, 0, 0);
+            SmartDashboard.putNumber("pid's speed", speed);
+            SmartDashboard.putNumber("Drive Distance Action", distancePassed);
 
+            if (pid.isInTolerance()) {
+                control.finish();
+            }
+        }
+        else {
+            double currentX_Place = swerve.getRobotPose().getX();
+            double speed = pid.applyAsDouble(currentX_Place, setPoint) * Swerve.MAX_SPEED;
 
-        swerve.drive(speed, 0, 0);
-        SmartDashboard.putNumber("pid's speed", speed);
-        SmartDashboard.putNumber("Drive Distance Action", distancePassed);
-
-        if(pid.isInTolerance()){
-            control.finish();
+            swerve.drive(speed, 0, 0, true);
+            if(pid.isInTolerance()){
+                control.finish();
+            }
         }
     }
 

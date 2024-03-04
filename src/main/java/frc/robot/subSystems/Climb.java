@@ -6,8 +6,8 @@ import com.revrobotics.SparkLimitSwitch;
 
 public class Climb extends Subsystem {
     private CANSparkMax motor;
-    private static final double CLIMB_SPEED = -0.8;
-    private static final double GO_DOWN = 0.4;
+    private static final double CLIMB_SPEED = -1;
+    private static final double GO_DOWN = 0.6;
     private SparkLimitSwitch forwardLimit;
     private SparkLimitSwitch reverseLimit;
 

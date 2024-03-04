@@ -16,7 +16,7 @@ public class TakeOut extends ActionBase {
         this.intake = intake;
         this.arm = arm;
         this.shooter = shooter;
-        requires(intake, arm,shooter);
+        requires(intake, shooter);
     }
 
     @Override
@@ -27,13 +27,14 @@ public class TakeOut extends ActionBase {
 
     @Override
     public void execute(ActionControl control) {
-        this.shooter.reverse();
-        this.intake.takeOut();
+            this.shooter.reverse();
+            this.intake.takeOut();
     }
 
     @Override
     public void end(FinishReason reason) {
     this.intake.stop();
-    shooter.moveDefault();
+    shooter.moveDefault(intake.isIN());
+    arm.setSetPointAngle(Arm.FLOOR_ANGLE);
     }
 }

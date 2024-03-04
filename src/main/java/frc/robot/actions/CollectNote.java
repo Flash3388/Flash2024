@@ -20,7 +20,7 @@ public class CollectNote extends ActionBase {
 
     @Override
     public void execute(ActionControl control) {
-        swerve.drive(-2, 0, 0);
+        swerve.drive(-1.5, 0, 0);
     }
 
     @Override
