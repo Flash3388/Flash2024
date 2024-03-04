@@ -46,7 +46,8 @@ public class SetPointAngleByVision extends ActionBase {
             double distance = limelight.getDisHorizontalToTarget();
 
             SmartDashboard.putNumber("odometer distance", distance);
-             double k = SmartDashboard.getNumber("k of angle", 19.5);
+             //double k = SmartDashboard.getNumber("k of angle", 19.5);
+             double k = 0.354 * Math.pow(distance,3) - 3.85 * Math.pow(distance, 2) + 13 * distance + 5.56;
 
             //double angle = -1.05 * Math.pow(distance, 2) + 11.2 * distance + 19.5 ; //18.4
             double angle = -1.05 * Math.pow(distance, 2) + 11.2 * distance + k ; //18.4

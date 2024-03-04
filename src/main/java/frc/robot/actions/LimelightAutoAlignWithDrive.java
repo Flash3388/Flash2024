@@ -83,9 +83,9 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
         double driveY = 0;
         if (withXbox) {
             driveX = Swerve.SIGNUM * xbox_driver.getAxis(XboxAxis.LeftStickX).getAsDouble() ;
-            driveX = Math.abs(driveX) > 0.2 ? driveX * Swerve.MAX_SPEED : 0;
+            driveX = Math.abs(driveX) > 0.2 ? driveX * driveX * Math.signum(driveX) * Swerve.MAX_SPEED : 0;
             driveY = Swerve.SIGNUM * xbox_driver.getAxis(XboxAxis.LeftStickY).getAsDouble() ;
-            driveY = Math.abs(driveY) > 0.2 ? driveY * Swerve.MAX_SPEED: 0;
+            driveY = Math.abs(driveY) > 0.2 ? driveY * driveY * Math.signum(driveY) * Swerve.MAX_SPEED: 0;
         }
 
        double rotation = pidController.applyAsDouble(gyroAngle, angle2Target); //using odometry
@@ -99,7 +99,6 @@ public class LimelightAutoAlignWithDrive extends ActionBase {
 
         SmartDashboard.putNumber("rotation", rotation);
         swerve.drive(driveY, driveX, rotation, true);
-
     }
 
     @Override
