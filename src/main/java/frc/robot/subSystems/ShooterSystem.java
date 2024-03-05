@@ -165,7 +165,7 @@ public class ShooterSystem extends Subsystem {
     }
 
     public void moveDefault(boolean isIn){
-        if(DriverStation.isAutonomous()) {
+        if(DriverStation.isAutonomousEnabled()) {
             rightEC.set(AUTO_DEFAULT_SPEED);
             leftEC.set(AUTO_DEFAULT_SPEED);
         }

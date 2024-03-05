@@ -12,7 +12,6 @@ import com.flash3388.flashlib.scheduling.actions.Actions;
 import com.flash3388.flashlib.time.Time;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cscore.VideoSink;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -29,13 +28,14 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     private Limelight limelight;
     private Arm arm;
     private Climb climb;
+    private RaspberryPi raspberryPi;
     private UsbCamera usbCamera;
     private VideoSink videoSink;
 
 
     private ActionGroup shootAndMove;
-    private ActionGroup shootMoveTakeAndShoot;
-    private ActionGroup shootMoveTake;
+    private ActionGroup front_shootMoveTakeAndShoot;
+    private ActionGroup side_shootMoveTakeShoot;
     private ActionGroup spinShoot;
     private ActionGroup moveBackward;
     private ActionGroup moveBackwardAndTake;
@@ -65,9 +65,11 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xbox_systems = getHidInterface().newXboxController(RobotMap.XBOX_SYSTEMS);
         limelight = new Limelight(swerve);
         climb = SystemFactory.createClimb();
+        this.raspberryPi = new RaspberryPi();
        // this.usbCamera = CameraServer.startAutomaticCapture();
        // this.videoSink = CameraServer.getServer();
        //  videoSink.setSource(null);
+
 
         //driver:
         swerve.setDefaultAction(new DriveWithXbox(swerve, xbox_driver));
@@ -75,13 +77,16 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
                 LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm, intake,false, true));
         xbox_driver.getButton(XboxButton.A).whenActive(new
                 LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm, intake,true, true));
-
+        xbox_driver.getButton(XboxButton.Y).whenActive(new Shoot(shooter, intake, arm, limelight));
+        
+        
         xbox_driver.getDpad().up().whenActive(Actions.instant(() -> Swerve.IS_FIELD_RELATIVE = !Swerve.IS_FIELD_RELATIVE));
         xbox_driver.getDpad().down().whenActive(Actions.instant(() -> Swerve.SIGNUM = -Swerve.SIGNUM));
-        xbox_driver.getDpad().right().whenActive(new StraightToField(limelight,swerve));
+        //xbox_driver.getDpad().left().whenActive(new RotateToNote(raspberryPi, swerve));
 
         xbox_driver.getButton(XboxButton.LB).whileActive(new CollectNote(swerve));
-        xbox_driver.getButton(XboxButton.RB).whenActive(Actions.instant(() -> arm.setSetPointAngle(Arm.FLOOR_ANGLE)));
+     //   xbox_driver.getButton(XboxButton.LB).whileActive(new RotateToNote(raspberryPi, swerve).andThen(new CollectNote(swerve)));
+        xbox_driver.getButton(XboxButton.RB).whenActive(new ClimbUp(climb, arm));
 
         xbox_driver.getAxis(XboxAxis.RT).asButton(0.8 ,true).whenActive(new SetDefault(arm,shooter,intake, limelight));
         xbox_driver.getAxis(XboxAxis.LT).asButton(0.8 ,true).whenActive(new AutoAlignToAmp_AndDrive(xbox_driver,limelight,swerve, intake));
@@ -112,17 +117,60 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
                 .andThen((new TakeIn(intake, arm, shooter))
                 .alongWith(new MoveDistance(swerve, distance, false)));
 
-        this.shootMoveTakeAndShoot = (Actions.instant(() -> swerve.resetWheels()))
+       /* this.front_shootMoveTakeAndShoot = (Actions.instant(() -> swerve.resetWheels()))
                         .andThen(new ShootToSpeaker(shooter, arm, intake).alongWith(new Shoot(shooter, intake,arm, limelight)))
                         .andThen((new TakeIn(intake, arm, shooter)).alongWith(new MoveDistance(swerve, distance, false)))
                         .andThen(new LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm,intake, false, false))
                         .andThen((new SetPointAngleByVision(limelight, intake, arm, shooter)).alongWith(new Shoot(shooter, intake,arm, limelight)));
+        */
 
+        this.front_shootMoveTakeAndShoot = ((new LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm, intake,false, false))
+                        .alongWith(new ShootToSpeaker(shooter, arm, intake).alongWith(new Shoot(shooter, intake, arm, limelight))))
+                .andThen(new TakeIn(intake, arm, shooter).alongWith(new StraightToField(limelight,swerve).andThen(new RotateToNote(raspberryPi,swerve))
+                        .andThen(new MoveDistance(swerve, distance, false))))
+                .andThen((new LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm, intake,false, false))
+                        .andThen(new SetPointAngleByVision(limelight,intake,arm, shooter).alongWith(new Shoot(shooter, intake, arm, limelight))));
+
+
+       /* this.shootMoveTakeAndShoot = new LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm, intake,false, false)
+                .andThen(new ShootToSpeaker(shooter, arm, intake).alongWith(new Shoot(shooter, intake,arm, limelight)))
+                .andThen(new TakeIn(intake, arm, shooter).alongWith(new StraightToField(limelight,swerve).andThen(new RotateToNote(raspberryPi,swerve))
+                        .andThen(new MoveDistance(swerve, distance, false))))
+                .andThen(new LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm,intake, false, false))
+                .andThen((new SetPointAngleByVision(limelight, intake, arm, shooter)).alongWith(new Shoot(shooter, intake,arm, limelight)));
+  */
+
+      /*  this.shootMoveTake = Actions.instant(() -> arm.setNotAmp()).andThen(new LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm, intake,false, false))
+                .andThen(new SetPointAngleByVision(limelight,intake,arm, shooter).alongWith(new Shoot(shooter, intake, arm, limelight)))
+                .andThen(new TakeIn(intake, arm, shooter).alongWith(new StraightToField(limelight,swerve).andThen(new RotateToNote(raspberryPi,swerve))
+                        .andThen(new MoveDistance(swerve, distance, false))))
+                .andThen(new LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm, intake,false, false))
+                .andThen(new SetPointAngleByVision(limelight,intake,arm, shooter).alongWith(new Shoot(shooter, intake, arm, limelight)));
+      */
+
+        this.side_shootMoveTakeShoot = Actions.instant(() -> arm.setNotAmp()).andThen((new LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm, intake,false, false))
+                .alongWith(new SetPointAngleByVision(limelight,intake,arm, shooter).alongWith(new Shoot(shooter, intake, arm, limelight))))
+                .andThen(new TakeIn(intake, arm, shooter).alongWith(new StraightToField(limelight,swerve).andThen(new RotateToNote(raspberryPi,swerve))
+                        .andThen(new MoveDistance(swerve, distance, false))))
+                .andThen((new LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm, intake,false, false))
+                .andThen(new SetPointAngleByVision(limelight,intake,arm, shooter).alongWith(new Shoot(shooter, intake, arm, limelight))));
+
+
+
+      /* working
+        this.shootMoveTake = Actions.instant(() -> arm.setNotAmp()).andThen(new LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm, intake,false, false))
+                .andThen(new SetPointAngleByVision(limelight,intake,arm, shooter).alongWith(new Shoot(shooter, intake, arm, limelight)))
+                .andThen(new TakeIn(intake, arm, shooter).alongWith(new StraightToField(limelight,swerve).andThen(new RotateToNote(raspberryPi,swerve))
+                .andThen(new MoveDistance(swerve, distance, false))));
+
+       */
+
+        /*
         this.shootMoveTake = Actions.instant(() -> swerve.resetWheels()).andThen(Actions.instant(() -> arm.setNotAmp()).andThen(Actions.instant(() -> arm.setSetPointAngle(Arm.SPEAKER_ANGLE)))
                 .andThen(Actions.instant(() -> shooter.shootSpeaker())
                 .alongWith(new Shoot(shooter, intake, arm, limelight))))
                 .andThen((new TakeIn(intake, arm, shooter)).alongWith(new MoveDistance(swerve, distance, false)));
-
+*/
         this.moveBackward = Actions.instant(() -> swerve.resetWheels()).andThen(new MoveDistance(swerve, distance, false));
         this.moveBackwardAndTake = Actions.instant(() -> swerve.resetWheels())
                 .andThen((new MoveDistance(swerve, distance, false)).alongWith(new TakeIn(intake, arm, shooter)));
@@ -139,7 +187,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
                 .andThen((new LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm, intake,false, false))
                 .alongWith((new SetPointAngleByVision(limelight, intake, arm, shooter)).alongWith(new Shoot(shooter, intake,arm, limelight))));
                 //.andThen(new StraightToField(limelight, swerve));
-*/
+       */
 
         this.spinShootSpinTakeShoot = new LimelightAutoAlignWithDrive(xbox_driver, limelight, swerve, arm, intake,false, false)
                 .alongWith((new SetPointAngleByVision(limelight, intake, arm, shooter)).alongWith(new Shoot(shooter, intake, arm, limelight)))
@@ -148,6 +196,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
                 .andThen((new TakeIn(intake, arm, shooter)).alongWith(new MoveDistance(swerve, distance, false).andThen(new LimelightAutoAlignWithDrive(xbox_driver, limelight, swerve, arm, intake,false, false))))
                 .andThen((new SetPointAngleByVision(limelight, intake, arm, shooter)).alongWith(new Shoot(shooter, intake,arm, limelight)));
         //.andThen(new StraightToField(limelight, swerve));
+
 
 
 
@@ -160,12 +209,13 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
          this.spinForward = new StraightToField(limelight, swerve);
 
          chooser = new SendableChooser<>();
-         chooser.setDefaultOption("shoot Move Take And Shoot", shootMoveTakeAndShoot);
+         chooser.setDefaultOption("FRONT shoot Move Take And Shoot", front_shootMoveTakeAndShoot);
          chooser.addOption("spin and shoot", spinShoot);
          chooser.addOption("move backward", moveBackward);
-         chooser.addOption("spin shoot and move backward", side_spinShootMoveBackward);
-         chooser.addOption("spin,shoot,move take and shoot", spinShootSpinTakeShoot);
-         chooser.addOption("move Backward And Take", moveBackwardAndTake);
+       //  chooser.addOption("spin shoot and move backward", side_spinShootMoveBackward);
+        // chooser.addOption("spin,shoot,move take and shoot", spinShootSpinTakeShoot);
+       //  chooser.addOption("move Backward And Take", moveBackwardAndTake);
+         chooser.addOption("SIDE shoot Move Take and Shoot", side_shootMoveTakeShoot);
 
          SmartDashboard.putData("Auto Chooser", chooser);
 
@@ -192,6 +242,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         swerve.resetCurrentAngle();
         arm.setNotAmp();
         //arm.setSetPointAngle(Arm.DEF_ANGLE);
+        if(arm.getArmPosition() >= 5)
+            arm.setSetPointAngle(Arm.FLOOR_ANGLE);
         SmartDashboard.putBoolean("got here", false);
 
         //PortForwarder.add(5809, "wpilibpi.local", 5809);
@@ -281,7 +333,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         arm.print();
         limelight.updateRobotPositionByAprilTag();
         swerve.updatePositioning();
-        shooter.print();
+        //shooter.print();
         swerve.print();
         intake.print();
 
