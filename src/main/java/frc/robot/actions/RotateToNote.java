@@ -5,6 +5,7 @@ import com.flash3388.flashlib.scheduling.ActionControl;
 import com.flash3388.flashlib.scheduling.FinishReason;
 import com.flash3388.flashlib.scheduling.actions.ActionBase;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subSystems.RaspberryPi;
 import frc.robot.subSystems.Swerve;
 
@@ -13,8 +14,8 @@ public class RotateToNote extends ActionBase {
     private Swerve swerve;
     private PidController pidController;
     private double setPoint = 0;
-    private final double KP = 0.08; //0.08
-    private final double KI = 0.00002; // 0.00001  0.00002
+    private final double KP = 0.03; //0.08
+    private final double KI = 0.0000001; // 0.00001  0.00002
     private final double KD = 0.00;
     private final double KF = 0;
     private final double I_ZONE = 5;
@@ -25,7 +26,7 @@ public class RotateToNote extends ActionBase {
         this.camera = raspberryPi;
         this.swerve = swerve;
 
-        pidController = PidController.newNamedController("AutoAlignWithDrive.rotation", KP, KI, KD, 0);
+        pidController = PidController.newNamedController("RotateToNote.rotation", KP, KI, KD, 0);
 
         pidController.setTolerance(PID_ERROR, 0.1); //0.001 0.01
         pidController.setOutputLimit(PID_LIMIT);
@@ -42,7 +43,9 @@ public class RotateToNote extends ActionBase {
     @Override
     public void execute(ActionControl control) {
         double rotation = pidController.applyAsDouble(camera.getXAngleToTarget(), setPoint);
-        swerve.drive(0, 0, rotation);
+        swerve.drive(0, 0, rotation, false);
+
+        SmartDashboard.putNumber("note angle to target", camera.getXAngleToTarget());
 
         if(pidController.isInTolerance())
             control.finish();

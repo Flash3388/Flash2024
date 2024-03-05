@@ -8,7 +8,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class RaspberryPi extends Subsystem {
 
-    private PhotonCamera camera = new PhotonCamera("Microsoft_LifeCam_HD-3000");
+    private PhotonCamera camera = new PhotonCamera("C922_Pro_Stream_Webcam");
 
     public RaspberryPi(){
         camera.setPipelineIndex(0);
