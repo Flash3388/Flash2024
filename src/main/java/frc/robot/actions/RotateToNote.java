@@ -15,7 +15,7 @@ public class RotateToNote extends ActionBase {
     private PidController pidController;
     private double setPoint = 0;
     private final double KP = 0.03; //0.08
-    private final double KI = 0.0000001; // 0.00001  0.00002
+    private final double KI = 0.0000001; // 0.00001  0.00002 --when in place without driving
     private final double KD = 0.00;
     private final double KF = 0;
     private final double I_ZONE = 5;
