@@ -75,13 +75,14 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
                 LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm, intake,false, true));
         xbox_driver.getButton(XboxButton.A).whenActive(new
                 LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm, intake,true, true));
+        xbox_driver.getButton(XboxButton.Y).whenActive(new Shoot(shooter, intake, arm, limelight));
 
         xbox_driver.getDpad().up().whenActive(Actions.instant(() -> Swerve.IS_FIELD_RELATIVE = !Swerve.IS_FIELD_RELATIVE));
         xbox_driver.getDpad().down().whenActive(Actions.instant(() -> Swerve.SIGNUM = -Swerve.SIGNUM));
-        xbox_driver.getDpad().right().whenActive(new StraightToField(limelight,swerve));
+       // xbox_driver.getDpad().right().whenActive(new StraightToField(limelight,swerve));
 
         xbox_driver.getButton(XboxButton.LB).whileActive(new CollectNote(swerve));
-        xbox_driver.getButton(XboxButton.RB).whenActive(Actions.instant(() -> arm.setSetPointAngle(Arm.FLOOR_ANGLE)));
+        //xbox_driver.getButton(XboxButton.RB).whenActive(Actions.instant(() -> arm.setSetPointAngle(Arm.FLOOR_ANGLE)));
 
         xbox_driver.getAxis(XboxAxis.RT).asButton(0.8 ,true).whenActive(new SetDefault(arm,shooter,intake, limelight));
         xbox_driver.getAxis(XboxAxis.LT).asButton(0.8 ,true).whenActive(new AutoAlignToAmp_AndDrive(xbox_driver,limelight,swerve, intake));
@@ -160,12 +161,12 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
          this.spinForward = new StraightToField(limelight, swerve);
 
          chooser = new SendableChooser<>();
-         chooser.setDefaultOption("shoot Move Take And Shoot", shootMoveTakeAndShoot);
+         chooser.setDefaultOption("FRONT shoot Move Take And Shoot", shootMoveTakeAndShoot);
          chooser.addOption("spin and shoot", spinShoot);
          chooser.addOption("move backward", moveBackward);
-         chooser.addOption("spin shoot and move backward", side_spinShootMoveBackward);
-         chooser.addOption("spin,shoot,move take and shoot", spinShootSpinTakeShoot);
-         chooser.addOption("move Backward And Take", moveBackwardAndTake);
+       //  chooser.addOption("spin shoot and move backward", side_spinShootMoveBackward);
+         chooser.addOption("SIDE spin,shoot,move take and shoot", spinShootSpinTakeShoot);
+      //   chooser.addOption("move Backward And Take", moveBackwardAndTake);
 
          SmartDashboard.putData("Auto Chooser", chooser);
 

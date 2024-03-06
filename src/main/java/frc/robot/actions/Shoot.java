@@ -63,7 +63,7 @@ public class Shoot extends ActionBase {
         else {
             if (shooter.gotToTarget(ShooterSystem.SPEED_TARGET_SPEAKER) && arm.isStabilizedAtTargetedPosition()){
                 if(DriverStation.isAutonomous()){
-                    if(ExtendedMath.constrained(limelight.getXAngleToTarget_Speaker(), -2, 2)) {
+                    if(ExtendedMath.constrained(limelight.getXAngleToTarget_Speaker(), -5, 5)) {
                         SmartDashboard.putBoolean("got here", true);
                         intake.shoot();
                     }
