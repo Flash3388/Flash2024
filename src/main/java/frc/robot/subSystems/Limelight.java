@@ -273,7 +273,7 @@ public class Limelight extends Subsystem {
             SmartDashboard.putBoolean("aprilTagPresent",false);
             return;
         }
-        if(getAvgDistance() <= 1.6)
+        if(getAvgDistance() <= 1.5)
             setPipline(1);
         else //2-3.5 m
             setPipline(0);

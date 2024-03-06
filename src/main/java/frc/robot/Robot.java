@@ -65,7 +65,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
         xbox_systems = getHidInterface().newXboxController(RobotMap.XBOX_SYSTEMS);
         limelight = new Limelight(swerve);
         climb = SystemFactory.createClimb();
-        this.raspberryPi = new RaspberryPi();
+      //  this.raspberryPi = new RaspberryPi();
        // this.usbCamera = CameraServer.startAutomaticCapture();
        // this.videoSink = CameraServer.getServer();
        //  videoSink.setSource(null);
@@ -126,8 +126,8 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
         this.front_shootMoveTakeAndShoot = ((new LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm, intake,false, false))
                         .alongWith(new ShootToSpeaker(shooter, arm, intake).alongWith(new Shoot(shooter, intake, arm, limelight))))
-                .andThen(new TakeIn(intake, arm, shooter).alongWith(new StraightToField(limelight,swerve).andThen(new RotateToNote(raspberryPi,swerve))
-                        .andThen(new MoveDistance(swerve, distance, false))))
+                .andThen(new TakeIn(intake, arm, shooter).alongWith(new StraightToField(limelight,swerve).andThen/*(new RotateToNote(raspberryPi,swerve))
+                        .andThen*/(new MoveDistance(swerve, distance, false))))
                 .andThen((new LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm, intake,false, false))
                         .andThen(new SetPointAngleByVision(limelight,intake,arm, shooter).alongWith(new Shoot(shooter, intake, arm, limelight))));
 
@@ -150,7 +150,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
 
         this.side_shootMoveTakeShoot = Actions.instant(() -> arm.setNotAmp()).andThen((new LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm, intake,false, false))
                 .alongWith(new SetPointAngleByVision(limelight,intake,arm, shooter).alongWith(new Shoot(shooter, intake, arm, limelight))))
-                .andThen(new TakeIn(intake, arm, shooter).alongWith(new StraightToField(limelight,swerve).andThen(new RotateToNote(raspberryPi,swerve))
+                .andThen(new TakeIn(intake, arm, shooter).alongWith(new StraightToField(limelight,swerve)/*.andThen(new RotateToNote(raspberryPi,swerve))*/
                         .andThen(new MoveDistance(swerve, distance, false))))
                 .andThen((new LimelightAutoAlignWithDrive(xbox_driver, limelight,swerve,arm, intake,false, false))
                 .andThen(new SetPointAngleByVision(limelight,intake,arm, shooter).alongWith(new Shoot(shooter, intake, arm, limelight))));
@@ -309,6 +309,7 @@ public class Robot extends DelegatingFrcRobotControl implements IterativeFrcRobo
     public void testPeriodic() {
 
     }
+
     public double calculateAngle(double distance){
 
         if(distance == Double.MIN_VALUE) {
