@@ -24,7 +24,7 @@ public class RobotMap {
     public static final int SWERVE_ABSOLUTE_ENCODER_RL = 6;
     public static final int SWERVE_ABSOLUTE_ENCODER_RR = 3;
     public static final double SWERVE_ABSOLUTE_ENCODER_FL_ZERO_ANGLE = 271.669 ;//275.8
-    public static final double SWERVE_ABSOLUTE_ENCODER_FR_ZERO_ANGLE = 42.7148 +180 ;// 60.105  60.996
+    public static final double SWERVE_ABSOLUTE_ENCODER_FR_ZERO_ANGLE = 258.486 ;// 60.105  60.996   42.7148 +180
     public static final double SWERVE_ABSOLUTE_ENCODER_RL_ZERO_ANGLE = 32.695 + 180; //216.47
     public static final double SWERVE_ABSOLUTE_ENCODER_RR_ZERO_ANGLE = 12.744 + 180 ; //190.458
     public static final int INTAKE = 13;
